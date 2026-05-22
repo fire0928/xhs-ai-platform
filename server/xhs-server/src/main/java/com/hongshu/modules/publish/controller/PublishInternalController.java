@@ -56,15 +56,15 @@ public class PublishInternalController {
             return ApiResponse.fail(404, "账号不存在");
         }
 
-        if (account.getCookie() == null || account.getCookie().isEmpty()) {
+        if (account.getCookieJson() == null || account.getCookieJson().isEmpty()) {
             return ApiResponse.fail(400, "账号Cookie未配置");
         }
 
         try {
-            String decryptedCookie = cryptoUtil.decrypt(account.getCookie());
+            String decryptedCookie = cryptoUtil.aesDecrypt(account.getCookieJson());
             return ApiResponse.ok(Map.of(
                     "accountId", accountId,
-                    "nickname", account.getNickname() != null ? account.getNickname() : "",
+                    "nickname", account.getXhNickname() != null ? account.getXhNickname() : "",
                     "cookie", decryptedCookie
             ));
         } catch (Exception e) {

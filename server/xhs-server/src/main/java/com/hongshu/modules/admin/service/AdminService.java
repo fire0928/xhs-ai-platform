@@ -149,7 +149,7 @@ public class AdminService {
                 "totalContents", contentCount,
                 "publishedContents", publishedCount,
                 "accountCount", accountMapper.selectCount(
-                        new LambdaQueryWrapper<>().eq(
+                        new LambdaQueryWrapper<com.hongshu.modules.account.entity.XiaohongshuAccount>().eq(
                                 com.hongshu.modules.account.entity.XiaohongshuAccount::getUserId, userId))
         );
     }

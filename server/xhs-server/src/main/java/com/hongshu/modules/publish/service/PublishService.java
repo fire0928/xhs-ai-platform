@@ -196,7 +196,7 @@ public class PublishService extends ServiceImpl<PublishQueueMapper, PublishQueue
                     "xhAccountId", String.valueOf(task.getXhAccountId() != null ? task.getXhAccountId() : 0)
             );
             redisTemplate.opsForStream().add(QUEUE_STREAM_KEY, taskMap);
-            log.info("推送发布任务: queueId={}, contentId={}", task.getId(), task.getContentId());
+            logger.info("推送发布任务: queueId={}, contentId={}", task.getId(), task.getContentId());
         }
     }
 
