@@ -3,13 +3,10 @@ FROM maven:3.9-eclipse-temurin-21-alpine AS builder
 
 WORKDIR /build
 
-# Copy pom.xml first for dependency caching
+# Copy everything and build in one step
 COPY pom.xml .
-RUN mvn dependency:go-offline -B
-
-# Copy source and build (verbose for debugging)
 COPY src ./src
-RUN mvn clean package -DskipTests -B
+RUN mvn package -DskipTests -B
 
 # ====== Stage 2: Run the JAR ======
 FROM eclipse-temurin:21-jre-alpine
