@@ -1,0 +1,517 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=375,initial-scale=1">
+<title>红书智创 - 手机版原型</title>
+<style>
+:root{
+--cp50:#FFF1F3;--cp100:#FFE0E5;--cp200:#FFC6CF;--cp300:#FF9DAD;--cp400:#FF6480;--cp500:#FE2C55;--cp600:#E61A45;--cp700:#C0133A;--cp800:#9E1537;--cp900:#841635;
+--cap:#8B5CF6;--capl:#EDE9FE;--cao:#F59E0B;--caol:#FEF3C7;
+--cn50:#FAFAF9;--cn100:#F5F5F4;--cn200:#E7E5E4;--cn300:#D6D3D1;--cn400:#A8A29E;--cn500:#78716C;--cn600:#57534E;--cn700:#44403C;--cn800:#292524;--cn900:#1C1917;
+--cs:#22C55E;--cw:#F59E0B;--ce:#EF4444;--ci:#3B82F6;
+--gb:linear-gradient(135deg,#FE2C55,#FF6480);--gai:linear-gradient(135deg,#FE2C55,#8B5CF6);--ggl:linear-gradient(135deg,#FFE0E5,#EDE9FE);--ggr:linear-gradient(135deg,#22C55E,#F59E0B);--gw:linear-gradient(135deg,#FFF1F3,#FEF3C7);
+--ff:'Inter','PingFang SC','Microsoft YaHei',sans-serif;--fm:'JetBrains Mono',monospace;
+--txs:11px;--tsm:13px;--tb:14px;--tl:16px;--txl:20px;--t2:24px;--t3:28px
+}
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:var(--ff);background:var(--cn100);display:flex;justify-content:center;align-items:center;min-height:100vh}
+/* PHONE FRAME */
+.phone-wrap{display:flex;flex-direction:column;align-items:center}
+.phone-label{font-size:13px;color:var(--cn400);margin-bottom:12px;font-weight:500}
+.phone{width:399px;height:860px;background:var(--cn800);border-radius:44px;padding:12px;position:relative;box-shadow:0 25px 50px -12px rgba(0,0,0,.25)}
+.phone-inner{width:375px;height:836px;background:var(--cn50);border-radius:32px;overflow:hidden;position:relative}
+.phone-notch{position:absolute;top:0;left:50%;transform:translateX(-50%);width:150px;height:28px;background:var(--cn800);border-radius:0 0 18px 18px;z-index:100}
+.phone-home{position:absolute;bottom:6px;left:50%;transform:translateX(-50%);width:134px;height:5px;background:rgba(255,255,255,.3);border-radius:3px;z-index:100}
+/* APP SHELL */
+.app{width:375px;height:836px;display:flex;flex-direction:column;overflow:hidden}
+.status-bar{height:44px;background:var(--cn50);display:flex;align-items:flex-end;justify-content:space-between;padding:0 24px 4px;font-size:var(--tsm);font-weight:600;color:var(--cn900);flex-shrink:0;z-index:50}
+.nav-bar{height:44px;background:var(--cn50);display:flex;align-items:center;justify-content:center;font-size:var(--tl);font-weight:600;color:var(--cn900);border-bottom:1px solid var(--cn100);flex-shrink:0;position:relative}
+.nav-bar .back{position:absolute;left:16px;cursor:pointer}
+.nav-bar .action{position:absolute;right:16px;cursor:pointer;color:var(--cp500)}
+.content{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;background:var(--cn50)}
+.tab-bar{height:50px;background:#fff;border-top:1px solid var(--cn200);display:flex;flex-shrink:0}
+.tab-item{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;cursor:pointer;transition:color .15s;color:var(--cn400)}
+.tab-item.active{color:var(--cp500)}
+.tab-item svg{width:22px;height:22px}
+.tab-item span{font-size:10px;font-weight:500}
+.tab-item.ai-tab svg{filter:none}
+.tab-item.ai-tab.active{color:var(--cp500)}
+.ai-tab-icon{background:var(--gai);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+/* PAGE */
+.page{display:none;min-height:100%}
+.page.active{display:block}
+/* COMPONENTS */
+.card{background:#fff;border-radius:12px;box-shadow:0 1px 3px rgba(0,0,0,.06);overflow:hidden}
+.metric-card{padding:14px 16px;border-top:3px solid var(--cp500)}
+.metric-card .label{font-size:var(--txs);color:var(--cn500);margin-bottom:6px;display:flex;align-items:center;gap:4px}
+.metric-card .value{font-family:var(--fm);font-size:var(--t2);font-weight:700;color:var(--cn900)}
+.metric-card .trend{font-size:var(--txs);display:flex;align-items:center;gap:2px;margin-top:4px}
+.trend-up{color:var(--cs)}.trend-down{color:var(--ce)}
+.metric-card .spark{margin-top:8px;height:32px}
+.scroll-row{display:flex;gap:12px;overflow-x:auto;padding:0 16px;scrollbar-width:none}
+.scroll-row::-webkit-scrollbar{display:none}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:6px;padding:10px 20px;border-radius:24px;font-size:var(--tb);font-weight:600;border:none;cursor:pointer;transition:all .15s}
+.btn-primary{background:var(--gb);color:#fff;box-shadow:0 4px 12px rgba(254,44,85,.3)}
+.btn-outline{background:#fff;color:var(--cp500);border:1.5px solid var(--cp500)}
+.btn-ghost{background:transparent;color:var(--cn600)}
+.btn-ai{background:var(--gai);color:#fff;box-shadow:0 4px 12px rgba(254,44,85,.25)}
+.tag{display:inline-flex;align-items:center;padding:4px 10px;border-radius:16px;font-size:var(--txs);font-weight:500}
+.tag-red{background:var(--cp50);color:var(--cp600)}
+.tag-purple{background:var(--capl);color:var(--cap)}
+.tag-orange{background:var(--caol);color:var(--cao)}
+.tag-green{background:#DCFCE7;color:#16A34A}
+.tag-blue{background:#DBEAFE;color:#2563EB}
+.progress-bar{height:6px;background:var(--cn200);border-radius:3px;overflow:hidden}
+.progress-fill{height:100%;border-radius:3px;transition:width .3s}
+/* ANIMATIONS */
+@keyframes shimmer{0%{background-position:-200% 0}100%{background-position:200% 0}}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.5}}
+@keyframes typing{0%,100%{opacity:1}50%{opacity:0}}
+@keyframes rotateBorder{0%{--angle:0deg}100%{--angle:360deg}}
+@keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-4px)}}
+.shimmer{background:linear-gradient(90deg,var(--cn200) 25%,var(--cn100) 50%,var(--cn200) 75%);background-size:200% 100%;animation:shimmer 1.5s infinite}
+.cursor-blink{display:inline-block;width:2px;height:1em;background:var(--cp500);animation:typing 1s infinite;vertical-align:text-bottom;margin-left:1px}
+@media(prefers-reduced-motion:reduce){*{animation-duration:.01ms!important;transition-duration:.01ms!important}}
+/* DASHBOARD */
+.dash-greeting{padding:16px;display:flex;align-items:center;gap:12px}
+.dash-avatar{width:40px;height:40px;border-radius:50%;background:var(--gb);display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.dash-hello{flex:1}
+.dash-hello h2{font-size:var(--tl);font-weight:700;color:var(--cn900)}
+.dash-hello p{font-size:var(--txs);color:var(--cn500)}
+.dash-switch{width:32px;height:32px;border-radius:8px;background:var(--cn100);display:flex;align-items:center;justify-content:center;cursor:pointer}
+.dash-metrics{padding:0 16px 16px}
+.metrics-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.dash-chart{padding:0 16px 16px}
+.chart-card{padding:16px}
+.chart-title{font-size:var(--tsm);font-weight:600;color:var(--cn700);margin-bottom:12px}
+.dash-ranking{padding:0 16px 16px}
+.rank-item{display:flex;align-items:center;gap:10px;margin-bottom:10px}
+.rank-num{width:20px;height:20px;border-radius:50%;font-size:var(--txs);font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.rank-num.top{background:var(--cp500);color:#fff}
+.rank-num.n2{background:var(--cn200);color:var(--cn600)}
+.rank-num.n3{background:var(--caol);color:#fff}
+.rank-info{flex:1;min-width:0}
+.rank-title{font-size:var(--tsm);font-weight:500;color:var(--cn700);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.rank-bar{height:6px;background:var(--cn100);border-radius:3px;margin-top:4px;overflow:hidden}
+.rank-val{font-size:var(--txs);color:var(--cn500);font-weight:600;flex-shrink:0}
+.dash-actions{padding:0 16px 24px;display:flex;gap:10px}
+.dash-actions .btn{flex:1;padding:14px}
+/* AI CREATE */
+.create-progress{padding:16px 16px 0;display:flex;align-items:center;gap:0}
+.step-dot{width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:var(--txs);font-weight:700;flex-shrink:0;transition:all .15s}
+.step-dot.done{background:var(--cs);color:#fff}
+.step-dot.active{background:var(--cp500);color:#fff;box-shadow:0 0 0 4px var(--cp100)}
+.step-dot.ai-active{background:var(--gai);color:#fff;box-shadow:0 0 0 4px var(--capl)}
+.step-dot.pending{background:var(--cn200);color:var(--cn400)}
+.step-line{flex:1;height:3px;background:var(--cn200);border-radius:2px}
+.step-line.done{background:var(--cs)}
+.step-line.active{background:var(--gb)}
+.create-body{padding:16px}
+.agent-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.agent-card{padding:16px;border-radius:12px;border:1.5px solid var(--cn200);cursor:pointer;transition:all .15s;text-align:center}
+.agent-card:hover{border-color:var(--cn300);background:var(--cn50)}
+.agent-card.selected{border-color:var(--cp500);background:var(--cp50)}
+.agent-icon{width:48px;height:48px;border-radius:12px;margin:0 auto 8px;display:flex;align-items:center;justify-content:center}
+.agent-name{font-size:var(--tb);font-weight:600;color:var(--cn800);margin-bottom:4px}
+.agent-tag{font-size:var(--txs);color:var(--cn500)}
+.input-group{margin-bottom:16px}
+.input-group label{display:block;font-size:var(--tsm);font-weight:600;color:var(--cn700);margin-bottom:6px}
+.input-group input,.input-group textarea{width:100%;padding:12px 14px;border-radius:10px;border:1.5px solid var(--cn200);font-size:var(--tb);font-family:var(--ff);outline:none;transition:border-color .15s}
+.input-group input:focus,.input-group textarea:focus{border-color:var(--cp500)}
+.input-group textarea{resize:none;height:80px}
+.tag-select{display:flex;flex-wrap:wrap;gap:6px}
+.tag-select .tag{cursor:pointer;transition:all .15s;border:1.5px solid transparent}
+.tag-select .tag.chosen{border-color:var(--cp500);background:var(--cp50);color:var(--cp600)}
+.title-card{display:flex;align-items:flex-start;gap:12px;padding:14px;border-radius:10px;border:1.5px solid var(--cn200);margin-bottom:10px;cursor:pointer;transition:all .15s}
+.title-card:hover{border-color:var(--cn300)}
+.title-card.selected{border-color:var(--cp500);background:var(--cp50)}
+.tc-num{width:24px;height:24px;border-radius:50%;background:var(--cn100);display:flex;align-items:center;justify-content:center;font-size:var(--txs);font-weight:700;color:var(--cn500);flex-shrink:0}
+.title-card.selected .tc-num{background:var(--cp500);color:#fff}
+.tc-text{flex:1;font-size:var(--tb);color:var(--cn800);line-height:1.5}
+.tc-btn{padding:4px 12px;border-radius:16px;font-size:var(--txs);font-weight:600;border:1px solid var(--cp500);color:var(--cp500);background:transparent;cursor:pointer;flex-shrink:0}
+.title-card.selected .tc-btn{background:var(--cp500);color:#fff}
+.ai-zone{padding:16px;border-radius:12px;background:var(--ggl);border:2px solid transparent;background-clip:padding-box;position:relative;margin-bottom:16px}
+.ai-zone::before{content:'';position:absolute;inset:-2px;border-radius:14px;background:conic-gradient(from 0deg,#FE2C55,#8B5CF6,#FE2C55);z-index:-1;animation:spin 3s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+.ai-text{font-size:var(--tb);color:var(--cn700);line-height:1.7}
+.img-carousel{display:flex;gap:8px;overflow-x:auto;padding-bottom:8px;scrollbar-width:none}
+.img-carousel::-webkit-scrollbar{display:none}
+.img-thumb{width:100px;height:100px;border-radius:10px;flex-shrink:0;overflow:hidden;position:relative}
+.img-thumb.shimmer-card{background:linear-gradient(90deg,var(--cn200) 25%,var(--cn100) 50%,var(--cn200) 75%);background-size:200% 100%;animation:shimmer 1.5s infinite}
+.create-footer{padding:12px 16px;background:#fff;border-top:1px solid var(--cn100);display:flex;gap:10px}
+.create-footer .btn{flex:1}
+/* REVIEW */
+.rev-tabs{display:flex;padding:0 16px;gap:0;background:#fff;border-bottom:1px solid var(--cn100)}
+.rev-tab{padding:10px 14px;font-size:var(--tsm);font-weight:500;color:var(--cn500);cursor:pointer;border-bottom:2px solid transparent;transition:all .15s}
+.rev-tab.active{color:var(--cp500);border-bottom-color:var(--cp500);font-weight:600}
+.rev-list{padding:12px 16px}
+.rev-card{background:#fff;border-radius:12px;overflow:hidden;margin-bottom:12px;box-shadow:0 1px 3px rgba(0,0,0,.05)}
+.rev-img{width:100%;height:180px;position:relative}
+.rev-body{padding:12px 14px}
+.rev-title{font-size:var(--tb);font-weight:600;color:var(--cn800);margin-bottom:6px}
+.rev-tags{display:flex;gap:4px;flex-wrap:wrap;margin-bottom:6px}
+.rev-meta{font-size:var(--txs);color:var(--cn500);display:flex;gap:8px}
+/* PUBLISH */
+.pub-date{display:flex;align-items:center;justify-content:center;gap:16px;padding:14px 16px}
+.pub-date svg{cursor:pointer;color:var(--cn400)}
+.pub-date-text{font-size:var(--tl);font-weight:600;color:var(--cn800)}
+.pub-list{padding:0 16px 12px}
+.pub-card{display:flex;gap:12px;padding:12px;background:#fff;border-radius:10px;margin-bottom:8px;align-items:center;box-shadow:0 1px 2px rgba(0,0,0,.04)}
+.pub-thumb{width:56px;height:56px;border-radius:8px;flex-shrink:0;overflow:hidden}
+.pub-info{flex:1;min-width:0}
+.pub-info-title{font-size:var(--tsm);font-weight:600;color:var(--cn800);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.pub-info-time{font-size:var(--txs);color:var(--cn500);margin-top:2px}
+.pub-stats{padding:12px 16px}
+.pub-stat-card{background:#fff;border-radius:10px;padding:14px;margin-bottom:8px;box-shadow:0 1px 2px rgba(0,0,0,.04)}
+/* PROFILE */
+.prof-header{padding:24px 16px;text-align:center;background:#fff}
+.prof-avatar{width:64px;height:64px;border-radius:50%;background:var(--gb);margin:0 auto 10px;display:flex;align-items:center;justify-content:center}
+.prof-name{font-size:var(--txl);font-weight:700;color:var(--cn900)}
+.prof-bind{font-size:var(--txs);color:var(--cn500);margin-top:4px}
+.prof-list{padding:8px 0}
+.prof-group{background:#fff;margin-bottom:8px}
+.prof-item{display:flex;align-items:center;padding:14px 16px;cursor:pointer;transition:background .1s}
+.prof-item:hover{background:var(--cn50)}
+.prof-item-icon{width:32px;height:32px;border-radius:8px;display:flex;align-items:center;justify-content:center;margin-right:12px;flex-shrink:0}
+.prof-item-label{flex:1;font-size:var(--tb);color:var(--cn800)}
+.prof-item-arrow{color:var(--cn300)}
+.prof-item-badge{font-size:var(--txs);color:var(--cn400);margin-right:8px}
+.prof-logout{margin:24px 16px;padding:14px;text-align:center;border-radius:12px;border:1.5px solid var(--cp500);color:var(--cp500);font-size:var(--tb);font-weight:600;cursor:pointer}
+/* LOGIN */
+.login-page{position:absolute;inset:0;background:var(--cn900);z-index:200;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:40px 32px}
+.login-deco{position:absolute;width:300px;height:300px;border-radius:50%;opacity:.08}
+.login-deco-1{background:var(--cp500);top:-80px;right:-60px}
+.login-deco-2{background:var(--cap);bottom:-60px;left:-80px}
+.login-logo{width:72px;height:72px;background:var(--gai);border-radius:18px;display:flex;align-items:center;justify-content:center;margin-bottom:20px;position:relative}
+.login-title{font-size:var(--t3);font-weight:700;color:#fff;margin-bottom:6px;position:relative}
+.login-slogan{font-size:var(--tb);color:rgba(255,255,255,.6);margin-bottom:40px;position:relative}
+.login-form{width:100%;position:relative}
+.login-form input{width:100%;padding:14px 16px;border-radius:12px;border:1.5px solid rgba(255,255,255,.15);background:rgba(255,255,255,.08);color:#fff;font-size:var(--tb);font-family:var(--ff);margin-bottom:12px;outline:none}
+.login-form input::placeholder{color:rgba(255,255,255,.4)}
+.login-form input:focus{border-color:var(--cp500)}
+.login-row{display:flex;gap:10px}
+.login-row input{flex:1}
+.login-code-btn{padding:14px 16px;border-radius:12px;background:var(--cp500);color:#fff;font-size:var(--tsm);font-weight:600;border:none;cursor:pointer;white-space:nowrap;flex-shrink:0}
+.login-btn{width:100%;padding:16px;border-radius:12px;background:var(--gb);color:#fff;font-size:var(--tl);font-weight:700;border:none;cursor:pointer;box-shadow:0 8px 24px rgba(254,44,85,.3);margin-top:8px}
+.login-terms{font-size:var(--txs);color:rgba(255,255,255,.35);text-align:center;margin-top:16px;position:relative}
+.login-terms a{color:rgba(255,255,255,.6);text-decoration:underline}
+/* EMPTY STATE */
+.empty-state{display:flex;flex-direction:column;align-items:center;justify-content:center;padding:48px 32px;text-align:center}
+.empty-state svg{margin-bottom:16px;opacity:.6}
+.empty-state h3{font-size:var(--tl);font-weight:600;color:var(--cn700);margin-bottom:6px}
+.empty-state p{font-size:var(--tsm);color:var(--cn500);margin-bottom:16px}
+/* FAB */
+.fab{position:fixed;bottom:70px;right:20px;width:52px;height:52px;border-radius:50%;background:var(--gai);display:flex;align-items:center;justify-content:center;box-shadow:0 6px 16px rgba(254,44,85,.35);cursor:pointer;z-index:50;animation:float 3s ease-in-out infinite}
+</style>
+</head>
+<body>
+<div class="phone-wrap">
+<div class="phone-label">鸿蒙 / Android 版</div>
+<div class="phone">
+<div class="phone-inner">
+<div class="phone-notch"></div>
+<div class="phone-home"></div>
+
+<!-- LOGIN PAGE -->
+<div class="login-page" id="loginPage">
+  <div class="login-deco login-deco-1"></div>
+  <div class="login-deco login-deco-2"></div>
+  <div class="login-logo">
+    <svg width="36" height="36" viewBox="0 0 36 36" fill="none"><rect x="6" y="6" width="10" height="10" rx="2" fill="white" opacity=".9"/><rect x="20" y="6" width="10" height="10" rx="2" fill="white" opacity=".6"/><rect x="6" y="20" width="10" height="10" rx="2" fill="white" opacity=".6"/><rect x="20" y="20" width="10" height="10" rx="2" fill="white" opacity=".4"/></svg>
+  </div>
+  <div class="login-title">红书智创</div>
+  <div class="login-slogan">让小红书运营更轻松</div>
+  <div class="login-form">
+    <input type="tel" placeholder="请输入手机号" maxlength="11">
+    <div class="login-row">
+      <input type="text" placeholder="验证码" maxlength="6">
+      <button class="login-code-btn">获取验证码</button>
+    </div>
+    <button class="login-btn" onclick="document.getElementById('loginPage').style.display='none'">登录 / 注册</button>
+  </div>
+  <div class="login-terms">登录即表示同意 <a>用户协议</a> 和 <a>隐私政策</a></div>
+</div>
+
+<div class="app">
+  <!-- STATUS BAR -->
+  <div class="status-bar">
+    <span>9:41</span>
+    <span style="display:flex;gap:4px;align-items:center">
+      <svg width="16" height="12" viewBox="0 0 16 12" fill="var(--cn900)"><rect x="0" y="5" width="3" height="7" rx="1"/><rect x="4.5" y="3" width="3" height="9" rx="1"/><rect x="9" y="1" width="3" height="11" rx="1"/><rect x="13" y="0" width="3" height="12" rx="1" opacity=".3"/></svg>
+    </span>
+  </div>
+
+  <!-- CONTENT AREA -->
+  <div class="content" id="contentArea">
+
+    <!-- PAGE: HOME -->
+    <div class="page active" id="pageHome">
+      <div class="dash-greeting">
+        <div class="dash-avatar"><svg width="20" height="20" viewBox="0 0 20 20" fill="white"><circle cx="10" cy="8" r="4"/><path d="M3 18c0-3.3 3.1-6 7-6s7 2.7 7 6"/></svg></div>
+        <div class="dash-hello"><h2>早上好，创作者</h2><p>今天有 3 篇内容待发布</p></div>
+        <div class="dash-switch"><svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M4 8h8M8 4l4 4-4 4" stroke="var(--cn500)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+      </div>
+      <div class="dash-metrics">
+        <div class="metrics-grid">
+          <div class="card metric-card">
+            <div class="label"><svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M3 7h8M7 3v8" stroke="var(--cp500)" stroke-width="1.5" stroke-linecap="round"/></svg> 今日发布</div>
+            <div class="value">4</div>
+            <div class="trend trend-up"><svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M6 2v8M3 5l3-3 3 3" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg> +12%</div>
+            <svg class="spark" viewBox="0 0 80 32"><polyline points="0,24 13,20 26,22 40,16 53,18 66,10 80,12" fill="none" stroke="var(--cp500)" stroke-width="2"/></svg>
+          </div>
+          <div class="card metric-card">
+            <div class="label"><svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M7 2l1.5 3 3.5.5-2.5 2.5.5 3.5L7 10l-3 1.5.5-3.5L2 5.5 5.5 5z" stroke="var(--cao)" stroke-width="1" fill="var(--caol)"/></svg> 互动量</div>
+            <div class="value">2.8k</div>
+            <div class="trend trend-up"><svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M6 2v8M3 5l3-3 3 3" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg> +8%</div>
+            <svg class="spark" viewBox="0 0 80 32"><polyline points="0,20 13,18 26,22 40,14 53,16 66,8 80,10" fill="none" stroke="var(--cao)" stroke-width="2"/></svg>
+          </div>
+          <div class="card metric-card">
+            <div class="label"><svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M7 2v10M4 5l3-3 3 3" stroke="var(--cs)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg> 粉丝增长</div>
+            <div class="value">+156</div>
+            <div class="trend trend-up"><svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M6 2v8M3 5l3-3 3 3" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg> +23%</div>
+            <svg class="spark" viewBox="0 0 80 32"><polyline points="0,26 13,22 26,24 40,18 53,14 66,8 80,6" fill="none" stroke="var(--cs)" stroke-width="2"/></svg>
+          </div>
+          <div class="card metric-card">
+            <div class="label"><svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M5 2l4 5-4 5M2 2l4 5-4 5" stroke="var(--cap)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg> AI创作</div>
+            <div class="value">12</div>
+            <div class="trend" style="color:var(--cn500)">次</div>
+            <svg class="spark" viewBox="0 0 80 32"><polyline points="0,20 13,16 26,22 40,14 53,10 66,8 80,4" fill="none" stroke="var(--cap)" stroke-width="2"/></svg>
+          </div>
+        </div>
+      </div>
+      <div class="dash-chart">
+        <div class="card chart-card">
+          <div class="chart-title">近7天趋势</div>
+          <svg viewBox="0 0 340 120" style="width:100%">
+            <line x1="0" y1="30" x2="340" y2="30" stroke="var(--cn100)" stroke-dasharray="4"/>
+            <line x1="0" y1="60" x2="340" y2="60" stroke="var(--cn100)" stroke-dasharray="4"/>
+            <line x1="0" y1="90" x2="340" y2="90" stroke="var(--cn100)" stroke-dasharray="4"/>
+            <text x="0" y="115" font-size="9" fill="var(--cn400)">周一</text><text x="50" y="115" font-size="9" fill="var(--cn400)">周二</text><text x="100" y="115" font-size="9" fill="var(--cn400)">周三</text><text x="150" y="115" font-size="9" fill="var(--cn400)">周四</text><text x="200" y="115" font-size="9" fill="var(--cn400)">周五</text><text x="250" y="115" font-size="9" fill="var(--cn400)">周六</text><text x="300" y="115" font-size="9" fill="var(--cn400)">周日</text>
+            <polyline points="10,80 60,65 110,70 160,50 210,55 260,35 310,40" fill="none" stroke="var(--cp500)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+            <polyline points="10,85 60,75 110,80 160,60 210,65 260,45 310,50" fill="none" stroke="var(--cap)" stroke-width="2" stroke-dasharray="5,3" stroke-linecap="round"/>
+            <circle cx="310" cy="40" r="4" fill="var(--cp500)"/><circle cx="310" cy="50" r="4" fill="var(--cap)"/>
+          </svg>
+        </div>
+      </div>
+      <div class="dash-ranking">
+        <div class="card" style="padding:16px">
+          <div class="chart-title">内容效果排行</div>
+          <div class="rank-item"><div class="rank-num top">1</div><div class="rank-info"><div class="rank-title">周末探店 | 隐藏的宝藏咖啡</div><div class="rank-bar"><div class="progress-fill" style="width:92%;background:var(--gb)"></div></div></div><div class="rank-val">1.2k</div></div>
+          <div class="rank-item"><div class="rank-num n2">2</div><div class="rank-info"><div class="rank-title">春日穿搭分享 | 通勤也能很美</div><div class="rank-bar"><div class="progress-fill" style="width:74%;background:var(--gb)"></div></div></div><div class="rank-val">860</div></div>
+          <div class="rank-item"><div class="rank-num n3">3</div><div class="rank-info"><div class="rank-title">家常菜谱 | 15分钟快手晚餐</div><div class="rank-bar"><div class="progress-fill" style="width:58%;background:var(--gb)"></div></div></div><div class="rank-val">640</div></div>
+        </div>
+      </div>
+      <div class="dash-actions">
+        <button class="btn btn-primary"><svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M5 2l6 6-6 6" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/><path d="M4 2l6 6-6 6" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" opacity=".5"/></svg>AI一键创作</button>
+        <button class="btn btn-outline"><svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M4 8h8M8 4v8" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>查看队列</button>
+      </div>
+    </div>
+
+    <!-- PAGE: AI CREATE -->
+    <div class="page" id="pageCreate">
+      <div class="create-progress">
+        <div class="step-dot done">1</div><div class="step-line done"></div>
+        <div class="step-dot done">2</div><div class="step-line done"></div>
+        <div class="step-dot active">3</div><div class="step-line"></div>
+        <div class="step-dot pending">4</div>
+      </div>
+      <div style="padding:12px 16px 4px;font-size:var(--txs);color:var(--cn500);text-align:center">③ 标题确认</div>
+      <div class="create-body">
+        <div class="title-card selected">
+          <div class="tc-num">1</div>
+          <div class="tc-text">周末探店｜这家隐藏的宝藏咖啡店你必须知道！</div>
+          <button class="tc-btn">选用</button>
+        </div>
+        <div class="title-card">
+          <div class="tc-num">2</div>
+          <div class="tc-text">城市角落里的温暖时光，一杯咖啡治愈周末</div>
+          <button class="tc-btn">选用</button>
+        </div>
+        <div class="title-card">
+          <div class="tc-num">3</div>
+          <div class="tc-text">咖啡控必打卡！这家小店绝了</div>
+          <button class="tc-btn">选用</button>
+        </div>
+        <button class="btn btn-ghost" style="width:100%;margin-top:8px">
+          <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M8 2v12M2 8h12" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+          重新生成标题
+        </button>
+        <!-- Agent grid (collapsed preview) -->
+        <div style="margin-top:16px;padding-top:16px;border-top:1px solid var(--cn100)">
+          <div style="font-size:var(--tsm);font-weight:600;color:var(--cn700);margin-bottom:10px">已选择 Agent</div>
+          <div style="display:flex;gap:10px;align-items:center;padding:10px;border-radius:10px;background:var(--cp50);border:1px solid var(--cp200)">
+            <div style="width:36px;height:36px;border-radius:10px;background:var(--cp100);display:flex;align-items:center;justify-content:center">
+              <svg width="18" height="18" viewBox="0 0 18 18" fill="none"><path d="M9 2l2 4 4.5.7-3.2 3.2.7 4.5L9 12.2l-4 2.2.7-4.5L2.5 6.7 7 6z" stroke="var(--cp500)" stroke-width="1.2" fill="var(--cp100)"/></svg>
+            </div>
+            <div><div style="font-size:var(--tsm);font-weight:600;color:var(--cn800)">生活分享 Agent</div><div style="font-size:var(--txs);color:var(--cn500)">日常 / 好物 / 探店</div></div>
+          </div>
+        </div>
+        <!-- Step 4 Preview (AI Generation) -->
+        <div style="margin-top:16px;padding-top:16px;border-top:1px solid var(--cn100)">
+          <div style="font-size:var(--tsm);font-weight:600;color:var(--cn700);margin-bottom:10px">④ 生成预览</div>
+          <div class="ai-zone">
+            <div class="ai-text">周末的午后，阳光透过玻璃窗洒进这间藏在巷子深处的咖啡店。手冲的耶加雪菲散发着花香，搭配一块柠檬塔，就是完美的下午时光...<span class="cursor-blink"></span></div>
+          </div>
+          <div style="font-size:var(--txs);color:var(--cn500);margin-bottom:8px">AI配图</div>
+          <div class="img-carousel">
+            <div class="img-thumb"><svg viewBox="0 0 100 100"><rect width="100" height="100" fill="#FFE0E5"/><circle cx="50" cy="40" r="18" fill="var(--cp300)"/><rect x="20" y="60" width="60" height="30" rx="6" fill="var(--cp200)"/></svg></div>
+            <div class="img-thumb"><svg viewBox="0 0 100 100"><rect width="100" height="100" fill="var(--caol)"/><circle cx="50" cy="45" r="20" fill="var(--cao)"/><rect x="25" y="65" width="50" height="25" rx="6" fill="#FDE68A"/></svg></div>
+            <div class="img-thumb"><svg viewBox="0 0 100 100"><rect width="100" height="100" fill="var(--capl)"/><circle cx="50" cy="42" r="18" fill="var(--cap)"/><rect x="22" y="62" width="56" height="28" rx="6" fill="#C4B5FD"/></svg></div>
+            <div class="img-thumb shimmer-card"></div>
+          </div>
+        </div>
+      </div>
+      <div class="create-footer">
+        <button class="btn btn-ghost">修改文案</button>
+        <button class="btn btn-ai"><svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M4 8h8M8 4v8" stroke="white" stroke-width="1.5" stroke-linecap="round"/></svg>加入发布队列</button>
+      </div>
+    </div>
+
+    <!-- PAGE: REVIEW -->
+    <div class="page" id="pageReview">
+      <div class="rev-tabs">
+        <div class="rev-tab active">全部</div>
+        <div class="rev-tab">待审核</div>
+        <div class="rev-tab">已通过</div>
+        <div class="rev-tab">已拒绝</div>
+      </div>
+      <div class="rev-list">
+        <div class="rev-card">
+          <div class="rev-img"><svg viewBox="0 0 375 180"><rect width="375" height="180" fill="#FFE0E5"/><circle cx="187" cy="70" r="35" fill="var(--cp300)"/><rect x="60" y="110" width="255" height="50" rx="8" fill="var(--cp200)"/><text x="187" y="80" text-anchor="middle" font-size="14" fill="var(--cp700)">周末咖啡探店</text></svg></div>
+          <div class="rev-body">
+            <div class="rev-title">周末探店｜这家隐藏的宝藏咖啡店你必须知道！</div>
+            <div class="rev-tags"><span class="tag tag-red">探店</span><span class="tag tag-orange">咖啡</span><span class="tag tag-purple">周末</span></div>
+            <div class="rev-meta"><span>AI生成</span><span>2分钟前</span></div>
+          </div>
+        </div>
+        <div class="rev-card">
+          <div class="rev-img"><svg viewBox="0 0 375 180"><rect width="375" height="180" fill="var(--caol)"/><circle cx="187" cy="70" r="35" fill="var(--cao)"/><rect x="60" y="110" width="255" height="50" rx="8" fill="#FDE68A"/><text x="187" y="80" text-anchor="middle" font-size="14" fill="#92400E">春日穿搭</text></svg></div>
+          <div class="rev-body">
+            <div class="rev-title">春日穿搭分享｜通勤也能很温柔</div>
+            <div class="rev-tags"><span class="tag tag-red">穿搭</span><span class="tag tag-green">通勤</span><span class="tag tag-orange">春季</span></div>
+            <div class="rev-meta"><span>AI生成</span><span>1小时前</span></div>
+          </div>
+        </div>
+        <div class="rev-card">
+          <div class="rev-img"><svg viewBox="0 0 375 180"><rect width="375" height="180" fill="var(--capl)"/><circle cx="187" cy="70" r="35" fill="var(--cap)"/><rect x="60" y="110" width="255" height="50" rx="8" fill="#C4B5FD"/><text x="187" y="80" text-anchor="middle" font-size="14" fill="#4C1D95">旅行攻略</text></svg></div>
+          <div class="rev-body">
+            <div class="rev-title">3天2夜云南攻略｜人均2k玩转大理</div>
+            <div class="rev-tags"><span class="tag tag-purple">旅行</span><span class="tag tag-blue">攻略</span><span class="tag tag-orange">云南</span></div>
+            <div class="rev-meta"><span>手动创作</span><span>3小时前</span></div>
+          </div>
+        </div>
+      </div>
+      <div class="fab"><svg width="24" height="24" viewBox="0 0 24 24" fill="white"><path d="M5 2l7 5-7 5V2zM12 7l7 5-7 5V7z" opacity=".8"/><path d="M12 7l7 5-7 5" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+    </div>
+
+    <!-- PAGE: PUBLISH -->
+    <div class="page" id="pagePublish">
+      <div class="pub-date">
+        <svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M12 4l-6 6 6 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        <div class="pub-date-text">5月22日 周五</div>
+        <svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M8 4l6 6-6 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </div>
+      <div class="pub-list">
+        <div style="font-size:var(--txs);font-weight:600;color:var(--cn500);text-transform:uppercase;letter-spacing:.05em;margin-bottom:8px;padding-left:4px">今天</div>
+        <div class="pub-card">
+          <div class="pub-thumb"><svg viewBox="0 0 56 56"><rect width="56" height="56" fill="#FFE0E5"/><circle cx="28" cy="24" r="12" fill="var(--cp300)"/></svg></div>
+          <div class="pub-info"><div class="pub-info-title">周末探店｜宝藏咖啡店</div><div class="pub-info-time">14:00 定时发布</div></div>
+          <span class="tag tag-blue" style="font-size:10px">定时中</span>
+        </div>
+        <div class="pub-card">
+          <div class="pub-thumb"><svg viewBox="0 0 56 56"><rect width="56" height="56" fill="var(--caol)"/><circle cx="28" cy="24" r="12" fill="var(--cao)"/></svg></div>
+          <div class="pub-info"><div class="pub-info-title">春日穿搭分享｜温柔通勤</div><div class="pub-info-time">18:30 定时发布</div></div>
+          <span class="tag tag-orange" style="font-size:10px">待发布</span>
+        </div>
+        <div style="font-size:var(--txs);font-weight:600;color:var(--cn500);text-transform:uppercase;letter-spacing:.05em;margin:16px 0 8px;padding-left:4px">明天</div>
+        <div class="pub-card">
+          <div class="pub-thumb"><svg viewBox="0 0 56 56"><rect width="56" height="56" fill="var(--capl)"/><circle cx="28" cy="24" r="12" fill="var(--cap)"/></svg></div>
+          <div class="pub-info"><div class="pub-info-title">3天2夜云南攻略｜大理</div><div class="pub-info-time">09:00 定时发布</div></div>
+          <span class="tag tag-blue" style="font-size:10px">定时中</span>
+        </div>
+      </div>
+      <div class="pub-stats">
+        <div class="pub-stat-card">
+          <div style="display:flex;justify-content:space-between;margin-bottom:8px">
+            <span style="font-size:var(--tsm);color:var(--cn500)">今日待发布</span>
+            <span style="font-size:var(--tl);font-weight:700;color:var(--cn900);font-family:var(--fm)">3</span>
+          </div>
+          <div style="display:flex;justify-content:space-between;margin-bottom:8px">
+            <span style="font-size:var(--tsm);color:var(--cn500)">本周计划</span>
+            <span style="font-size:var(--tl);font-weight:700;color:var(--cn900);font-family:var(--fm)">12</span>
+          </div>
+          <div>
+            <div style="display:flex;justify-content:space-between;margin-bottom:4px">
+              <span style="font-size:var(--tsm);color:var(--cn500)">发布成功率</span>
+              <span style="font-size:var(--tsm);font-weight:600;color:var(--cs)">94%</span>
+            </div>
+            <div class="progress-bar"><div class="progress-fill" style="width:94%;background:var(--ggr)"></div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- PAGE: PROFILE -->
+    <div class="page" id="pageProfile">
+      <div class="prof-header">
+        <div class="prof-avatar"><svg width="28" height="28" viewBox="0 0 20 20" fill="white"><circle cx="10" cy="8" r="4"/><path d="M3 18c0-3.3 3.1-6 7-6s7 2.7 7 6"/></svg></div>
+        <div class="prof-name">创作者小王</div>
+        <div class="prof-bind">已绑定 2 个小红书账号</div>
+      </div>
+      <div class="prof-list">
+        <div class="prof-group">
+          <div class="prof-item"><div class="prof-item-icon" style="background:var(--cp50)"><svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M8 2l1.5 3 3.5.5-2.5 2.5.5 3.5L8 10l-3 1.5.5-3.5L3 5.5 6.5 5z" stroke="var(--cp500)" stroke-width="1" fill="var(--cp100)"/></svg></div><div class="prof-item-label">账号管理</div><div class="prof-item-badge">2个账号</div><svg width="16" height="16" viewBox="0 0 16 16" fill="none" class="prof-item-arrow"><path d="M6 4l4 4-4 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg></div>
+          <div class="prof-item"><div class="prof-item-icon" style="background:#DBEAFE"><svg width="16" height="16" viewBox="0 0 16 16" fill="none"><rect x="2" y="3" width="12" height="10" rx="1.5" stroke="#3B82F6" stroke-width="1.2"/><path d="M5 7h6M5 9.5h4" stroke="#3B82F6" stroke-width="1" stroke-linecap="round"/></svg></div><div class="prof-item-label">数据分析</div><svg width="16" height="16" viewBox="0 0 16 16" fill="none" class="prof-item-arrow"><path d="M6 4l4 4-4 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg></div>
+          <div class="prof-item"><div class="prof-item-icon" style="background:var(--caol)"><svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M8 2v5M8 9v1" stroke="var(--cao)" stroke-width="1.5" stroke-linecap="round"/><circle cx="8" cy="8" r="6" stroke="var(--cao)" stroke-width="1.2"/></svg></div><div class="prof-item-label">通知设置</div><svg width="16" height="16" viewBox="0 0 16 16" fill="none" class="prof-item-arrow"><path d="M6 4l4 4-4 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg></div>
+          <div class="prof-item"><div class="prof-item-icon" style="background:var(--capl)"><svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M8 2l2 4 4.5.7-3.2 3.2.7 4.5L8 12.2l-4 2.2.7-4.5L1.5 6.7 6 6z" stroke="var(--cap)" stroke-width="1" fill="var(--capl)"/></svg></div><div class="prof-item-label">AI偏好设置</div><svg width="16" height="16" viewBox="0 0 16 16" fill="none" class="prof-item-arrow"><path d="M6 4l4 4-4 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg></div>
+        </div>
+        <div class="prof-group">
+          <div class="prof-item"><div class="prof-item-icon" style="background:var(--cn100)"><svg width="16" height="16" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="6" stroke="var(--cn500)" stroke-width="1.2"/><path d="M6 6.5c0-1.1.9-2 2-2s2 .9 2 2c0 1.7-2 1.5-2 3" stroke="var(--cn500)" stroke-width="1" stroke-linecap="round"/></svg></div><div class="prof-item-label">帮助与反馈</div><svg width="16" height="16" viewBox="0 0 16 16" fill="none" class="prof-item-arrow"><path d="M6 4l4 4-4 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg></div>
+          <div class="prof-item"><div class="prof-item-icon" style="background:var(--cn100)"><svg width="16" height="16" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="6" stroke="var(--cn500)" stroke-width="1.2"/><path d="M6 6h4M6 8h3M6 10h2" stroke="var(--cn500)" stroke-width="1" stroke-linecap="round"/></svg></div><div class="prof-item-label">关于我们</div><svg width="16" height="16" viewBox="0 0 16 16" fill="none" class="prof-item-arrow"><path d="M6 4l4 4-4 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg></div>
+        </div>
+      </div>
+      <div class="prof-logout">退出登录</div>
+    </div>
+  </div>
+
+  <!-- TAB BAR -->
+  <div class="tab-bar">
+    <div class="tab-item active" onclick="switchTab('Home')">
+      <svg viewBox="0 0 24 24" fill="none"><path d="M3 12l9-9 9 9" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><path d="M5 10v10h5v-6h4v6h5V10" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      <span>首页</span>
+    </div>
+    <div class="tab-item ai-tab" onclick="switchTab('Create')">
+      <svg viewBox="0 0 24 24" fill="none"><path d="M5 3l7 4.5L19 3v9l-7 4.5L5 12V3z" stroke="url(#aiGrad)" stroke-width="2" fill="none"/><defs><linearGradient id="aiGrad" x1="5" y1="3" x2="19" y2="12"><stop stop-color="#FE2C55"/><stop offset="1" stop-color="#8B5CF6"/></linearGradient></defs></svg>
+      <span>AI创作</span>
+    </div>
+    <div class="tab-item" onclick="switchTab('Review')">
+      <svg viewBox="0 0 24 24" fill="none"><path d="M9 11l3 3L22 4" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+      <span>审核</span>
+    </div>
+    <div class="tab-item" onclick="switchTab('Publish')">
+      <svg viewBox="0 0 24 24" fill="none"><path d="M22 2L11 13" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><path d="M22 2l-7 20-4-9-9-4 20-7z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      <span>发布</span>
+    </div>
+    <div class="tab-item" onclick="switchTab('Profile')">
+      <svg viewBox="0 0 24 24" fill="none"><circle cx="12" cy="8" r="4" stroke="currentColor" stroke-width="2"/><path d="M4 21c0-4 3.6-7 8-7s8 3 8 7" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+      <span>我的</span>
+    </div>
+  </div>
+</div>
+
+</div>
+</div>
+</div>
+
+<script>
+function switchTab(name){
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  document.getElementById('page'+name).classList.add('active');
+  document.querySelectorAll('.tab-item').forEach(t=>t.classList.remove('active'));
+  event.currentTarget.classList.add('active');
+  document.getElementById('contentArea').scrollTop=0;
+}
+</script>
+</body>
+</html>

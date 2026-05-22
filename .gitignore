@@ -1,0 +1,46 @@
+# Dependencies
+node_modules/
+__pycache__/
+*.pyc
+.idea/
+.vscode/
+
+# Build outputs
+dist/
+build/
+*.pak
+*.dll
+*.exe
+*.lnk
+
+# OS files
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Env files
+.env
+.env.local
+
+# Logs
+*.log
+logs/
+
+# Temp
+*.tmp
+*.swp
+
+# Archives
+*.tar.gz
+*.zip
+*.rar
+
+# Misc
+$null
+-p/
+
+# Client packages (large dirs to avoid)
+client-pc/node_modules/
+client-admin/node_modules/
+client-mini/node_modules/
+client-harmony/node_modules/

@@ -1,0 +1,66 @@
+{
+  "pages": [
+    {
+      "path": "pages/index/index",
+      "style": { "navigationBarTitleText": "红书智创", "navigationStyle": "custom" }
+    },
+    {
+      "path": "pages/create/create",
+      "style": { "navigationBarTitleText": "AI创作", "navigationStyle": "custom" }
+    },
+    {
+      "path": "pages/messages/messages",
+      "style": { "navigationBarTitleText": "消息", "navigationStyle": "custom" }
+    },
+    {
+      "path": "pages/profile/profile",
+      "style": { "navigationBarTitleText": "我的", "navigationStyle": "custom" }
+    },
+    {
+      "path": "pages/accounts/accounts",
+      "style": { "navigationBarTitleText": "账号管理" }
+    },
+    {
+      "path": "pages/settings/settings",
+      "style": { "navigationBarTitleText": "个人设置" }
+    }
+  ],
+  "globalStyle": {
+    "navigationBarTextStyle": "black",
+    "navigationBarBackgroundColor": "#FFFFFF",
+    "backgroundColor": "#FAFAF9"
+  },
+  "tabBar": {
+    "color": "#A8A29E",
+    "selectedColor": "#FE2C55",
+    "backgroundColor": "#FFFFFF",
+    "borderStyle": "black",
+    "list": [
+      {
+        "pagePath": "pages/index/index",
+        "text": "首页",
+        "iconPath": "static/tab-home.png",
+        "selectedIconPath": "static/tab-home-active.png"
+      },
+      {
+        "pagePath": "pages/create/create",
+        "text": "创作",
+        "iconPath": "static/tab-create.png",
+        "selectedIconPath": "static/tab-create-active.png"
+      },
+      {
+        "pagePath": "pages/messages/messages",
+        "text": "消息",
+        "iconPath": "static/tab-msg.png",
+        "selectedIconPath": "static/tab-msg-active.png"
+      },
+      {
+        "pagePath": "pages/profile/profile",
+        "text": "我的",
+        "iconPath": "static/tab-mine.png",
+        "selectedIconPath": "static/tab-mine-active.png"
+      }
+    ]
+  },
+  "easycom": { "autoscan": true }
+}

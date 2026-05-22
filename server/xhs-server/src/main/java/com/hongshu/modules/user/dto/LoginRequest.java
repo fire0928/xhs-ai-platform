@@ -1,0 +1,10 @@
+package com.hongshu.modules.user.dto;
+
+import lombok.Data;
+import jakarta.validation.constraints.NotBlank;
+
+@Data
+public class LoginRequest {
+    @NotBlank private String phone;
+    @NotBlank private String password;
+}

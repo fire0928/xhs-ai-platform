@@ -1,0 +1,473 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=375,initial-scale=1">
+<title>红书智创 - 微信小程序版原型</title>
+<style>
+:root{
+--cp50:#FFF1F3;--cp100:#FFE0E5;--cp200:#FFC6CF;--cp300:#FF9DAD;--cp400:#FF6480;--cp500:#FE2C55;--cp600:#E61A45;--cp700:#C0133A;--cp800:#9E1537;--cp900:#841635;
+--cap:#8B5CF6;--capl:#EDE9FE;--cao:#F59E0B;--caol:#FEF3C7;
+--cn50:#FAFAF9;--cn100:#F5F5F4;--cn200:#E7E5E4;--cn300:#D6D3D1;--cn400:#A8A29E;--cn500:#78716C;--cn600:#57534E;--cn700:#44403C;--cn800:#292524;--cn900:#1C1917;
+--cs:#22C55E;--cw:#F59E0B;--ce:#EF4444;--ci:#3B82F6;
+--gb:linear-gradient(135deg,#FE2C55,#FF6480);--gai:linear-gradient(135deg,#FE2C55,#8B5CF6);--ggl:linear-gradient(135deg,#FFE0E5,#EDE9FE);--ggr:linear-gradient(135deg,#22C55E,#F59E0B);
+--cwx:#07C160;--cwxd:#06AD56;
+--ff:'Inter','PingFang SC','Microsoft YaHei',sans-serif;--fm:'JetBrains Mono',monospace;
+--txs:11px;--tsm:13px;--tb:14px;--tl:16px;--txl:20px;--t2:24px;--t3:28px
+}
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:var(--ff);background:var(--cn100);display:flex;justify-content:center;align-items:center;min-height:100vh}
+.phone-wrap{display:flex;flex-direction:column;align-items:center}
+.phone-label{font-size:13px;color:var(--cn400);margin-bottom:12px;font-weight:500}
+.phone{width:399px;height:860px;background:var(--cn800);border-radius:44px;padding:12px;position:relative;box-shadow:0 25px 50px -12px rgba(0,0,0,.25)}
+.phone-inner{width:375px;height:836px;background:var(--cn50);border-radius:32px;overflow:hidden;position:relative}
+.phone-home{position:absolute;bottom:6px;left:50%;transform:translateX(-50%);width:134px;height:5px;background:rgba(255,255,255,.3);border-radius:3px;z-index:100}
+.app{width:375px;height:836px;display:flex;flex-direction:column;overflow:hidden}
+/* 小程序导航栏 */
+.wx-nav{height:88px;background:#fff;display:flex;flex-direction:column;flex-shrink:0;position:relative;z-index:50}
+.wx-status{height:44px;display:flex;align-items:flex-end;justify-content:space-between;padding:0 24px 4px;font-size:var(--tsm);font-weight:600;color:var(--cn900)}
+.wx-title-bar{height:44px;display:flex;align-items:center;justify-content:center;position:relative}
+.wx-title{font-size:var(--tl);font-weight:600;color:var(--cn900)}
+.wx-capsule{position:absolute;right:12px;top:6px;width:87px;height:32px;background:var(--cn200);border-radius:16px;display:flex;align-items:center;justify-content:center;gap:8px}
+.wx-capsule-dot{width:6px;height:6px;border-radius:50%;background:var(--cn400)}
+.wx-capsule-line{width:12px;height:2px;border-radius:1px;background:var(--cn400)}
+.content{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;background:var(--cn50)}
+.tab-bar{height:50px;background:#fff;border-top:1px solid var(--cn200);display:flex;flex-shrink:0}
+.tab-item{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;cursor:pointer;transition:color .15s;color:var(--cn400)}
+.tab-item.active{color:var(--cp500)}
+.tab-item svg{width:22px;height:22px}
+.tab-item span{font-size:10px;font-weight:500}
+.page{display:none;min-height:100%}
+.page.active{display:block}
+/* COMPONENTS */
+.card{background:#fff;border-radius:12px;box-shadow:0 1px 3px rgba(0,0,0,.06);overflow:hidden}
+.metric-card{padding:14px 16px;border-top:3px solid var(--cp500)}
+.metric-card .label{font-size:var(--txs);color:var(--cn500);margin-bottom:6px;display:flex;align-items:center;gap:4px}
+.metric-card .value{font-family:var(--fm);font-size:var(--t2);font-weight:700;color:var(--cn900)}
+.metric-card .trend{font-size:var(--txs);display:flex;align-items:center;gap:2px;margin-top:4px}
+.trend-up{color:var(--cs)}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:6px;padding:10px 20px;border-radius:24px;font-size:var(--tb);font-weight:600;border:none;cursor:pointer;transition:all .15s}
+.btn-primary{background:var(--gb);color:#fff;box-shadow:0 4px 12px rgba(254,44,85,.3)}
+.btn-outline{background:#fff;color:var(--cp500);border:1.5px solid var(--cp500)}
+.btn-ghost{background:transparent;color:var(--cn600)}
+.btn-ai{background:var(--gai);color:#fff;box-shadow:0 4px 12px rgba(254,44,85,.25)}
+.btn-wechat{background:var(--cwx);color:#fff;border-radius:24px;box-shadow:0 4px 12px rgba(7,193,96,.3)}
+.tag{display:inline-flex;align-items:center;padding:4px 10px;border-radius:16px;font-size:var(--txs);font-weight:500}
+.tag-red{background:var(--cp50);color:var(--cp600)}
+.tag-purple{background:var(--capl);color:var(--cap)}
+.tag-orange{background:var(--caol);color:var(--cao)}
+.tag-green{background:#DCFCE7;color:#16A34A}
+.tag-blue{background:#DBEAFE;color:#2563EB}
+.progress-bar{height:6px;background:var(--cn200);border-radius:3px;overflow:hidden}
+.progress-fill{height:100%;border-radius:3px}
+@keyframes shimmer{0%{background-position:-200% 0}100%{background-position:200% 0}}
+@keyframes typing{0%,100%{opacity:1}50%{opacity:0}}
+@keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-4px)}}
+@keyframes spin{to{transform:rotate(360deg)}}
+.shimmer{background:linear-gradient(90deg,var(--cn200) 25%,var(--cn100) 50%,var(--cn200) 75%);background-size:200% 100%;animation:shimmer 1.5s infinite}
+.cursor-blink{display:inline-block;width:2px;height:1em;background:var(--cp500);animation:typing 1s infinite;vertical-align:text-bottom;margin-left:1px}
+@media(prefers-reduced-motion:reduce){*{animation-duration:.01ms!important;transition-duration:.01ms!important}}
+/* HOME */
+.home-welcome{padding:16px;display:flex;align-items:center;gap:10px;background:#fff;margin-bottom:12px}
+.home-avatar{width:36px;height:36px;border-radius:50%;background:var(--gb);display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.home-hello{flex:1}
+.home-hello h3{font-size:var(--tl);font-weight:700;color:var(--cn900)}
+.home-hello p{font-size:var(--txs);color:var(--cn500)}
+.home-badge{padding:3px 8px;border-radius:10px;background:var(--cp50);color:var(--cp600);font-size:var(--txs);font-weight:600}
+.home-metrics{padding:0 16px 12px}
+.metrics-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.home-chart{padding:0 16px 12px}
+.chart-card{padding:16px}
+.chart-title{font-size:var(--tsm);font-weight:600;color:var(--cn700);margin-bottom:12px}
+.home-actions{padding:0 16px 16px;display:flex;gap:10px}
+.home-actions .btn{flex:1;padding:14px}
+.home-recent{padding:0 16px 24px}
+.recent-row{display:flex;gap:10px;overflow-x:auto;scrollbar-width:none}
+.recent-row::-webkit-scrollbar{display:none}
+.recent-card{width:160px;flex-shrink:0;background:#fff;border-radius:10px;overflow:hidden;box-shadow:0 1px 3px rgba(0,0,0,.05)}
+.recent-thumb{width:160px;height:90px}
+.recent-info{padding:8px 10px}
+.recent-info-title{font-size:var(--txs);font-weight:600;color:var(--cn700);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+/* AI CREATE */
+.create-progress{padding:12px 16px 0;display:flex;align-items:center}
+.step-dot{width:26px;height:26px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:var(--txs);font-weight:700;flex-shrink:0}
+.step-dot.done{background:var(--cs);color:#fff}
+.step-dot.active{background:var(--cp500);color:#fff;box-shadow:0 0 0 4px var(--cp100)}
+.step-dot.pending{background:var(--cn200);color:var(--cn400)}
+.step-line{flex:1;height:3px;background:var(--cn200);border-radius:2px}
+.step-line.done{background:var(--cs)}
+.step-line.active{background:var(--gb)}
+.create-body{padding:16px}
+.agent-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.agent-card{padding:14px 10px;border-radius:12px;border:1.5px solid var(--cn200);cursor:pointer;transition:all .15s;text-align:center}
+.agent-card.selected{border-color:var(--cp500);background:var(--cp50)}
+.agent-icon{width:44px;height:44px;border-radius:12px;margin:0 auto 6px;display:flex;align-items:center;justify-content:center}
+.agent-name{font-size:var(--tsm);font-weight:600;color:var(--cn800);margin-bottom:3px}
+.agent-tag{font-size:10px;color:var(--cn500)}
+.input-group{margin-bottom:14px}
+.input-group label{display:block;font-size:var(--tsm);font-weight:600;color:var(--cn700);margin-bottom:6px}
+.input-group input,.input-group textarea{width:100%;padding:12px 14px;border-radius:10px;border:1.5px solid var(--cn200);font-size:var(--tb);font-family:var(--ff);outline:none}
+.input-group input:focus,.input-group textarea:focus{border-color:var(--cp500)}
+.input-group textarea{resize:none;height:70px}
+.tag-select{display:flex;flex-wrap:wrap;gap:6px}
+.tag-select .tag{cursor:pointer;border:1.5px solid transparent;transition:all .15s}
+.tag-select .tag.chosen{border-color:var(--cp500);background:var(--cp50);color:var(--cp600)}
+.title-card{display:flex;align-items:flex-start;gap:10px;padding:12px;border-radius:10px;border:1.5px solid var(--cn200);margin-bottom:8px;cursor:pointer;transition:all .15s}
+.title-card.selected{border-color:var(--cp500);background:var(--cp50)}
+.tc-num{width:22px;height:22px;border-radius:50%;background:var(--cn100);display:flex;align-items:center;justify-content:center;font-size:var(--txs);font-weight:700;color:var(--cn500);flex-shrink:0}
+.title-card.selected .tc-num{background:var(--cp500);color:#fff}
+.tc-text{flex:1;font-size:var(--tsm);color:var(--cn800);line-height:1.5}
+.tc-btn{padding:3px 10px;border-radius:14px;font-size:var(--txs);font-weight:600;border:1px solid var(--cp500);color:var(--cp500);background:transparent;cursor:pointer;flex-shrink:0}
+.title-card.selected .tc-btn{background:var(--cp500);color:#fff}
+.ai-zone{padding:14px;border-radius:12px;background:var(--ggl);border:2px solid transparent;background-clip:padding-box;position:relative;margin-bottom:14px}
+.ai-zone::before{content:'';position:absolute;inset:-2px;border-radius:14px;background:conic-gradient(from 0deg,#FE2C55,#8B5CF6,#FE2C55);z-index:-1;animation:spin 3s linear infinite}
+.ai-text{font-size:var(--tsm);color:var(--cn700);line-height:1.7}
+.img-carousel{display:flex;gap:8px;overflow-x:auto;padding-bottom:8px;scrollbar-width:none}
+.img-carousel::-webkit-scrollbar{display:none}
+.img-thumb{width:90px;height:90px;border-radius:10px;flex-shrink:0;overflow:hidden}
+.img-thumb.shimmer-card{background:linear-gradient(90deg,var(--cn200) 25%,var(--cn100) 50%,var(--cn200) 75%);background-size:200% 100%;animation:shimmer 1.5s infinite}
+.create-footer{padding:10px 16px;background:#fff;border-top:1px solid var(--cn100);display:flex;gap:8px}
+.create-footer .btn{flex:1}
+.share-wechat{margin-top:12px;text-align:center}
+/* MESSAGES */
+.msg-subscribe{margin:12px 16px;padding:14px;background:#EFF6FF;border-radius:12px;display:flex;align-items:center;gap:10px}
+.msg-sub-icon{width:32px;height:32px;border-radius:8px;background:#DBEAFE;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.msg-sub-text{flex:1;font-size:var(--tsm);color:var(--cn700)}
+.msg-sub-btn{padding:6px 14px;border-radius:14px;background:var(--ci);color:#fff;font-size:var(--txs);font-weight:600;border:none;cursor:pointer}
+.msg-tabs{display:flex;padding:0 16px;gap:0;background:#fff;border-bottom:1px solid var(--cn100)}
+.msg-tab{padding:10px 14px;font-size:var(--tsm);font-weight:500;color:var(--cn500);cursor:pointer;border-bottom:2px solid transparent}
+.msg-tab.active{color:var(--cp500);border-bottom-color:var(--cp500);font-weight:600}
+.msg-list{padding:12px 16px}
+.msg-card{display:flex;gap:10px;padding:12px;background:#fff;border-radius:10px;margin-bottom:8px;align-items:center;box-shadow:0 1px 2px rgba(0,0,0,.04)}
+.msg-thumb{width:44px;height:44px;border-radius:8px;flex-shrink:0;overflow:hidden}
+.msg-info{flex:1;min-width:0}
+.msg-title{font-size:var(--tsm);font-weight:600;color:var(--cn800);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.msg-time{font-size:var(--txs);color:var(--cn500);margin-top:2px}
+/* PROFILE */
+.prof-header{padding:20px 16px;text-align:center;background:#fff}
+.prof-avatar{width:56px;height:56px;border-radius:50%;background:var(--gb);margin:0 auto 8px;display:flex;align-items:center;justify-content:center}
+.prof-name{font-size:var(--txl);font-weight:700;color:var(--cn900)}
+.prof-bind{font-size:var(--txs);color:var(--cn500);margin-top:4px}
+.prof-list{padding:8px 0}
+.prof-group{background:#fff;margin-bottom:8px}
+.prof-item{display:flex;align-items:center;padding:13px 16px;cursor:pointer}
+.prof-item:hover{background:var(--cn50)}
+.prof-item-icon{width:30px;height:30px;border-radius:8px;display:flex;align-items:center;justify-content:center;margin-right:10px;flex-shrink:0}
+.prof-item-label{flex:1;font-size:var(--tsm);color:var(--cn800)}
+.prof-item-arrow{color:var(--cn300)}
+.prof-item-badge{font-size:var(--txs);color:var(--cn400);margin-right:6px}
+.prof-logout{margin:20px 16px;padding:13px;text-align:center;border-radius:12px;border:1.5px solid var(--cp500);color:var(--cp500);font-size:var(--tsm);font-weight:600;cursor:pointer}
+/* LOGIN */
+.login-page{position:absolute;inset:0;background:var(--cn50);z-index:200;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:40px 32px}
+.login-deco{position:absolute;border-radius:50%;opacity:.1}
+.login-deco-1{width:280px;height:280px;background:var(--cp500);top:-60px;right:-40px}
+.login-deco-2{width:200px;height:200px;background:var(--cap);bottom:100px;left:-60px}
+.login-logo{width:64px;height:64px;background:var(--gai);border-radius:16px;display:flex;align-items:center;justify-content:center;margin-bottom:16px;position:relative}
+.login-title{font-size:var(--t2);font-weight:700;color:var(--cn900);margin-bottom:4px;position:relative}
+.login-slogan{font-size:var(--tb);color:var(--cn500);margin-bottom:32px;position:relative}
+.login-btn-wx{width:100%;padding:14px;border-radius:12px;background:var(--cwx);color:#fff;font-size:var(--tl);font-weight:700;border:none;cursor:pointer;box-shadow:0 8px 24px rgba(7,193,96,.3);display:flex;align-items:center;justify-content:center;gap:8px;position:relative}
+.login-hint{font-size:var(--txs);color:var(--cn400);text-align:center;margin-top:12px;position:relative}
+.login-terms{font-size:var(--txs);color:var(--cn400);text-align:center;margin-top:24px;position:relative}
+.login-terms a{color:var(--cn600);text-decoration:underline}
+</style>
+</head>
+<body>
+<div class="phone-wrap">
+<div class="phone-label">微信小程序版</div>
+<div class="phone">
+<div class="phone-inner">
+<div class="phone-home"></div>
+
+<!-- LOGIN PAGE -->
+<div class="login-page" id="loginPage">
+  <div class="login-deco login-deco-1"></div>
+  <div class="login-deco login-deco-2"></div>
+  <div class="login-logo">
+    <svg width="32" height="32" viewBox="0 0 36 36" fill="none"><rect x="6" y="6" width="10" height="10" rx="2" fill="white" opacity=".9"/><rect x="20" y="6" width="10" height="10" rx="2" fill="white" opacity=".6"/><rect x="6" y="20" width="10" height="10" rx="2" fill="white" opacity=".6"/><rect x="20" y="20" width="10" height="10" rx="2" fill="white" opacity=".4"/></svg>
+  </div>
+  <div class="login-title">红书智创</div>
+  <div class="login-slogan">让小红书运营更轻松</div>
+  <button class="login-btn-wx" onclick="document.getElementById('loginPage').style.display='none'">
+    <svg width="20" height="20" viewBox="0 0 20 20" fill="white"><path d="M14.5 9.5c0-2.8-2.7-5-6-5s-6 2.2-6 5c0 1.6.9 3 2.2 3.9l-.6 1.7 2-1c.8.2 1.6.4 2.4.4 3.3 0 6-2.2 6-5z"/><circle cx="7" cy="9" r=".8"/><circle cx="11" cy="9" r=".8"/></svg>
+    微信一键登录
+  </button>
+  <div class="login-hint">安全登录，不泄露隐私</div>
+  <div class="login-terms">登录即表示同意 <a>用户协议</a> 和 <a>隐私政策</a></div>
+</div>
+
+<div class="app">
+  <!-- 小程序导航栏 -->
+  <div class="wx-nav">
+    <div class="wx-status">
+      <span>9:41</span>
+      <span style="display:flex;gap:4px;align-items:center">
+        <svg width="16" height="12" viewBox="0 0 16 12" fill="var(--cn900)"><rect x="0" y="5" width="3" height="7" rx="1"/><rect x="4.5" y="3" width="3" height="9" rx="1"/><rect x="9" y="1" width="3" height="11" rx="1"/><rect x="13" y="0" width="3" height="12" rx="1" opacity=".3"/></svg>
+      </span>
+    </div>
+    <div class="wx-title-bar">
+      <span class="wx-title" id="wxTitle">红书智创</span>
+      <div class="wx-capsule">
+        <div class="wx-capsule-dot"></div>
+        <div class="wx-capsule-line"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- CONTENT -->
+  <div class="content" id="contentArea">
+
+    <!-- PAGE: HOME -->
+    <div class="page active" id="pageHome">
+      <div class="home-welcome">
+        <div class="home-avatar"><svg width="18" height="18" viewBox="0 0 20 20" fill="white"><circle cx="10" cy="8" r="4"/><path d="M3 18c0-3.3 3.1-6 7-6s7 2.7 7 6"/></svg></div>
+        <div class="home-hello"><h3>早上好，创作者</h3><p>今天有 3 篇内容待发布</p></div>
+        <span class="home-badge">3</span>
+      </div>
+      <div class="home-metrics">
+        <div class="metrics-grid">
+          <div class="card metric-card">
+            <div class="label"><svg width="12" height="12" viewBox="0 0 14 14" fill="none"><path d="M3 7h8M7 3v8" stroke="var(--cp500)" stroke-width="1.5" stroke-linecap="round"/></svg> 今日发布</div>
+            <div class="value">4</div>
+            <div class="trend trend-up"><svg width="10" height="10" viewBox="0 0 12 12" fill="none"><path d="M6 2v8M3 5l3-3 3 3" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg> +12%</div>
+          </div>
+          <div class="card metric-card">
+            <div class="label"><svg width="12" height="12" viewBox="0 0 14 14" fill="none"><path d="M7 2l1.5 3 3.5.5-2.5 2.5.5 3.5L7 10l-3 1.5.5-3.5L2 5.5 5.5 5z" stroke="var(--cao)" stroke-width="1" fill="var(--caol)"/></svg> 互动量</div>
+            <div class="value">2.8k</div>
+            <div class="trend trend-up"><svg width="10" height="10" viewBox="0 0 12 12" fill="none"><path d="M6 2v8M3 5l3-3 3 3" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg> +8%</div>
+          </div>
+          <div class="card metric-card">
+            <div class="label"><svg width="12" height="12" viewBox="0 0 14 14" fill="none"><path d="M7 2v10M4 5l3-3 3 3" stroke="var(--cs)" stroke-width="1.5" stroke-linecap="round"/></svg> 粉丝增长</div>
+            <div class="value">+156</div>
+            <div class="trend trend-up"><svg width="10" height="10" viewBox="0 0 12 12" fill="none"><path d="M6 2v8M3 5l3-3 3 3" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg> +23%</div>
+          </div>
+          <div class="card metric-card">
+            <div class="label"><svg width="12" height="12" viewBox="0 0 14 14" fill="none"><path d="M5 2l4 5-4 5M2 2l4 5-4 5" stroke="var(--cap)" stroke-width="1.5" stroke-linecap="round"/></svg> AI创作</div>
+            <div class="value">12</div>
+            <div class="trend" style="color:var(--cn500)">次</div>
+          </div>
+        </div>
+      </div>
+      <div class="home-chart">
+        <div class="card chart-card">
+          <div class="chart-title">近7天趋势</div>
+          <svg viewBox="0 0 340 100" style="width:100%">
+            <line x1="0" y1="25" x2="340" y2="25" stroke="var(--cn100)" stroke-dasharray="4"/>
+            <line x1="0" y1="50" x2="340" y2="50" stroke="var(--cn100)" stroke-dasharray="4"/>
+            <line x1="0" y1="75" x2="340" y2="75" stroke="var(--cn100)" stroke-dasharray="4"/>
+            <text x="0" y="95" font-size="9" fill="var(--cn400)">周一</text><text x="50" y="95" font-size="9" fill="var(--cn400)">周二</text><text x="100" y="95" font-size="9" fill="var(--cn400)">周三</text><text x="150" y="95" font-size="9" fill="var(--cn400)">周四</text><text x="200" y="95" font-size="9" fill="var(--cn400)">周五</text><text x="250" y="95" font-size="9" fill="var(--cn400)">周六</text><text x="300" y="95" font-size="9" fill="var(--cn400)">周日</text>
+            <polyline points="10,65 60,55 110,60 160,40 210,45 260,28 310,32" fill="none" stroke="var(--cp500)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+            <polyline points="10,70 60,62 110,68 160,50 210,55 260,38 310,42" fill="none" stroke="var(--cap)" stroke-width="2" stroke-dasharray="5,3"/>
+            <circle cx="310" cy="32" r="3" fill="var(--cp500)"/><circle cx="310" cy="42" r="3" fill="var(--cap)"/>
+          </svg>
+        </div>
+      </div>
+      <div class="home-actions">
+        <button class="btn btn-primary"><svg width="14" height="14" viewBox="0 0 16 16" fill="none"><path d="M5 2l6 6-6 6" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/><path d="M4 2l6 6-6 6" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" opacity=".5"/></svg>AI一键创作</button>
+        <button class="btn btn-outline"><svg width="14" height="14" viewBox="0 0 16 16" fill="none"><path d="M4 8h8M8 4v8" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>查看队列</button>
+      </div>
+      <div class="home-recent">
+        <div class="chart-title" style="margin-bottom:10px">最近创作</div>
+        <div class="recent-row">
+          <div class="recent-card">
+            <div class="recent-thumb"><svg viewBox="0 0 160 90"><rect width="160" height="90" fill="#FFE0E5"/><circle cx="80" cy="38" r="20" fill="var(--cp300)"/><text x="80" y="75" text-anchor="middle" font-size="10" fill="var(--cp700)">咖啡探店</text></svg></div>
+            <div class="recent-info"><div class="recent-info-title">周末探店｜宝藏咖啡</div><span class="tag tag-green" style="font-size:9px;padding:2px 6px">已发布</span></div>
+          </div>
+          <div class="recent-card">
+            <div class="recent-thumb"><svg viewBox="0 0 160 90"><rect width="160" height="90" fill="var(--caol)"/><circle cx="80" cy="38" r="20" fill="var(--cao)"/><text x="80" y="75" text-anchor="middle" font-size="10" fill="#92400E">穿搭分享</text></svg></div>
+            <div class="recent-info"><div class="recent-info-title">春日穿搭｜温柔通勤</div><span class="tag tag-blue" style="font-size:9px;padding:2px 6px">待发布</span></div>
+          </div>
+          <div class="recent-card">
+            <div class="recent-thumb"><svg viewBox="0 0 160 90"><rect width="160" height="90" fill="var(--capl)"/><circle cx="80" cy="38" r="20" fill="var(--cap)"/><text x="80" y="75" text-anchor="middle" font-size="10" fill="#4C1D95">旅行攻略</text></svg></div>
+            <div class="recent-info"><div class="recent-info-title">3天2夜云南攻略</div><span class="tag tag-orange" style="font-size:9px;padding:2px 6px">审核中</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- PAGE: AI CREATE -->
+    <div class="page" id="pageCreate">
+      <div class="create-progress">
+        <div class="step-dot done">1</div><div class="step-line done"></div>
+        <div class="step-dot done">2</div><div class="step-line done"></div>
+        <div class="step-dot done">3</div><div class="step-line active"></div>
+        <div class="step-dot active">4</div>
+      </div>
+      <div style="padding:8px 16px;font-size:var(--txs);color:var(--cn500);text-align:center">④ 生成内容</div>
+      <div class="create-body">
+        <!-- Agent + Input summary -->
+        <div style="display:flex;gap:8px;align-items:center;padding:10px;border-radius:10px;background:var(--cp50);border:1px solid var(--cp200);margin-bottom:14px">
+          <div style="width:32px;height:32px;border-radius:8px;background:var(--cp100);display:flex;align-items:center;justify-content:center">
+            <svg width="14" height="14" viewBox="0 0 18 18" fill="none"><path d="M9 2l2 4 4.5.7-3.2 3.2.7 4.5L9 12.2l-4 2.2.7-4.5L2.5 6.7 7 6z" stroke="var(--cp500)" stroke-width="1.2" fill="var(--cp100)"/></svg>
+          </div>
+          <div style="flex:1"><div style="font-size:var(--txs);font-weight:600;color:var(--cn800)">生活分享 Agent</div><div style="font-size:10px;color:var(--cn500)">主题：周末咖啡探店</div></div>
+        </div>
+        <!-- Title chosen -->
+        <div style="margin-bottom:14px">
+          <div style="font-size:var(--txs);color:var(--cn500);margin-bottom:4px">已选标题</div>
+          <div style="font-size:var(--tb);font-weight:600;color:var(--cn800);padding:8px 12px;background:var(--cp50);border-radius:8px;border-left:3px solid var(--cp500)">周末探店｜这家隐藏的宝藏咖啡店你必须知道！</div>
+        </div>
+        <!-- AI Generation Zone -->
+        <div class="ai-zone">
+          <div class="ai-text">周末的午后，阳光透过玻璃窗洒进这间藏在巷子深处的咖啡店。手冲的耶加雪菲散发着花香，搭配一块柠檬塔，就是完美的下午时光...<span class="cursor-blink"></span></div>
+        </div>
+        <div style="font-size:var(--txs);color:var(--cn500);margin-bottom:8px">AI配图</div>
+        <div class="img-carousel">
+          <div class="img-thumb"><svg viewBox="0 0 90 90"><rect width="90" height="90" fill="#FFE0E5"/><circle cx="45" cy="36" r="16" fill="var(--cp300)"/><rect x="18" y="54" width="54" height="26" rx="5" fill="var(--cp200)"/></svg></div>
+          <div class="img-thumb"><svg viewBox="0 0 90 90"><rect width="90" height="90" fill="var(--caol)"/><circle cx="45" cy="36" r="16" fill="var(--cao)"/><rect x="18" y="54" width="54" height="26" rx="5" fill="#FDE68A"/></svg></div>
+          <div class="img-thumb"><svg viewBox="0 0 90 90"><rect width="90" height="90" fill="var(--capl)"/><circle cx="45" cy="36" r="16" fill="var(--cap)"/><rect x="18" y="54" width="54" height="26" rx="5" fill="#C4B5FD"/></svg></div>
+          <div class="img-thumb shimmer-card"></div>
+        </div>
+        <!-- 分享给朋友 (小程序特有) -->
+        <div class="share-wechat">
+          <button class="btn btn-wechat" style="width:100%;margin-top:10px">
+            <svg width="16" height="16" viewBox="0 0 20 20" fill="white"><path d="M14.5 9.5c0-2.8-2.7-5-6-5s-6 2.2-6 5c0 1.6.9 3 2.2 3.9l-.6 1.7 2-1c.8.2 1.6.4 2.4.4 3.3 0 6-2.2 6-5z"/><circle cx="7" cy="9" r=".8"/><circle cx="11" cy="9" r=".8"/></svg>
+            转发给朋友
+          </button>
+        </div>
+      </div>
+      <div class="create-footer">
+        <button class="btn btn-ghost">修改文案</button>
+        <button class="btn btn-ai"><svg width="14" height="14" viewBox="0 0 16 16" fill="none"><path d="M4 8h8M8 4v8" stroke="white" stroke-width="1.5" stroke-linecap="round"/></svg>加入发布队列</button>
+      </div>
+    </div>
+
+    <!-- PAGE: MESSAGES -->
+    <div class="page" id="pageMessages">
+      <div class="msg-subscribe">
+        <div class="msg-sub-icon"><svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M8 2v5M8 9v1" stroke="var(--ci)" stroke-width="1.5" stroke-linecap="round"/><circle cx="8" cy="8" r="6" stroke="var(--ci)" stroke-width="1.2"/></svg></div>
+        <div class="msg-sub-text">开启通知，不错过发布结果</div>
+        <button class="msg-sub-btn">允许</button>
+      </div>
+      <div class="msg-tabs">
+        <div class="msg-tab active">全部</div>
+        <div class="msg-tab">审核</div>
+        <div class="msg-tab">发布</div>
+      </div>
+      <div class="msg-list">
+        <div class="msg-card">
+          <div class="msg-thumb"><svg viewBox="0 0 44 44"><rect width="44" height="44" fill="#FFE0E5"/><circle cx="22" cy="18" r="10" fill="var(--cp300)"/></svg></div>
+          <div class="msg-info"><div class="msg-title">周末探店｜宝藏咖啡店</div><div class="msg-time">2分钟前 · 审核通过</div></div>
+          <span class="tag tag-green" style="font-size:10px">通过</span>
+        </div>
+        <div class="msg-card">
+          <div class="msg-thumb"><svg viewBox="0 0 44 44"><rect width="44" height="44" fill="var(--caol)"/><circle cx="22" cy="18" r="10" fill="var(--cao)"/></svg></div>
+          <div class="msg-info"><div class="msg-title">春日穿搭分享｜温柔通勤</div><div class="msg-time">1小时前 · 需修改</div></div>
+          <span class="tag tag-orange" style="font-size:10px">修改</span>
+        </div>
+        <div class="msg-card">
+          <div class="msg-thumb"><svg viewBox="0 0 44 44"><rect width="44" height="44" fill="var(--capl)"/><circle cx="22" cy="18" r="10" fill="var(--cap)"/></svg></div>
+          <div class="msg-info"><div class="msg-title">3天2夜云南攻略</div><div class="msg-time">3小时前 · 发布成功</div></div>
+          <span class="tag tag-green" style="font-size:10px">成功</span>
+        </div>
+        <div class="msg-card">
+          <div class="msg-thumb"><svg viewBox="0 0 44 44"><rect width="44" height="44" fill="var(--cp50)"/><circle cx="22" cy="18" r="10" fill="var(--cp300)"/></svg></div>
+          <div class="msg-info"><div class="msg-title">家居好物推荐</div><div class="msg-time">5小时前 · 发布失败</div></div>
+          <span class="tag" style="font-size:10px;background:#FEE2E2;color:#DC2626">失败</span>
+        </div>
+        <div class="msg-card">
+          <div class="msg-thumb"><svg viewBox="0 0 44 44"><rect width="44" height="44" fill="#DCFCE7"/><circle cx="22" cy="18" r="10" fill="var(--cs)"/></svg></div>
+          <div class="msg-info"><div class="msg-title">美食食谱｜15分钟快手晚餐</div><div class="msg-time">6小时前 · 审核通过</div></div>
+          <span class="tag tag-green" style="font-size:10px">通过</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- PAGE: PROFILE -->
+    <div class="page" id="pageProfile">
+      <div class="prof-header">
+        <div class="prof-avatar"><svg width="24" height="24" viewBox="0 0 20 20" fill="white"><circle cx="10" cy="8" r="4"/><path d="M3 18c0-3.3 3.1-6 7-6s7 2.7 7 6"/></svg></div>
+        <div class="prof-name">创作者小王</div>
+        <div class="prof-bind">已绑定 2 个小红书账号</div>
+      </div>
+      <div class="prof-list">
+        <div class="prof-group">
+          <div class="prof-item">
+            <div class="prof-item-icon" style="background:var(--cp50)"><svg width="14" height="14" viewBox="0 0 16 16" fill="none"><path d="M8 2l1.5 3 3.5.5-2.5 2.5.5 3.5L8 10l-3 1.5.5-3.5L3 5.5 6.5 5z" stroke="var(--cp500)" stroke-width="1" fill="var(--cp100)"/></svg></div>
+            <div class="prof-item-label">账号管理</div>
+            <div class="prof-item-badge">2个账号</div>
+            <svg width="14" height="14" viewBox="0 0 16 16" fill="none" class="prof-item-arrow"><path d="M6 4l4 4-4 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+          </div>
+          <div class="prof-item">
+            <div class="prof-item-icon" style="background:#DBEAFE"><svg width="14" height="14" viewBox="0 0 16 16" fill="none"><path d="M4 8h8M8 4v8" stroke="#3B82F6" stroke-width="1.5" stroke-linecap="round"/></svg></div>
+            <div class="prof-item-label">发布队列</div>
+            <svg width="14" height="14" viewBox="0 0 16 16" fill="none" class="prof-item-arrow"><path d="M6 4l4 4-4 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+          </div>
+          <div class="prof-item">
+            <div class="prof-item-icon" style="background:#DBEAFE"><svg width="14" height="14" viewBox="0 0 16 16" fill="none"><rect x="2" y="3" width="12" height="10" rx="1.5" stroke="#3B82F6" stroke-width="1.2"/><path d="M5 7h6M5 9.5h4" stroke="#3B82F6" stroke-width="1" stroke-linecap="round"/></svg></div>
+            <div class="prof-item-label">数据分析</div>
+            <svg width="14" height="14" viewBox="0 0 16 16" fill="none" class="prof-item-arrow"><path d="M6 4l4 4-4 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+          </div>
+        </div>
+        <div class="prof-group">
+          <div class="prof-item">
+            <div class="prof-item-icon" style="background:var(--capl)"><svg width="14" height="14" viewBox="0 0 16 16" fill="none"><path d="M8 2l2 4 4.5.7-3.2 3.2.7 4.5L8 12.2l-4 2.2.7-4.5L1.5 6.7 6 6z" stroke="var(--cap)" stroke-width="1" fill="var(--capl)"/></svg></div>
+            <div class="prof-item-label">AI偏好设置</div>
+            <svg width="14" height="14" viewBox="0 0 16 16" fill="none" class="prof-item-arrow"><path d="M6 4l4 4-4 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+          </div>
+          <div class="prof-item">
+            <div class="prof-item-icon" style="background:var(--caol)"><svg width="14" height="14" viewBox="0 0 16 16" fill="none"><path d="M8 2v5M8 9v1" stroke="var(--cao)" stroke-width="1.5" stroke-linecap="round"/><circle cx="8" cy="8" r="6" stroke="var(--cao)" stroke-width="1.2"/></svg></div>
+            <div class="prof-item-label">通知设置</div>
+            <svg width="14" height="14" viewBox="0 0 16 16" fill="none" class="prof-item-arrow"><path d="M6 4l4 4-4 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+          </div>
+        </div>
+        <div class="prof-group">
+          <div class="prof-item">
+            <div class="prof-item-icon" style="background:#DCFCE7"><svg width="14" height="14" viewBox="0 0 20 20" fill="none"><path d="M14.5 9.5c0-2.8-2.7-5-6-5s-6 2.2-6 5c0 1.6.9 3 2.2 3.9l-.6 1.7 2-1c.8.2 1.6.4 2.4.4 3.3 0 6-2.2 6-5z" stroke="var(--cwx)" stroke-width="1" fill="#DCFCE7"/><circle cx="7" cy="9" r=".6" fill="var(--cwx)"/><circle cx="11" cy="9" r=".6" fill="var(--cwx)"/></svg></div>
+            <div class="prof-item-label">分享给朋友</div>
+            <svg width="14" height="14" viewBox="0 0 16 16" fill="none" class="prof-item-arrow"><path d="M6 4l4 4-4 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+          </div>
+          <div class="prof-item">
+            <div class="prof-item-icon" style="background:var(--cn100)"><svg width="14" height="14" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="6" stroke="var(--cn500)" stroke-width="1.2"/><path d="M6 6.5c0-1.1.9-2 2-2s2 .9 2 2c0 1.7-2 1.5-2 3" stroke="var(--cn500)" stroke-width="1" stroke-linecap="round"/></svg></div>
+            <div class="prof-item-label">帮助与反馈</div>
+            <svg width="14" height="14" viewBox="0 0 16 16" fill="none" class="prof-item-arrow"><path d="M6 4l4 4-4 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+          </div>
+          <div class="prof-item">
+            <div class="prof-item-icon" style="background:var(--cn100)"><svg width="14" height="14" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="6" stroke="var(--cn500)" stroke-width="1.2"/><path d="M6 6h4M6 8h3M6 10h2" stroke="var(--cn500)" stroke-width="1" stroke-linecap="round"/></svg></div>
+            <div class="prof-item-label">关于我们</div>
+            <svg width="14" height="14" viewBox="0 0 16 16" fill="none" class="prof-item-arrow"><path d="M6 4l4 4-4 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+          </div>
+        </div>
+      </div>
+      <div class="prof-logout">退出登录</div>
+    </div>
+
+  </div>
+
+  <!-- TAB BAR -->
+  <div class="tab-bar">
+    <div class="tab-item active" onclick="switchTab('Home')">
+      <svg viewBox="0 0 24 24" fill="none"><path d="M3 12l9-9 9 9" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><path d="M5 10v10h5v-6h4v6h5V10" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      <span>首页</span>
+    </div>
+    <div class="tab-item" onclick="switchTab('Create')">
+      <svg viewBox="0 0 24 24" fill="none"><path d="M5 3l7 4.5L19 3v9l-7 4.5L5 12V3z" stroke="url(#aiG2)" stroke-width="2" fill="none"/><defs><linearGradient id="aiG2" x1="5" y1="3" x2="19" y2="12"><stop stop-color="#FE2C55"/><stop offset="1" stop-color="#8B5CF6"/></linearGradient></defs></svg>
+      <span>创作</span>
+    </div>
+    <div class="tab-item" onclick="switchTab('Messages')">
+      <svg viewBox="0 0 24 24" fill="none"><path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><path d="M13.73 21a2 2 0 01-3.46 0" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+      <span>消息</span>
+    </div>
+    <div class="tab-item" onclick="switchTab('Profile')">
+      <svg viewBox="0 0 24 24" fill="none"><circle cx="12" cy="8" r="4" stroke="currentColor" stroke-width="2"/><path d="M4 21c0-4 3.6-7 8-7s8 3 8 7" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+      <span>我的</span>
+    </div>
+  </div>
+</div>
+
+</div>
+</div>
+</div>
+
+<script>
+const titles={Home:'红书智创',Create:'AI创作',Messages:'消息',Profile:'我的'};
+function switchTab(name){
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  document.getElementById('page'+name).classList.add('active');
+  document.querySelectorAll('.tab-item').forEach(t=>t.classList.remove('active'));
+  event.currentTarget.classList.add('active');
+  document.getElementById('wxTitle').textContent=titles[name]||'红书智创';
+  document.getElementById('contentArea').scrollTop=0;
+}
+</script>
+</body>
+</html>

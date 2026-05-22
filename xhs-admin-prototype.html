@@ -1,0 +1,637 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=1280">
+<title>红书智创 - 超级管理员后台</title>
+<style>
+:root{--cp-50:#FFF1F3;--cp-100:#FFE0E5;--cp-200:#FFC6CF;--cp-300:#FF9DAD;--cp-400:#FF6480;--cp-500:#FE2C55;--cp-600:#E61A45;--cp-700:#C0133A;--cp-800:#9E1537;--cp-900:#841635;--ca-purple:#8B5CF6;--ca-purple-l:#EDE9FE;--ca-orange:#F59E0B;--ca-orange-l:#FEF3C7;--cn-50:#FAFAF9;--cn-100:#F5F5F4;--cn-200:#E7E5E4;--cn-300:#D6D3D1;--cn-400:#A8A29E;--cn-500:#78716C;--cn-600:#57534E;--cn-700:#44403C;--cn-800:#292524;--cn-900:#1C1917;--cs:#22C55E;--cw:#F59E0B;--ce:#EF4444;--ci:#3B82F6;--gb:linear-gradient(135deg,#FE2C55,#FF6480);--gai:linear-gradient(135deg,#FE2C55,#8B5CF6);--gg:linear-gradient(135deg,#22C55E,#F59E0B);--ff:'Inter','PingFang SC','Microsoft YaHei',sans-serif;--fm:'JetBrains Mono','Fira Code',monospace;--txs:11px;--tsm:13px;--tb:14px;--tlg:16px;--txl:20px;--t2xl:24px;--t3xl:28px;--fn:400;--fm5:500;--fs6:600;--fb:700;--s1:4px;--s2:8px;--s3:12px;--s4:16px;--s5:20px;--s6:24px;--s8:32px;--s16:64px;--rs:4px;--rm:6px;--rl:8px;--rxl:12px;--r2xl:16px;--rf:9999px;--shs:0 1px 3px rgba(0,0,0,.06),0 1px 2px rgba(0,0,0,.04);--shm:0 4px 6px -1px rgba(0,0,0,.07),0 2px 4px -1px rgba(0,0,0,.04);--shl:0 10px 15px -3px rgba(0,0,0,.08),0 4px 6px -2px rgba(0,0,0,.04);--sw:260px;--hh:56px}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}html{font-size:14px;-webkit-font-smoothing:antialiased}body{font-family:var(--ff);color:var(--cn-800);background:var(--cn-50);line-height:22px;overflow:hidden;height:100vh}a{color:var(--cp-500);text-decoration:none}button{cursor:pointer;font-family:inherit;border:none;background:none}input,textarea,select{font-family:inherit;font-size:inherit}
+.app{display:flex;height:100vh;width:100%}
+/* DARK SIDEBAR */
+.sb{width:var(--sw);min-width:var(--sw);background:var(--cn-900);display:flex;flex-direction:column;z-index:10}
+.sb-brand{height:var(--hh);display:flex;align-items:center;padding:0 var(--s5);gap:var(--s3);border-bottom:1px solid rgba(255,255,255,.08)}
+.sb-brand-icon{width:28px;height:28px;background:var(--gai);border-radius:var(--rm);display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.sb-brand-icon svg{width:16px;height:16px}
+.sb-brand-text{font-size:var(--tb);font-weight:var(--fs6);color:#fff;white-space:nowrap}
+.sb-brand-badge{font-size:var(--txs);background:rgba(254,44,85,.2);color:var(--cp-400);padding:2px 6px;border-radius:var(--rf);font-weight:var(--fm5);white-space:nowrap}
+.sb-nav{flex:1;padding:var(--s3);overflow-y:auto}
+.sb-lbl{font-size:var(--txs);font-weight:var(--fs6);color:rgba(255,255,255,.35);text-transform:uppercase;letter-spacing:.06em;padding:var(--s4) var(--s3) var(--s1)}
+.sb-item{display:flex;align-items:center;gap:var(--s3);padding:var(--s2) var(--s3);border-radius:var(--rm);color:rgba(255,255,255,.55);font-size:var(--tsm);font-weight:var(--fm5);cursor:pointer;transition:all .15s;position:relative;margin-bottom:2px}
+.sb-item:hover{background:rgba(255,255,255,.06);color:rgba(255,255,255,.85)}
+.sb-item.active{background:rgba(254,44,85,.15);color:var(--cp-400);font-weight:var(--fs6)}
+.sb-item.active::before{content:'';position:absolute;left:-3px;top:4px;bottom:4px;width:3px;background:var(--cp-500);border-radius:0 2px 2px 0}
+.sb-item svg{width:18px;height:18px;flex-shrink:0}
+.sb-item .cnt-b{background:var(--cp-500);color:#fff;font-size:10px;min-width:18px;height:18px;border-radius:var(--rf);display:flex;align-items:center;justify-content:center;font-weight:var(--fs6);margin-left:auto}
+.sb-user{padding:var(--s4);border-top:1px solid rgba(255,255,255,.08);display:flex;align-items:center;gap:var(--s3)}
+.sb-avatar{width:32px;height:32px;border-radius:var(--rf);background:linear-gradient(135deg,#FE2C55,#8B5CF6);display:flex;align-items:center;justify-content:center;color:#fff;font-size:var(--tsm);font-weight:var(--fb);flex-shrink:0}
+.sb-user-info{flex:1;min-width:0}.sb-user-name{font-size:var(--tsm);font-weight:var(--fs6);color:rgba(255,255,255,.9)}.sb-user-plan{font-size:var(--txs);color:rgba(255,255,255,.4)}
+/* MAIN */
+.mc{flex:1;display:flex;flex-direction:column;overflow:hidden;min-width:0}
+.tb{height:var(--hh);min-height:var(--hh);background:#fff;border-bottom:1px solid var(--cn-200);display:flex;align-items:center;justify-content:space-between;padding:0 var(--s8)}
+.tb-bc{font-size:var(--tsm);color:var(--cn-400)}.tb-bc span{color:var(--cn-800);font-weight:var(--fm5)}
+.tb-right{display:flex;align-items:center;gap:var(--s4)}
+.tb-search{display:flex;align-items:center;gap:var(--s2);background:var(--cn-100);border-radius:var(--rl);padding:var(--s1) var(--s3);width:240px}
+.tb-search input{border:none;background:none;outline:none;font-size:var(--tsm);color:var(--cn-700);width:100%}
+.tb-search svg{width:14px;height:14px;color:var(--cn-400)}
+.tb-ib{width:32px;height:32px;display:flex;align-items:center;justify-content:center;border-radius:var(--rm);color:var(--cn-500);transition:all .15s;position:relative}
+.tb-ib:hover{background:var(--cn-100);color:var(--cn-700)}
+.tb-ib svg{width:18px;height:18px}
+.tb-ib .dot{position:absolute;top:4px;right:4px;width:6px;height:6px;background:var(--cp-500);border-radius:50%;border:1.5px solid #fff}
+.pc{flex:1;overflow-y:auto;padding:var(--s8)}
+.pv{display:none}.pv.active{display:block}
+/* BUTTONS */
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:var(--s2);padding:var(--s2) var(--s4);border-radius:var(--rl);font-size:var(--tsm);font-weight:var(--fm5);transition:all .15s;white-space:nowrap}
+.btn svg{width:16px;height:16px}
+.btn-p{background:var(--cp-500);color:#fff}.btn-p:hover{background:var(--cp-600)}
+.btn-s{background:#fff;color:var(--cp-500);border:1px solid var(--cp-300)}.btn-s:hover{background:var(--cp-50)}
+.btn-g{color:var(--cn-600)}.btn-g:hover{background:var(--cn-100)}
+.btn-d{background:#FEE2E2;color:#B91C1C}.btn-d:hover{background:#FECACA}
+.btn-sm{padding:var(--s1) var(--s3);font-size:var(--txs)}
+/* CARDS */
+.cc{background:#fff;border-radius:var(--rxl);padding:var(--s5);box-shadow:var(--shs);border:1px solid var(--cn-100)}
+.cc-h{display:flex;align-items:center;justify-content:space-between;margin-bottom:var(--s5)}
+.cc-t{font-size:var(--tb);font-weight:var(--fs6);color:var(--cn-800)}
+.cc-st{font-size:var(--txs);color:var(--cn-500)}
+/* METRIC */
+.am-row{display:grid;grid-template-columns:repeat(4,1fr);gap:var(--s5);margin-bottom:var(--s6)}
+.am{background:#fff;border-radius:var(--rxl);padding:var(--s5);box-shadow:var(--shs);border:1px solid var(--cn-100);position:relative;overflow:hidden;transition:transform .2s,box-shadow .2s}
+.am:hover{transform:translateY(-2px);box-shadow:var(--shm)}
+.am-lb{font-size:var(--txs);color:var(--cn-500);font-weight:var(--fm5);margin-bottom:var(--s2);display:flex;align-items:center;gap:var(--s1)}
+.am-vl{font-family:var(--fm);font-size:var(--t2xl);font-weight:var(--fb);color:var(--cn-900)}
+.am-ch{font-size:var(--txs);font-weight:var(--fm5);margin-top:var(--s1)}
+.am-icon{position:absolute;top:-10px;right:-10px;width:56px;height:56px;border-radius:50%;opacity:.08}
+/* TABLE */
+.tbl-wrap{background:#fff;border-radius:var(--rxl);box-shadow:var(--shs);border:1px solid var(--cn-100);overflow:hidden}
+.tbl-bar{display:flex;align-items:center;justify-content:space-between;padding:var(--s4) var(--s5);border-bottom:1px solid var(--cn-100)}
+.tbl-bar-l{display:flex;align-items:center;gap:var(--s3)}
+.tbl-bar-r{display:flex;align-items:center;gap:var(--s2)}
+.tbl{width:100%;border-collapse:collapse}
+.tbl th{padding:var(--s3) var(--s4);text-align:left;font-size:var(--txs);font-weight:var(--fs6);color:var(--cn-500);background:var(--cn-50);border-bottom:1px solid var(--cn-100);white-space:nowrap}
+.tbl td{padding:var(--s3) var(--s4);font-size:var(--tsm);color:var(--cn-700);border-bottom:1px solid var(--cn-50)}
+.tbl tr:hover td{background:var(--cn-50)}
+.tbl tr:last-child td{border-bottom:none}
+/* TAGS */
+.tag{display:inline-flex;align-items:center;gap:var(--s1);padding:2px var(--s2);border-radius:var(--rf);font-size:var(--txs);font-weight:var(--fm5)}
+.tag-r{background:var(--cp-50);color:var(--cp-600)}.tag-p{background:var(--ca-purple-l);color:var(--ca-purple)}
+.tag-o{background:var(--ca-orange-l);color:#B45309}.tag-g{background:#DCFCE7;color:#15803D}
+.tag-b{background:#DBEAFE;color:#1D4ED8}.tag-n{background:var(--cn-100);color:var(--cn-600)}
+.tag-d{background:#FEE2E2;color:#B91C1C}
+/* INPUT */
+.ipt{width:100%;padding:var(--s2) var(--s3);border:1px solid var(--cn-300);border-radius:var(--rl);font-size:var(--tsm);color:var(--cn-800);background:#fff;outline:none;transition:border-color .15s,box-shadow .15s}
+.ipt:focus{border-color:var(--cp-400);box-shadow:0 0 0 3px rgba(254,44,85,.1)}
+.ipt::placeholder{color:var(--cn-400)}
+select.ipt{appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath d='M3 4.5L6 7.5L9 4.5' stroke='%2378716C' stroke-width='1.5' stroke-linecap='round' fill='none'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 10px center;padding-right:28px}
+/* HBAR */
+.hb{display:flex;align-items:center;gap:var(--s3);margin-bottom:var(--s3)}
+.hb-l{font-size:var(--txs);color:var(--cn-500);width:90px;text-align:right;flex-shrink:0}
+.hb-t{flex:1;height:20px;background:var(--cn-100);border-radius:var(--rf);overflow:hidden}
+.hb-f{height:100%;border-radius:var(--rf);transition:width .5s ease;display:flex;align-items:center;padding-left:var(--s2);font-size:var(--txs);font-weight:var(--fs6);color:#fff;min-width:24px}
+/* TABS */
+.atr{display:flex;gap:var(--s2);margin-bottom:var(--s6)}
+.att{padding:var(--s2) var(--s4);border-radius:var(--rf);font-size:var(--tsm);font-weight:var(--fm5);color:var(--cn-500);cursor:pointer;transition:all .15s}
+.att:hover{color:var(--cn-700);background:var(--cn-100)}.att.act{background:var(--cn-800);color:#fff}
+/* MODAL */
+.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.4);z-index:200;display:none;align-items:center;justify-content:center}
+.modal-overlay.show{display:flex}
+.modal{background:#fff;border-radius:var(--r2xl);width:560px;max-height:80vh;overflow-y:auto;box-shadow:var(--shl)}
+.modal-h{display:flex;align-items:center;justify-content:space-between;padding:var(--s5) var(--s6);border-bottom:1px solid var(--cn-100)}
+.modal-h h3{font-size:var(--tlg);font-weight:var(--fs6);color:var(--cn-900)}
+.modal-b{padding:var(--s6)}
+.modal-f{display:flex;justify-content:flex-end;gap:var(--s3);padding:var(--s4) var(--s6);border-top:1px solid var(--cn-100)}
+.fg{margin-bottom:var(--s5)}
+.fg label{display:block;font-size:var(--tsm);font-weight:var(--fm5);color:var(--cn-700);margin-bottom:var(--s2)}
+.fg .hint{font-size:var(--txs);color:var(--cn-400);margin-top:var(--s1)}
+/* STATUS DOT */
+.sd{width:6px;height:6px;border-radius:50%;display:inline-block;margin-right:var(--s1)}
+.sd-g{background:var(--cs)}.sd-r{background:var(--ce)}.sd-y{background:var(--cw)}.sd-b{background:var(--ci)}
+/* AVATAR */
+.av{width:32px;height:32px;border-radius:var(--rf);display:flex;align-items:center;justify-content:center;font-size:var(--txs);font-weight:var(--fb);color:#fff;flex-shrink:0}
+/* SCROLLBAR */
+::-webkit-scrollbar{width:6px}::-webkit-scrollbar-track{background:transparent}::-webkit-scrollbar-thumb{background:var(--cn-200);border-radius:3px}::-webkit-scrollbar-thumb:hover{background:var(--cn-300)}
+/* GRID LAYOUTS */
+.g2c{display:grid;grid-template-columns:1fr 1fr;gap:var(--s5)}
+.g3c{display:grid;grid-template-columns:1fr 1fr 1fr;gap:var(--s5)}
+.g13c{display:grid;grid-template-columns:1.5fr 1fr;gap:var(--s5)}
+.g31c{display:grid;grid-template-columns:1fr 1.5fr;gap:var(--s5)}
+/* TOGGLE */
+.tgl{width:36px;height:20px;background:var(--cn-300);border-radius:var(--rf);position:relative;cursor:pointer;transition:background .2s}
+.tgl.on{background:var(--cp-500)}
+.tgl::after{content:'';width:16px;height:16px;background:#fff;border-radius:50%;position:absolute;top:2px;left:2px;transition:transform .2s;box-shadow:0 1px 2px rgba(0,0,0,.04)}
+.tgl.on::after{transform:translateX(16px)}
+/* MEMBER CARD */
+.mem-card{background:#fff;border-radius:var(--rxl);padding:var(--s5);box-shadow:var(--shs);border:1px solid var(--cn-100);transition:all .2s;position:relative;overflow:hidden}
+.mem-card:hover{box-shadow:var(--shm)}
+.mem-card-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:var(--s4)}
+.mem-card-badge{position:absolute;top:0;right:0;width:0;height:0;border-style:solid;border-width:0 40px 40px 0}
+.mem-card-badge.popular{border-color:transparent var(--cp-500) transparent transparent}
+.mem-card-name{font-size:var(--tlg);font-weight:var(--fb);color:var(--cn-900);margin-bottom:var(--s1)}
+.mem-card-price{margin-bottom:var(--s4)}.mem-card-price .amt{font-family:var(--fm);font-size:var(--t3xl);font-weight:var(--fb);color:var(--cn-900)}.mem-card-price .per{font-size:var(--txs);color:var(--cn-400)}
+.mem-card-feats{list-style:none;margin-bottom:var(--s5)}.mem-card-feats li{font-size:var(--txs);color:var(--cn-600);padding:var(--s1) 0;display:flex;align-items:center;gap:var(--s2)}
+.mem-card-feats li svg{width:14px;height:14px;flex-shrink:0}
+/* AGENT CARD */
+.agent-card{background:#fff;border-radius:var(--rxl);padding:var(--s5);box-shadow:var(--shs);border:1px solid var(--cn-100);transition:all .2s}
+.agent-card:hover{box-shadow:var(--shm)}
+.agent-card-h{display:flex;align-items:center;gap:var(--s3);margin-bottom:var(--s4)}
+.agent-icon{width:40px;height:40px;border-radius:var(--rl);display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.agent-card-tt{font-size:var(--tb);font-weight:var(--fs6);color:var(--cn-800)}
+.agent-card-sub{font-size:var(--txs);color:var(--cn-400)}
+.agent-card-body{font-size:var(--tsm);color:var(--cn-600);line-height:22px;margin-bottom:var(--s4)}
+.agent-card-foot{display:flex;align-items:center;justify-content:space-between}
+/* API CARD */
+.api-card{background:#fff;border-radius:var(--rxl);padding:var(--s5);box-shadow:var(--shs);border:1px solid var(--cn-100);margin-bottom:var(--s4)}
+.api-card-h{display:flex;align-items:center;justify-content:space-between;margin-bottom:var(--s4)}
+.api-card-name{display:flex;align-items:center;gap:var(--s3);font-size:var(--tb);font-weight:var(--fs6);color:var(--cn-800)}
+.api-card-detail{display:grid;grid-template-columns:1fr 1fr;gap:var(--s3);font-size:var(--txs);color:var(--cn-500)}
+.api-card-detail span{display:flex;align-items:center;gap:var(--s1)}
+/* VIOLATION */
+.vio-item{display:flex;align-items:flex-start;gap:var(--s4);padding:var(--s4);background:#fff;border-radius:var(--rl);border:1px solid var(--cn-100);margin-bottom:var(--s2)}
+.vio-icon{width:36px;height:36px;border-radius:var(--rm);display:flex;align-items:center;justify-content:center;flex-shrink:0;background:#FEE2E2}
+.vio-icon svg{width:18px;height:18px;color:var(--ce)}
+/* PROGRESS */
+.prog{height:6px;background:var(--cn-100);border-radius:var(--rf);overflow:hidden}
+.prog-f{height:100%;border-radius:var(--rf);transition:width .5s ease}
+/* ACCESSIBILITY */
+@media(prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important}}
+/* UTILS */
+.flex{display:flex}.fcol{flex-direction:column}.aic{align-items:center}.jbt{justify-content:space-between}
+.g1{gap:var(--s1)}.g2{gap:var(--s2)}.g3{gap:var(--s3)}.g4{gap:var(--s4)}.g5{gap:var(--s5)}.g6{gap:var(--s6)}
+.mb3{margin-bottom:var(--s3)}.mb4{margin-bottom:var(--s4)}.mb5{margin-bottom:var(--s5)}.mb6{margin-bottom:var(--s6)}.mb8{margin-bottom:var(--s8)}
+.mt4{margin-top:var(--s4)}
+.tc{text-align:center}.fw6{font-weight:var(--fs6)}.fwb{font-weight:var(--fb)}.fnm{font-family:var(--fm)}
+</style>
+</head>
+<body>
+<div class="app">
+<!-- ====== DARK SIDEBAR ====== -->
+<aside class="sb">
+<div class="sb-brand">
+<div class="sb-brand-icon"><svg viewBox="0 0 16 16" fill="none"><path d="M8 2L12 5.5V10.5L8 14L4 10.5V5.5L8 2Z" fill="white" opacity=".9"/><path d="M8 4L10.5 6V10L8 12L5.5 10V6L8 4Z" fill="white"/><circle cx="8" cy="8" r="1.5" fill="rgba(254,44,85,.6)"/></svg></div>
+<span class="sb-brand-text">红书智创</span>
+<span class="sb-brand-badge">Admin</span>
+</div>
+<nav class="sb-nav">
+<div class="sb-lbl">总览</div>
+<div class="sb-item active" onclick="go('overview')"><svg viewBox="0 0 18 18" fill="none"><rect x="2" y="2" width="6" height="6" rx="1.5" fill="currentColor" opacity=".6"/><rect x="10" y="2" width="6" height="6" rx="1.5" fill="currentColor" opacity=".4"/><rect x="2" y="10" width="6" height="6" rx="1.5" fill="currentColor" opacity=".4"/><rect x="10" y="10" width="6" height="6" rx="1.5" fill="currentColor" opacity=".6"/></svg><span>系统总览</span></div>
+
+<div class="sb-lbl">用户与会员</div>
+<div class="sb-item" onclick="go('users')"><svg viewBox="0 0 18 18" fill="none"><circle cx="7" cy="7" r="3.5" stroke="currentColor" stroke-width="1.5" fill="none"/><path d="M1 15C1 12 3.5 10 7 10C10.5 10 13 12 13 15" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" fill="none"/><circle cx="14" cy="6" r="2.5" stroke="currentColor" stroke-width="1.2" fill="none" opacity=".5"/><path d="M14 10C16 10 17 11.5 17 13" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" fill="none" opacity=".5"/></svg><span>用户管理</span><span class="cnt-b">1.2K</span></div>
+<div class="sb-item" onclick="go('membership')"><svg viewBox="0 0 18 18" fill="none"><path d="M9 2L11 7H16L12 10.5L13.5 16L9 12.5L4.5 16L6 10.5L2 7H7L9 2Z" fill="currentColor" opacity=".6"/></svg><span>会员管理</span></div>
+
+<div class="sb-lbl">AI 与内容</div>
+<div class="sb-item" onclick="go('ai-models')"><svg viewBox="0 0 18 18" fill="none"><path d="M6 3L6 6L3 6L3 12L6 12L6 15L12 15L12 12L15 12L15 6L12 6L12 3L6 3Z" stroke="currentColor" stroke-width="1.5" fill="none"/><circle cx="9" cy="9" r="2" fill="currentColor" opacity=".4"/></svg><span>AI 大模型管理</span></div>
+<div class="sb-item" onclick="go('agents')"><svg viewBox="0 0 18 18" fill="none"><path d="M9 2L10.5 5.5H14.5L11.25 8L12.75 12L9 9.5L5.25 12L6.75 8L3.5 5.5H7.5L9 2Z" fill="currentColor" opacity=".6"/></svg><span>Agent 管理</span></div>
+<div class="sb-item" onclick="go('monitor')"><svg viewBox="0 0 18 18" fill="none"><path d="M2 14L6 8L10 11L16 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" fill="none"/><circle cx="16" cy="4" r="1.5" fill="currentColor" opacity=".5"/></svg><span>调用监控</span></div>
+<div class="sb-item" onclick="go('content')"><svg viewBox="0 0 18 18" fill="none"><path d="M3 3H15C15.55 3 16 3.45 16 4V14C16 14.55 15.55 15 15 15H3C2.45 15 2 14.55 2 14V4C2 3.45 2.45 3 3 3Z" stroke="currentColor" stroke-width="1.5" fill="none"/><path d="M6 7H12M6 10H10" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg><span>内容管理</span><span class="cnt-b" style="background:var(--ce)">3</span></div>
+
+<div class="sb-lbl">数据</div>
+<div class="sb-item" onclick="go('analytics')"><svg viewBox="0 0 18 18" fill="none"><path d="M3 15V8M7 15V5M11 15V10M15 15V3" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg><span>数据分析</span></div>
+<div class="sb-item" onclick="go('settings')"><svg viewBox="0 0 18 18" fill="none"><circle cx="9" cy="9" r="2.5" stroke="currentColor" stroke-width="1.5" fill="none"/><path d="M9 1.5V3.5M9 14.5V16.5M1.5 9H3.5M14.5 9H16.5M3.4 3.4L4.8 4.8M13.2 13.2L14.6 14.6M14.6 3.4L13.2 4.8M4.8 13.2L3.4 14.6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg><span>系统设置</span></div>
+</nav>
+<div class="sb-user"><div class="sb-avatar">管</div><div class="sb-user-info"><div class="sb-user-name">超级管理员</div><div class="sb-user-plan">admin@hongshu.ai</div></div></div>
+</aside>
+
+<div class="mc">
+<header class="tb">
+<div class="tb-bc">管理后台 / <span id="pn">系统总览</span></div>
+<div class="tb-right">
+<div class="tb-search"><svg viewBox="0 0 14 14" fill="none"><circle cx="6" cy="6" r="4.5" stroke="currentColor" stroke-width="1.5"/><path d="M9.5 9.5L13 13" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg><input type="text" placeholder="搜索用户、内容、Agent..."></div>
+<button class="tb-ib"><svg viewBox="0 0 18 18" fill="none"><path d="M4 7C4 4.79 6.24 3 9 3C11.76 3 14 4.79 14 7V11L15 14H3L4 11V7Z" stroke="currentColor" stroke-width="1.5" fill="none"/><path d="M7 14C7 15.1 7.9 16 9 16C10.1 16 11 15.1 11 14" stroke="currentColor" stroke-width="1.5"/></svg><span class="dot"></span></button>
+</div>
+</header>
+<div class="pc">
+
+<!-- ====== OVERVIEW ====== -->
+<div class="pv active" id="p-overview">
+<div class="flex aic jbt mb6">
+<div><div style="font-size:var(--txl);font-weight:var(--fb);color:var(--cn-900)">系统总览</div><div style="font-size:var(--tsm);color:var(--cn-500)">实时监控平台运行状态与关键指标</div></div>
+<div class="flex aic g3">
+<button class="btn btn-g"><svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M2 8H14M8 2V14" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>刷新数据</button>
+<button class="btn btn-p"><svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M2 4H14M2 8H10M2 12H12" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>导出报表</button>
+</div>
+</div>
+
+<div class="am-row">
+<div class="am"><div class="am-lb"><svg width="14" height="14" viewBox="0 0 14 14" fill="none"><circle cx="7" cy="5" r="3" stroke="#3B82F6" stroke-width="1.5" fill="none"/><path d="M2 13C2 10 4 8.5 7 8.5C10 8.5 12 10 12 13" stroke="#3B82F6" stroke-width="1.5" stroke-linecap="round" fill="none"/></svg>总用户数</div><div class="am-vl">1,284</div><div class="am-ch" style="color:var(--cs)">&#8593; 12.3% 较上月</div><div class="am-icon" style="background:var(--ci)"></div></div>
+<div class="am"><div class="am-lb"><svg width="14" height="14" viewBox="0 0 14 14" fill="none"><circle cx="7" cy="7" r="5" stroke="#22C55E" stroke-width="1.5" fill="none"/><path d="M7 4V7.5L9.5 9" stroke="#22C55E" stroke-width="1.5" stroke-linecap="round"/></svg>日活用户</div><div class="am-vl">428</div><div class="am-ch" style="color:var(--cs)">&#8593; 8.5%</div><div class="am-icon" style="background:var(--cs)"></div></div>
+<div class="am"><div class="am-lb"><svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M7 1L8.5 4.5H12L9.25 6.5L10.5 10L7 7.75L3.5 10L4.75 6.5L2 4.5H5.5L7 1Z" fill="#8B5CF6" opacity=".7"/></svg>AI 创作总量</div><div class="am-vl">52,647</div><div class="am-ch" style="color:var(--cs)">&#8593; 24.1%</div><div class="am-icon" style="background:var(--ca-purple)"></div></div>
+<div class="am"><div class="am-lb"><svg width="14" height="14" viewBox="0 0 14 14" fill="none"><circle cx="7" cy="7" r="5" stroke="#22C55E" stroke-width="2" fill="none"/><path d="M5 7L6.5 8.5L9 5.5" stroke="#22C55E" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>系统健康度</div><div class="am-vl" style="color:var(--cs)">99.8%</div><div class="am-ch" style="color:var(--cn-500)">所有服务正常运行</div><div class="am-icon" style="background:var(--cs)"></div></div>
+</div>
+
+<div class="g13c mb6">
+<div class="cc"><div class="cc-h"><div><div class="cc-t">用户增长趋势</div><div class="cc-st">近 30 天注册 & 活跃</div></div><div class="flex aic g3"><span class="flex aic g1" style="font-size:11px;color:var(--cn-400)"><span style="width:8px;height:3px;background:var(--ci);border-radius:2px;display:inline-block"></span>注册</span><span class="flex aic g1" style="font-size:11px;color:var(--cn-400)"><span style="width:8px;height:3px;background:var(--ca-purple);border-radius:2px;display:inline-block"></span>日活</span></div></div>
+<svg viewBox="0 0 520 180" style="width:100%"><line x1="40" y1="155" x2="510" y2="155" stroke="#E7E5E4" stroke-width=".5"/><line x1="40" y1="87" x2="510" y2="87" stroke="#E7E5E4" stroke-width=".5" stroke-dasharray="4"/><line x1="40" y1="20" x2="510" y2="20" stroke="#E7E5E4" stroke-width=".5" stroke-dasharray="4"/><text x="35" y="158" text-anchor="end" fill="#A8A29E" font-size="10">0</text><text x="35" y="90" text-anchor="end" fill="#A8A29E" font-size="10">150</text><text x="35" y="23" text-anchor="end" fill="#A8A29E" font-size="10">300</text><text x="80" y="172" text-anchor="middle" fill="#A8A29E" font-size="9">5/1</text><text x="150" y="172" text-anchor="middle" fill="#A8A29E" font-size="9">5/5</text><text x="220" y="172" text-anchor="middle" fill="#A8A29E" font-size="9">5/10</text><text x="290" y="172" text-anchor="middle" fill="#A8A29E" font-size="9">5/15</text><text x="360" y="172" text-anchor="middle" fill="#A8A29E" font-size="9">5/18</text><text x="430" y="172" text-anchor="middle" fill="#A8A29E" font-size="9">5/20</text><text x="500" y="172" text-anchor="middle" fill="#A8A29E" font-size="9">5/22</text><polyline points="80,130 150,118 220,105 290,95 360,82 430,68 500,55" fill="none" stroke="#3B82F6" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/><linearGradient id="rg1" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#3B82F6" stop-opacity=".15"/><stop offset="100%" stop-color="#3B82F6" stop-opacity="0"/></linearGradient><polygon points="80,130 150,118 220,105 290,95 360,82 430,68 500,55 500,155 80,155" fill="url(#rg1)"/><polyline points="80,95 150,88 220,82 290,75 360,65 430,58 500,48" fill="none" stroke="#8B5CF6" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" stroke-dasharray="6 3"/><circle cx="500" cy="55" r="4" fill="#3B82F6" stroke="#fff" stroke-width="2"/><circle cx="500" cy="48" r="4" fill="#8B5CF6" stroke="#fff" stroke-width="2"/></svg></div>
+
+<div class="cc"><div class="cc-h"><div><div class="cc-t">终端分布</div><div class="cc-st">用户注册终端占比</div></div></div>
+<div class="hb"><div class="hb-l">电脑端</div><div class="hb-t"><div class="hb-f" style="width:45%;background:var(--ci)">45%</div></div></div>
+<div class="hb"><div class="hb-l">鸿蒙端</div><div class="hb-t"><div class="hb-f" style="width:30%;background:var(--cp-500)">30%</div></div></div>
+<div class="hb"><div class="hb-l">小程序</div><div class="hb-t"><div class="hb-f" style="width:25%;background:var(--cs)">25%</div></div></div>
+<div style="margin-top:var(--s5);padding-top:var(--s4);border-top:1px solid var(--cn-100)">
+<div style="font-size:var(--txs);color:var(--cn-500);margin-bottom:var(--s2)">今日新增用户</div>
+<div class="flex aic g4">
+<div class="flex aic g1"><svg width="10" height="10" viewBox="0 0 10 10"><circle cx="5" cy="5" r="5" fill="#3B82F6"/></svg><span style="font-size:var(--txs);color:var(--cn-600)">电脑 8</span></div>
+<div class="flex aic g1"><svg width="10" height="10" viewBox="0 0 10 10"><circle cx="5" cy="5" r="5" fill="#FE2C55"/></svg><span style="font-size:var(--txs);color:var(--cn-600)">鸿蒙 5</span></div>
+<div class="flex aic g1"><svg width="10" height="10" viewBox="0 0 10 10"><circle cx="5" cy="5" r="5" fill="#22C55E"/></svg><span style="font-size:var(--txs);color:var(--cn-600)">小程序 6</span></div>
+</div>
+</div></div>
+</div>
+
+<div class="g2c mb6">
+<div class="cc"><div class="cc-h"><div class="cc-t">服务状态</div><span class="tag tag-g"><span class="sd sd-g"></span>全部正常</span></div>
+<div style="display:grid;grid-template-columns:1fr 1fr;gap:var(--s4)">
+<div style="padding:var(--s3);border-radius:var(--rl);border:1px solid var(--cn-100)"><div style="font-size:var(--txs);color:var(--cn-500);margin-bottom:var(--s1)">API 服务</div><div class="flex aic jbt"><span style="font-size:var(--tb);font-weight:var(--fs6);color:var(--cn-800)">12ms</span><span class="sd sd-g"></span></div></div>
+<div style="padding:var(--s3);border-radius:var(--rl);border:1px solid var(--cn-100)"><div style="font-size:var(--txs);color:var(--cn-500);margin-bottom:var(--s1)">数据库</div><div class="flex aic jbt"><span style="font-size:var(--tb);font-weight:var(--fs6);color:var(--cn-800)">3ms</span><span class="sd sd-g"></span></div></div>
+<div style="padding:var(--s3);border-radius:var(--rl);border:1px solid var(--cn-100)"><div style="font-size:var(--txs);color:var(--cn-500);margin-bottom:var(--s1)">Redis</div><div class="flex aic jbt"><span style="font-size:var(--tb);font-weight:var(--fs6);color:var(--cn-800)">1ms</span><span class="sd sd-g"></span></div></div>
+<div style="padding:var(--s3);border-radius:var(--rl);border:1px solid var(--cn-100)"><div style="font-size:var(--txs);color:var(--cn-500);margin-bottom:var(--s1)">发布引擎</div><div class="flex aic jbt"><span style="font-size:var(--tb);font-weight:var(--fs6);color:var(--cn-800)">正常</span><span class="sd sd-g"></span></div></div>
+</div></div>
+<div class="cc"><div class="cc-h"><div class="cc-t">最近操作日志</div><button class="btn btn-sm btn-g">查看全部</button></div>
+<div style="font-size:var(--txs);color:var(--cn-500)">
+<div class="flex aic g3 mb3" style="padding:var(--s2) 0;border-bottom:1px solid var(--cn-50)"><span style="color:var(--cn-400);width:50px">10:32</span><span class="tag tag-g">用户</span><span>新增用户 138****6721 (鸿蒙端)</span></div>
+<div class="flex aic g3 mb3" style="padding:var(--s2) 0;border-bottom:1px solid var(--cn-50)"><span style="color:var(--cn-400);width:50px">10:28</span><span class="tag tag-p">AI</span><span>Agent「美食探店」配置更新</span></div>
+<div class="flex aic g3 mb3" style="padding:var(--s2) 0;border-bottom:1px solid var(--cn-50)"><span style="color:var(--cn-400);width:50px">10:15</span><span class="tag tag-d">违规</span><span>检测到违规内容 #8234 已自动下架</span></div>
+<div class="flex aic g3 mb3" style="padding:var(--s2) 0;border-bottom:1px solid var(--cn-50)"><span style="color:var(--cn-400);width:50px">09:50</span><span class="tag tag-r">会员</span><span>用户 155****8832 升级为专业版</span></div>
+<div class="flex aic g3" style="padding:var(--s2) 0"><span style="color:var(--cn-400);width:50px">09:30</span><span class="tag tag-o">系统</span><span>大模型 API 密钥轮换完成</span></div>
+</div></div>
+</div>
+</div>
+
+<!-- ====== USER MANAGEMENT ====== -->
+<div class="pv" id="p-users">
+<div class="flex aic jbt mb6">
+<div><div style="font-size:var(--txl);font-weight:var(--fb);color:var(--cn-900)">用户管理</div><div style="font-size:var(--tsm);color:var(--cn-500)">管理所有注册用户，查看数据与状态</div></div>
+<div class="flex aic g3">
+<button class="btn btn-g"><svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M2 8H14M8 2V14" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>新增用户</button>
+<button class="btn btn-p"><svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M2 4H14M2 8H10M2 12H12" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>导出用户</button>
+</div>
+</div>
+
+<!-- Stats row -->
+<div class="am-row">
+<div class="am"><div class="am-lb">总用户数</div><div class="am-vl">1,284</div><div class="am-ch" style="color:var(--cs)">&#8593; 12.3%</div></div>
+<div class="am"><div class="am-lb">活跃用户 (7天)</div><div class="am-vl">856</div><div class="am-ch" style="color:var(--cs)">&#8593; 8.5%</div></div>
+<div class="am"><div class="am-lb">今日新增</div><div class="am-vl">19</div><div class="am-ch" style="color:var(--cs)">&#8593; 5</div></div>
+<div class="am"><div class="am-lb">已禁用</div><div class="am-vl" style="color:var(--ce)">7</div><div class="am-ch" style="color:var(--cn-500)">占比 0.5%</div></div>
+</div>
+
+<!-- User Table -->
+<div class="tbl-wrap">
+<div class="tbl-bar">
+<div class="tbl-bar-l">
+<div style="display:flex;align-items:center;gap:var(--s2);background:var(--cn-100);border-radius:var(--rl);padding:var(--s1) var(--s3);width:200px"><svg width="14" height="14" viewBox="0 0 14 14" fill="none"><circle cx="6" cy="6" r="4.5" stroke="currentColor" stroke-width="1.5"/><path d="M9.5 9.5L13 13" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg><input type="text" placeholder="搜索手机号..." style="border:none;background:none;outline:none;font-size:var(--txs);width:100%"></div>
+<select class="ipt" style="width:120px;padding:var(--s1) var(--s3);font-size:var(--txs)"><option>全部状态</option><option>正常</option><option>已禁用</option></select>
+<select class="ipt" style="width:120px;padding:var(--s1) var(--s3);font-size:var(--txs)"><option>全部终端</option><option>电脑端</option><option>鸿蒙端</option><option>小程序</option></select>
+</div>
+<div class="tbl-bar-r"><span style="font-size:var(--txs);color:var(--cn-400)">共 1,284 条</span></div>
+</div>
+<table class="tbl">
+<thead><tr><th><input type="checkbox"></th><th>用户 ID</th><th>手机号</th><th>会员等级</th><th>绑定账号</th><th>注册终端</th><th>注册时间</th><th>最后登录</th><th>状态</th><th>操作</th></tr></thead>
+<tbody>
+<tr><td><input type="checkbox"></td><td class="fnm" style="font-size:var(--txs)">1001</td><td>138****6721</td><td><span class="tag tag-p">专业版</span></td><td>2 个小红书</td><td><span class="tag tag-b">电脑端</span></td><td>2026-03-15</td><td>2026-05-22 10:32</td><td><span class="tag tag-g"><span class="sd sd-g"></span>正常</span></td><td><div class="flex aic g2"><button class="btn btn-sm btn-g">编辑</button><button class="btn btn-sm" style="color:var(--ce)">禁用</button></div></td></tr>
+<tr><td><input type="checkbox"></td><td class="fnm" style="font-size:var(--txs)">1002</td><td>155****8832</td><td><span class="tag tag-o">标准版</span></td><td>1 个小红书</td><td><span class="tag tag-r">鸿蒙端</span></td><td>2026-04-02</td><td>2026-05-22 09:50</td><td><span class="tag tag-g"><span class="sd sd-g"></span>正常</span></td><td><div class="flex aic g2"><button class="btn btn-sm btn-g">编辑</button><button class="btn btn-sm" style="color:var(--ce)">禁用</button></div></td></tr>
+<tr><td><input type="checkbox"></td><td class="fnm" style="font-size:var(--txs)">1003</td><td>186****3345</td><td><span class="tag tag-n">免费版</span></td><td>0 个</td><td><span class="tag tag-g">小程序</span></td><td>2026-05-01</td><td>2026-05-20 14:22</td><td><span class="tag tag-g"><span class="sd sd-g"></span>正常</span></td><td><div class="flex aic g2"><button class="btn btn-sm btn-g">编辑</button><button class="btn btn-sm" style="color:var(--ce)">禁用</button></div></td></tr>
+<tr><td><input type="checkbox"></td><td class="fnm" style="font-size:var(--txs)">1004</td><td>177****9901</td><td><span class="tag tag-p">专业版</span></td><td>3 个小红书</td><td><span class="tag tag-b">电脑端</span></td><td>2026-02-20</td><td>2026-05-21 18:05</td><td><span class="tag tag-g"><span class="sd sd-g"></span>正常</span></td><td><div class="flex aic g2"><button class="btn btn-sm btn-g">编辑</button><button class="btn btn-sm" style="color:var(--ce)">禁用</button></div></td></tr>
+<tr><td><input type="checkbox"></td><td class="fnm" style="font-size:var(--txs)">1005</td><td>139****5567</td><td><span class="tag tag-n">免费版</span></td><td>1 个小红书</td><td><span class="tag tag-r">鸿蒙端</span></td><td>2026-05-10</td><td>2026-05-18 09:12</td><td><span class="tag tag-d"><span class="sd sd-r"></span>已禁用</span></td><td><div class="flex aic g2"><button class="btn btn-sm btn-g">编辑</button><button class="btn btn-sm" style="color:var(--cs)">启用</button></div></td></tr>
+<tr><td><input type="checkbox"></td><td class="fnm" style="font-size:var(--txs)">1006</td><td>182****2234</td><td><span class="tag tag-o">标准版</span></td><td>1 个小红书</td><td><span class="tag tag-g">小程序</span></td><td>2026-04-18</td><td>2026-05-22 08:30</td><td><span class="tag tag-g"><span class="sd sd-g"></span>正常</span></td><td><div class="flex aic g2"><button class="btn btn-sm btn-g">编辑</button><button class="btn btn-sm" style="color:var(--ce)">禁用</button></div></td></tr>
+</tbody>
+</table>
+<div style="display:flex;align-items:center;justify-content:space-between;padding:var(--s4) var(--s5)"><span style="font-size:var(--txs);color:var(--cn-400)">显示 1-6 / 共 1,284 条</span><div class="flex aic g2"><button class="btn btn-sm btn-g" disabled>&lt;</button><button class="btn btn-sm" style="background:var(--cn-800);color:#fff">1</button><button class="btn btn-sm btn-g">2</button><button class="btn btn-sm btn-g">3</button><span style="font-size:var(--txs);color:var(--cn-400)">...</span><button class="btn btn-sm btn-g">214</button><button class="btn btn-sm btn-g">&gt;</button></div></div>
+</div>
+</div>
+
+<!-- ====== MEMBERSHIP MANAGEMENT ====== -->
+<div class="pv" id="p-membership">
+<div class="flex aic jbt mb6">
+<div><div style="font-size:var(--txl);font-weight:var(--fb);color:var(--cn-900)">会员管理</div><div style="font-size:var(--tsm);color:var(--cn-500)">设定会员等级、定价与注册开通管理</div></div>
+<div class="flex aic g3">
+<button class="btn btn-g"><svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M8 2V14M2 8H14" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>新增等级</button>
+<button class="btn btn-p">保存变更</button>
+</div>
+</div>
+
+<!-- Membership Level Cards -->
+<div class="g3c mb6">
+<div class="mem-card" style="border-top:3px solid var(--cn-400)">
+<div class="mem-card-top"><span class="fw6" style="font-size:var(--tb);color:var(--cn-500)">免费版</span><span class="tag tag-n">当前 682 人</span></div>
+<div class="mem-card-name">免费版</div>
+<div class="mem-card-price"><span class="amt" style="color:var(--cn-500)">&#165;0</span><span class="per">/永久</span></div>
+<ul class="mem-card-feats">
+<li><svg viewBox="0 0 14 14" fill="none"><path d="M3 7L6 10L11 4" stroke="#78716C" stroke-width="1.5" stroke-linecap="round"/></svg>每日 3 次 AI 创作</li>
+<li><svg viewBox="0 0 14 14" fill="none"><path d="M3 7L6 10L11 4" stroke="#78716C" stroke-width="1.5" stroke-linecap="round"/></svg>绑定 1 个小红书账号</li>
+<li><svg viewBox="0 0 14 14" fill="none"><path d="M3 7L6 10L11 4" stroke="#78716C" stroke-width="1.5" stroke-linecap="round"/></svg>基础数据分析</li>
+<li><svg viewBox="0 0 14 14" fill="none"><path d="M3 7L6 10L11 4" stroke="#78716C" stroke-width="1.5" stroke-linecap="round"/></svg>2 个可选 Agent</li>
+<li style="color:var(--cn-300)"><svg viewBox="0 0 14 14"><path d="M3 7L6 10L11 4" stroke="#D6D3D1" stroke-width="1.5" stroke-linecap="round"/></svg>批量操作</li>
+<li style="color:var(--cn-300)"><svg viewBox="0 0 14 14"><path d="M3 7L6 10L11 4" stroke="#D6D3D1" stroke-width="1.5" stroke-linecap="round"/></svg>数据导出</li>
+</ul>
+<button class="btn btn-s" style="width:100%">编辑等级</button>
+</div>
+
+<div class="mem-card" style="border-top:3px solid var(--ca-orange)">
+<div class="mem-card-badge popular"></div>
+<div class="mem-card-top"><span class="fw6" style="font-size:var(--tb);color:var(--ca-orange)">标准版</span><span class="tag tag-o">当前 412 人</span></div>
+<div class="mem-card-name">标准版</div>
+<div class="mem-card-price"><span class="amt">&#165;49</span><span class="per">/月</span></div>
+<ul class="mem-card-feats">
+<li><svg viewBox="0 0 14 14" fill="none"><path d="M3 7L6 10L11 4" stroke="#B45309" stroke-width="1.5" stroke-linecap="round"/></svg>每日 20 次 AI 创作</li>
+<li><svg viewBox="0 0 14 14" fill="none"><path d="M3 7L6 10L11 4" stroke="#B45309" stroke-width="1.5" stroke-linecap="round"/></svg>绑定 2 个小红书账号</li>
+<li><svg viewBox="0 0 14 14" fill="none"><path d="M3 7L6 10L11 4" stroke="#B45309" stroke-width="1.5" stroke-linecap="round"/></svg>高级数据分析</li>
+<li><svg viewBox="0 0 14 14" fill="none"><path d="M3 7L6 10L11 4" stroke="#B45309" stroke-width="1.5" stroke-linecap="round"/></svg>全部 Agent 可选</li>
+<li><svg viewBox="0 0 14 14" fill="none"><path d="M3 7L6 10L11 4" stroke="#B45309" stroke-width="1.5" stroke-linecap="round"/></svg>批量审核</li>
+<li style="color:var(--cn-300)"><svg viewBox="0 0 14 14"><path d="M3 7L6 10L11 4" stroke="#D6D3D1" stroke-width="1.5" stroke-linecap="round"/></svg>数据导出</li>
+</ul>
+<button class="btn" style="width:100%;background:var(--ca-orange);color:#fff">编辑等级</button>
+</div>
+
+<div class="mem-card" style="border-top:3px solid var(--ca-purple)">
+<div class="mem-card-top"><span class="fw6" style="font-size:var(--tb);color:var(--ca-purple)">专业版</span><span class="tag tag-p">当前 190 人</span></div>
+<div class="mem-card-name">专业版</div>
+<div class="mem-card-price"><span class="amt">&#165;99</span><span class="per">/月</span></div>
+<ul class="mem-card-feats">
+<li><svg viewBox="0 0 14 14" fill="none"><path d="M3 7L6 10L11 4" stroke="#8B5CF6" stroke-width="1.5" stroke-linecap="round"/></svg>无限 AI 创作</li>
+<li><svg viewBox="0 0 14 14" fill="none"><path d="M3 7L6 10L11 4" stroke="#8B5CF6" stroke-width="1.5" stroke-linecap="round"/></svg>绑定 3 个小红书账号</li>
+<li><svg viewBox="0 0 14 14" fill="none"><path d="M3 7L6 10L11 4" stroke="#8B5CF6" stroke-width="1.5" stroke-linecap="round"/></svg>全功能数据分析</li>
+<li><svg viewBox="0 0 14 14" fill="none"><path d="M3 7L6 10L11 4" stroke="#8B5CF6" stroke-width="1.5" stroke-linecap="round"/></svg>全部 Agent + 自定义</li>
+<li><svg viewBox="0 0 14 14" fill="none"><path d="M3 7L6 10L11 4" stroke="#8B5CF6" stroke-width="1.5" stroke-linecap="round"/></svg>批量操作 + 定时发布</li>
+<li><svg viewBox="0 0 14 14" fill="none"><path d="M3 7L6 10L11 4" stroke="#8B5CF6" stroke-width="1.5" stroke-linecap="round"/></svg>数据导出 + 报表</li>
+</ul>
+<button class="btn" style="width:100%;background:var(--gai);color:#fff">编辑等级</button>
+</div>
+</div>
+
+<!-- Registration config -->
+<div class="g2c">
+<div class="cc"><div class="cc-h"><div class="cc-t">注册设置</div><span class="tag tag-g"><span class="sd sd-g"></span>开放注册</span></div>
+<div class="fg"><label>注册方式</label><div class="flex aic g3"><label style="display:flex;align-items:center;gap:var(--s2);font-size:var(--tsm);color:var(--cn-700)"><input type="checkbox" checked> 手机号注册</label><label style="display:flex;align-items:center;gap:var(--s2);font-size:var(--tsm);color:var(--cn-700)"><input type="checkbox" checked> 微信授权(小程序)</label><label style="display:flex;align-items:center;gap:var(--s2);font-size:var(--tsm);color:var(--cn-700)"><input type="checkbox"> 邀请码注册</label></div></div>
+<div class="fg"><label>默认会员等级</label><select class="ipt"><option>免费版</option><option>标准版</option><option>专业版</option></select><div class="hint">新注册用户自动分配的会员等级</div></div>
+<div class="fg"><label>验证码有效期</label><input class="ipt" type="number" value="5" style="width:120px"><span style="font-size:var(--txs);color:var(--cn-400);margin-left:var(--s2)">分钟</span></div>
+<div class="fg"><label>邀请码</label><div class="flex aic g3"><div class="tgl" onclick="this.classList.toggle('on')"></div><span style="font-size:var(--tsm);color:var(--cn-600)">启用邀请码机制</span></div><div class="hint">开启后需输入邀请码方可注册</div></div>
+</div>
+
+<div class="cc"><div class="cc-h"><div class="cc-t">会员升降级规则</div></div>
+<div class="fg"><label>升级策略</label><select class="ipt"><option>即时生效</option><option>下个计费周期生效</option></select><div class="hint">用户付费升级后的生效时间</div></div>
+<div class="fg"><label>降级策略</label><select class="ipt"><option>到期后降级</option><option>到期后保留7天</option></select><div class="hint">会员到期后的处理方式</div></div>
+<div class="fg"><label>到期提醒</label><div class="flex aic g3"><input class="ipt" type="number" value="7" style="width:80px"><span style="font-size:var(--tsm);color:var(--cn-600)">天前通知</span></div></div>
+<div class="fg"><label>续费优惠</label><div class="flex aic g3"><input class="ipt" type="number" value="9" style="width:80px"><span style="font-size:var(--tsm);color:var(--cn-600)">折续费</span></div><div class="hint">在到期提醒期间续费可享受的折扣</div></div>
+</div>
+</div>
+</div>
+
+<!-- ====== AI MODEL MANAGEMENT ====== -->
+<div class="pv" id="p-ai-models">
+<div class="flex aic jbt mb6">
+<div><div style="font-size:var(--txl);font-weight:var(--fb);color:var(--cn-900)">AI 大模型管理</div><div style="font-size:var(--tsm);color:var(--cn-500)">配置大模型 API、密钥与调用参数</div></div>
+<button class="btn btn-p" onclick="document.getElementById('modal-api').classList.add('show')"><svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M8 2V14M2 8H14" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>新增 API</button>
+</div>
+
+<div class="api-card">
+<div class="api-card-h"><div class="api-card-name"><span class="sd sd-g"></span>GPT-4o</div><div class="flex aic g2"><button class="btn btn-sm btn-g">编辑</button><button class="btn btn-sm" style="color:var(--ce)">删除</button></div></div>
+<div class="api-card-detail"><span><svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M6 1L7.5 4H11L8.25 6L9.5 9.5L6 7.5L2.5 9.5L3.75 6L1 4H4.5L6 1Z" fill="#F59E0B"/></svg>调用地址：api.openai.com/v1</span><span>频率限制：60次/分</span><span>绑定 Agent：3 个</span><span>今日调用：2,847 次</span></div>
+<div style="margin-top:var(--s3)"><div class="flex aic jbt mb3"><span style="font-size:var(--txs);color:var(--cn-500)">额度使用</span><span style="font-size:var(--txs);color:var(--cn-600);font-weight:var(--fs6)">&#36;1,247 / &#36;2,000</span></div><div class="prog"><div class="prog-f" style="width:62%;background:var(--gai)"></div></div></div>
+</div>
+
+<div class="api-card">
+<div class="api-card-h"><div class="api-card-name"><span class="sd sd-g"></span>文心一言 4.0</div><div class="flex aic g2"><button class="btn btn-sm btn-g">编辑</button><button class="btn btn-sm" style="color:var(--ce)">删除</button></div></div>
+<div class="api-card-detail"><span><svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M6 1L7.5 4H11L8.25 6L9.5 9.5L6 7.5L2.5 9.5L3.75 6L1 4H4.5L6 1Z" fill="#3B82F6"/></svg>调用地址：aip.baidubce.com</span><span>频率限制：100次/分</span><span>绑定 Agent：2 个</span><span>今日调用：1,523 次</span></div>
+<div style="margin-top:var(--s3)"><div class="flex aic jbt mb3"><span style="font-size:var(--txs);color:var(--cn-500)">额度使用</span><span style="font-size:var(--txs);color:var(--cn-600);font-weight:var(--fs6)">&#165;3,420 / &#165;5,000</span></div><div class="prog"><div class="prog-f" style="width:68%;background:var(--ci)"></div></div></div>
+</div>
+
+<div class="api-card">
+<div class="api-card-h"><div class="api-card-name"><span class="sd sd-g"></span>通义千问 Max</div><div class="flex aic g2"><button class="btn btn-sm btn-g">编辑</button><button class="btn btn-sm" style="color:var(--ce)">删除</button></div></div>
+<div class="api-card-detail"><span><svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M6 1L7.5 4H11L8.25 6L9.5 9.5L6 7.5L2.5 9.5L3.75 6L1 4H4.5L6 1Z" fill="#FE2C55"/></svg>调用地址：dashscope.aliyuncs.com</span><span>频率限制：80次/分</span><span>绑定 Agent：1 个</span><span>今日调用：876 次</span></div>
+<div style="margin-top:var(--s3)"><div class="flex aic jbt mb3"><span style="font-size:var(--txs);color:var(--cn-500)">额度使用</span><span style="font-size:var(--txs);color:var(--cn-600);font-weight:var(--fs6)">&#165;1,200 / &#165;3,000</span></div><div class="prog"><div class="prog-f" style="width:40%;background:var(--cp-500)"></div></div></div>
+</div>
+</div>
+
+<!-- ====== AGENT MANAGEMENT ====== -->
+<div class="pv" id="p-agents">
+<div class="flex aic jbt mb6">
+<div><div style="font-size:var(--txl);font-weight:var(--fb);color:var(--cn-900)">Agent 管理</div><div style="font-size:var(--tsm);color:var(--cn-500)">创建和管理创作 Agent，配置风格与适用领域</div></div>
+<button class="btn btn-p"><svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M8 2V14M2 8H14" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>新增 Agent</button>
+</div>
+
+<div style="display:grid;grid-template-columns:repeat(3,1fr);gap:var(--s5)">
+<div class="agent-card">
+<div class="agent-card-h"><div class="agent-icon" style="background:var(--cp-50)"><svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M10 3L12 8H17L13 11L14.5 16L10 13L5.5 16L7 11L3 8H8L10 3Z" fill="#FE2C55" opacity=".7"/></svg></div><div><div class="agent-card-tt">生活分享 Agent</div><div class="agent-card-sub">绑定：GPT-4o · 排序 1</div></div></div>
+<div class="agent-card-body">擅长日常生活类内容创作，风格轻松自然，适合生活方式博主</div>
+<div style="display:flex;gap:var(--s1);margin-bottom:var(--s4);flex-wrap:wrap"><span class="tag tag-r">生活方式</span><span class="tag tag-o">好物推荐</span></div>
+<div class="agent-card-foot"><span style="font-size:var(--txs);color:var(--cn-400)">今日调用 1,024 次</span><div class="flex aic g2"><button class="btn btn-sm btn-g">编辑</button><button class="btn btn-sm" style="color:var(--ce)">删除</button></div></div>
+</div>
+
+<div class="agent-card">
+<div class="agent-card-h"><div class="agent-icon" style="background:var(--ca-orange-l)"><svg width="20" height="20" viewBox="0 0 20 20" fill="none"><circle cx="10" cy="7" r="4" stroke="#F59E0B" stroke-width="2" fill="none"/><path d="M4 18C4 14.5 6.5 12 10 12C13.5 12 16 14.5 16 18" stroke="#F59E0B" stroke-width="2" stroke-linecap="round" fill="none"/></svg></div><div><div class="agent-card-tt">美食探店 Agent</div><div class="agent-card-sub">绑定：文心一言 · 排序 2</div></div></div>
+<div class="agent-card-body">专注美食领域，写出令人食欲大开的探店内容和食谱分享</div>
+<div style="display:flex;gap:var(--s1);margin-bottom:var(--s4);flex-wrap:wrap"><span class="tag tag-o">美食探店</span><span class="tag tag-r">食谱分享</span></div>
+<div class="agent-card-foot"><span style="font-size:var(--txs);color:var(--cn-400)">今日调用 823 次</span><div class="flex aic g2"><button class="btn btn-sm btn-g">编辑</button><button class="btn btn-sm" style="color:var(--ce)">删除</button></div></div>
+</div>
+
+<div class="agent-card">
+<div class="agent-card-h"><div class="agent-icon" style="background:#DCFCE7"><svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M4 17L8 7L12 13L16 4L18 10" stroke="#22C55E" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill="none"/></svg></div><div><div class="agent-card-tt">旅行攻略 Agent</div><div class="agent-card-sub">绑定：GPT-4o · 排序 3</div></div></div>
+<div class="agent-card-body">编写详细的旅行攻略和路线推荐，适合旅行博主</div>
+<div style="display:flex;gap:var(--s1);margin-bottom:var(--s4);flex-wrap:wrap"><span class="tag tag-g">旅行攻略</span><span class="tag tag-b">路线推荐</span></div>
+<div class="agent-card-foot"><span style="font-size:var(--txs);color:var(--cn-400)">今日调用 567 次</span><div class="flex aic g2"><button class="btn btn-sm btn-g">编辑</button><button class="btn btn-sm" style="color:var(--ce)">删除</button></div></div>
+</div>
+
+<div class="agent-card">
+<div class="agent-card-h"><div class="agent-icon" style="background:var(--ca-purple-l)"><svg width="20" height="20" viewBox="0 0 20 20" fill="none"><circle cx="10" cy="10" r="6" stroke="#8B5CF6" stroke-width="2" fill="none"/><path d="M10 6V10L13 13" stroke="#8B5CF6" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></div><div><div class="agent-card-tt">穿搭时尚 Agent</div><div class="agent-card-sub">绑定：通义千问 · 排序 4</div></div></div>
+<div class="agent-card-body">时尚穿搭内容创作，了解流行趋势和搭配技巧</div>
+<div style="display:flex;gap:var(--s1);margin-bottom:var(--s4);flex-wrap:wrap"><span class="tag tag-p">穿搭</span><span class="tag tag-o">时尚</span></div>
+<div class="agent-card-foot"><span style="font-size:var(--txs);color:var(--cn-400)">今日调用 433 次</span><div class="flex aic g2"><button class="btn btn-sm btn-g">编辑</button><button class="btn btn-sm" style="color:var(--ce)">删除</button></div></div>
+</div>
+
+<div class="agent-card" style="border:2px dashed var(--cn-300);display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:240px;cursor:pointer;background:transparent" onmouseover="this.style.borderColor='var(--cp-300)';this.style.background='var(--cp-50)'" onmouseout="this.style.borderColor='var(--cn-300)';this.style.background='transparent'">
+<svg width="32" height="32" viewBox="0 0 32 32" fill="none"><circle cx="16" cy="16" r="12" stroke="#A8A29E" stroke-width="2" stroke-dasharray="4 2" fill="none"/><path d="M16 10V22M10 16H22" stroke="#A8A29E" stroke-width="2" stroke-linecap="round"/></svg>
+<span style="font-size:var(--tsm);color:var(--cn-400);margin-top:var(--s3)">添加新 Agent</span>
+</div>
+</div>
+</div>
+
+<!-- ====== API MONITOR ====== -->
+<div class="pv" id="p-monitor">
+<div class="flex aic jbt mb6">
+<div><div style="font-size:var(--txl);font-weight:var(--fb);color:var(--cn-900)">调用监控</div><div style="font-size:var(--tsm);color:var(--cn-500)">实时查看大模型 API 调用记录与统计</div></div>
+<div class="flex aic g3">
+<select class="ipt" style="width:140px"><option>全部 API</option><option>GPT-4o</option><option>文心一言</option><option>通义千问</option></select>
+<select class="ipt" style="width:120px"><option>今日</option><option>近7天</option><option>近30天</option></select>
+<button class="btn btn-p"><svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M2 4H14M2 8H10M2 12H12" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>导出报表</button>
+</div>
+</div>
+
+<div class="am-row">
+<div class="am"><div class="am-lb">今日总调用</div><div class="am-vl">5,246</div><div class="am-ch" style="color:var(--cs)">&#8593; 18.2%</div></div>
+<div class="am"><div class="am-lb">成功率</div><div class="am-vl" style="color:var(--cs)">99.2%</div><div class="am-ch" style="color:var(--cn-500)">42 次失败</div></div>
+<div class="am"><div class="am-lb">平均响应</div><div class="am-vl">2.3s</div><div class="am-ch" style="color:var(--cs)">&#8595; 0.4s</div></div>
+<div class="am"><div class="am-lb">预估费用</div><div class="am-vl">&#165;286</div><div class="am-ch" style="color:var(--ca-orange)">&#8593; 12%</div></div>
+</div>
+
+<div class="cc mb6"><div class="cc-h"><div><div class="cc-t">调用趋势</div><div class="cc-st">近 24 小时各 API 调用量</div></div><div class="flex aic g3"><span class="flex aic g1" style="font-size:11px;color:var(--cn-400)"><span style="width:8px;height:3px;background:#FE2C55;border-radius:2px;display:inline-block"></span>GPT-4o</span><span class="flex aic g1" style="font-size:11px;color:var(--cn-400)"><span style="width:8px;height:3px;background:#3B82F6;border-radius:2px;display:inline-block"></span>文心</span><span class="flex aic g1" style="font-size:11px;color:var(--cn-400)"><span style="width:8px;height:3px;background:#F59E0B;border-radius:2px;display:inline-block"></span>通义</span></div></div>
+<svg viewBox="0 0 520 160" style="width:100%"><line x1="40" y1="135" x2="510" y2="135" stroke="#E7E5E4" stroke-width=".5"/><line x1="40" y1="75" x2="510" y2="75" stroke="#E7E5E4" stroke-width=".5" stroke-dasharray="4"/><line x1="40" y1="15" x2="510" y2="15" stroke="#E7E5E4" stroke-width=".5" stroke-dasharray="4"/><text x="35" y="138" text-anchor="end" fill="#A8A29E" font-size="9">0</text><text x="35" y="78" text-anchor="end" fill="#A8A29E" font-size="9">200</text><text x="35" y="18" text-anchor="end" fill="#A8A29E" font-size="9">400</text><polyline points="80,100 150,85 220,70 290,60 360,50 430,40 500,30" fill="none" stroke="#FE2C55" stroke-width="2" stroke-linecap="round"/><polyline points="80,110 150,100 220,90 290,82 360,75 430,68 500,55" fill="none" stroke="#3B82F6" stroke-width="2" stroke-linecap="round"/><polyline points="80,120 150,115 220,108 290,100 360,95 430,88 500,80" fill="none" stroke="#F59E0B" stroke-width="2" stroke-linecap="round"/></svg></div>
+
+<!-- Call records -->
+<div class="tbl-wrap">
+<table class="tbl">
+<thead><tr><th>时间</th><th>用户</th><th>Agent</th><th>API</th><th>终端</th><th>结果</th><th>耗时</th><th>消耗</th></tr></thead>
+<tbody>
+<tr><td style="font-size:var(--txs);color:var(--cn-400)">10:32:15</td><td>138****6721</td><td>生活分享</td><td>GPT-4o</td><td><span class="tag tag-b">电脑</span></td><td><span class="tag tag-g">成功</span></td><td class="fnm" style="font-size:var(--txs)">1.8s</td><td class="fnm" style="font-size:var(--txs)">&#36;0.02</td></tr>
+<tr><td style="font-size:var(--txs);color:var(--cn-400)">10:31:48</td><td>155****8832</td><td>美食探店</td><td>文心一言</td><td><span class="tag tag-r">鸿蒙</span></td><td><span class="tag tag-g">成功</span></td><td class="fnm" style="font-size:var(--txs)">2.1s</td><td class="fnm" style="font-size:var(--txs)">&#165;0.03</td></tr>
+<tr><td style="font-size:var(--txs);color:var(--cn-400)">10:30:22</td><td>186****3345</td><td>旅行攻略</td><td>GPT-4o</td><td><span class="tag tag-g">小程序</span></td><td><span class="tag tag-d">失败</span></td><td class="fnm" style="font-size:var(--txs)">10.0s</td><td class="fnm" style="font-size:var(--txs)">-</td></tr>
+<tr><td style="font-size:var(--txs);color:var(--cn-400)">10:29:55</td><td>177****9901</td><td>穿搭时尚</td><td>通义千问</td><td><span class="tag tag-b">电脑</span></td><td><span class="tag tag-g">成功</span></td><td class="fnm" style="font-size:var(--txs)">3.2s</td><td class="fnm" style="font-size:var(--txs)">&#165;0.02</td></tr>
+</tbody>
+</table>
+</div>
+</div>
+
+<!-- ====== CONTENT MANAGEMENT ====== -->
+<div class="pv" id="p-content">
+<div class="flex aic jbt mb6">
+<div><div style="font-size:var(--txl);font-weight:var(--fb);color:var(--cn-900)">内容管理</div><div style="font-size:var(--tsm);color:var(--cn-500)">全量内容查看、违规监控与内容管理</div></div>
+<div class="flex aic g3">
+<button class="btn btn-d"><svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M8 2L9 6H13L9.5 8.5L11 13L8 10L5 13L6.5 8.5L3 6H7L8 2Z" fill="currentColor" opacity=".6"/></svg>违规词管理</button>
+<button class="btn btn-p"><svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M2 4H14M2 8H10M2 12H12" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>导出内容</button>
+</div>
+</div>
+
+<!-- Violation Alert -->
+<div style="background:#FEE2E2;border:1px solid #FECACA;border-radius:var(--rxl);padding:var(--s4) var(--s5);margin-bottom:var(--s6);display:flex;align-items:center;gap:var(--s4)">
+<div style="width:36px;height:36px;border-radius:var(--rm);background:#FEE2E2;display:flex;align-items:center;justify-content:center;flex-shrink:0"><svg width="18" height="18" viewBox="0 0 18 18" fill="none"><path d="M9 2L16 15H2L9 2Z" fill="#EF4444" opacity=".15"/><path d="M9 7V10M9 13H9.01" stroke="#EF4444" stroke-width="1.5" stroke-linecap="round"/></svg></div>
+<div style="flex:1"><div style="font-size:var(--tsm);font-weight:var(--fs6);color:#B91C1C">3 条违规内容待处理</div><div style="font-size:var(--txs);color:#DC2626">系统已自动标记，请及时审核</div></div>
+<button class="btn btn-d btn-sm">立即处理</button>
+</div>
+
+<!-- Content Table -->
+<div class="tbl-wrap">
+<div class="tbl-bar">
+<div class="tbl-bar-l">
+<select class="ipt" style="width:120px;padding:var(--s1) var(--s3);font-size:var(--txs)"><option>全部状态</option><option>草稿</option><option>审核中</option><option>已通过</option><option>已发布</option><option>违规</option></select>
+<select class="ipt" style="width:120px;padding:var(--s1) var(--s3);font-size:var(--txs)"><option>全部终端</option><option>电脑端</option><option>鸿蒙端</option><option>小程序</option></select>
+<div style="display:flex;align-items:center;gap:var(--s2);background:var(--cn-100);border-radius:var(--rl);padding:var(--s1) var(--s3);width:200px"><svg width="14" height="14" viewBox="0 0 14 14" fill="none"><circle cx="6" cy="6" r="4.5" stroke="currentColor" stroke-width="1.5"/><path d="M9.5 9.5L13 13" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg><input type="text" placeholder="搜索内容..." style="border:none;background:none;outline:none;font-size:var(--txs);width:100%"></div>
+</div>
+<div class="tbl-bar-r"><span style="font-size:var(--txs);color:var(--cn-400)">共 52,647 条</span></div>
+</div>
+<table class="tbl">
+<thead><tr><th><input type="checkbox"></th><th>内容 ID</th><th>用户</th><th>标题</th><th>Agent</th><th>生成终端</th><th>审核状态</th><th>发布状态</th><th>生成时间</th><th>操作</th></tr></thead>
+<tbody>
+<tr><td><input type="checkbox"></td><td class="fnm" style="font-size:var(--txs)">#8234</td><td>138****6721</td><td style="max-width:200px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">春日野餐全攻略：从装备到美食</td><td><span class="tag tag-r">生活</span></td><td><span class="tag tag-b">电脑</span></td><td><span class="tag tag-g">已通过</span></td><td><span class="tag tag-g">已发布</span></td><td>05-22 10:15</td><td><button class="btn btn-sm btn-g">查看</button></td></tr>
+<tr style="background:#FEF2F2"><td><input type="checkbox"></td><td class="fnm" style="font-size:var(--txs);color:var(--ce)">#8233</td><td>155****8832</td><td style="max-width:200px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:var(--ce)">减肥神药曝光！这款产品千万别碰</td><td><span class="tag tag-o">美食</span></td><td><span class="tag tag-r">鸿蒙</span></td><td><span class="tag tag-d"><span class="sd sd-r"></span>违规</span></td><td><span class="tag tag-n">未发布</span></td><td>05-22 09:48</td><td><div class="flex aic g2"><button class="btn btn-sm btn-g">查看</button><button class="btn btn-sm btn-d">删除</button></div></td></tr>
+<tr><td><input type="checkbox"></td><td class="fnm" style="font-size:var(--txs)">#8232</td><td>186****3345</td><td style="max-width:200px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">周末 city walk 路线推荐</td><td><span class="tag tag-g">旅行</span></td><td><span class="tag tag-g">小程序</span></td><td><span class="tag tag-b">审核中</span></td><td><span class="tag tag-n">未发布</span></td><td>05-22 09:30</td><td><button class="btn btn-sm btn-g">查看</button></td></tr>
+</tbody>
+</table>
+</div>
+</div>
+
+<!-- ====== ANALYTICS ====== -->
+<div class="pv" id="p-analytics">
+<div class="flex aic jbt mb6">
+<div><div style="font-size:var(--txl);font-weight:var(--fb);color:var(--cn-900)">数据分析</div><div style="font-size:var(--tsm);color:var(--cn-500)">分用户数据分析与全局统计报表</div></div>
+<div class="flex aic g3">
+<select class="ipt" style="width:160px"><option>全部用户</option><option>指定用户...</option></select>
+<select class="ipt" style="width:120px"><option>近7天</option><option>近30天</option><option>近90天</option></select>
+<button class="btn btn-p"><svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M2 4H14M2 8H10M2 12H12" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>导出报表</button>
+</div>
+</div>
+
+<div class="am-row">
+<div class="am"><div class="am-lb">平均创作量/用户</div><div class="am-vl">41</div><div class="am-ch" style="color:var(--cs)">&#8593; 15%</div></div>
+<div class="am"><div class="am-lb">平均审核通过率</div><div class="am-vl" style="color:var(--cs)">87.3%</div><div class="am-ch" style="color:var(--cn-500)">目标 90%</div></div>
+<div class="am"><div class="am-lb">平均发布成功率</div><div class="am-vl" style="color:var(--cs)">96.8%</div><div class="am-ch" style="color:var(--cs)">&#8593; 1.2%</div></div>
+<div class="am"><div class="am-lb">平均内容效果</div><div class="am-vl">356</div><div class="am-ch" style="color:var(--cn-500)">互动量/篇</div></div>
+</div>
+
+<div class="g13c mb6">
+<div class="cc"><div class="cc-h"><div><div class="cc-t">各终端创作效果对比</div><div class="cc-st">AI vs 手动创作平均互动量</div></div></div>
+<div class="hb"><div class="hb-l">电脑-AI</div><div class="hb-t"><div class="hb-f" style="width:78%;background:var(--gai)">412</div></div></div>
+<div class="hb"><div class="hb-l">电脑-手动</div><div class="hb-t"><div class="hb-f" style="width:45%;background:var(--cp-200)">238</div></div></div>
+<div class="hb"><div class="hb-l">鸿蒙-AI</div><div class="hb-t"><div class="hb-f" style="width:65%;background:var(--gai)">343</div></div></div>
+<div class="hb"><div class="hb-l">鸿蒙-手动</div><div class="hb-t"><div class="hb-f" style="width:35%;background:var(--cp-100);color:var(--cp-600)">185</div></div></div>
+<div class="hb"><div class="hb-l">小程序-AI</div><div class="hb-t"><div class="hb-f" style="width:52%;background:var(--gai)">274</div></div></div>
+<div class="hb"><div class="hb-l">小程序-手动</div><div class="hb-t"><div class="hb-f" style="width:28%;background:var(--cp-50);color:var(--cp-500)">148</div></div></div>
+</div>
+
+<div class="cc"><div class="cc-h"><div class="cc-t">会员等级分布</div></div>
+<svg viewBox="0 0 200 200" style="width:180px;margin:0 auto;display:block"><circle cx="100" cy="100" r="70" fill="none" stroke="#E7E5E4" stroke-width="24"/><circle cx="100" cy="100" r="70" fill="none" stroke="#78716C" stroke-width="24" stroke-dasharray="232 208" stroke-dashoffset="0" transform="rotate(-90 100 100)"/><circle cx="100" cy="100" r="70" fill="none" stroke="#F59E0B" stroke-width="24" stroke-dasharray="140 300" stroke-dashoffset="-232" transform="rotate(-90 100 100)"/><circle cx="100" cy="100" r="70" fill="none" stroke="#8B5CF6" stroke-width="24" stroke-dasharray="68 372" stroke-dashoffset="-372" transform="rotate(-90 100 100)"/><text x="100" y="95" text-anchor="middle" fill="#1C1917" font-size="20" font-weight="700" font-family="JetBrains Mono">1,284</text><text x="100" y="115" text-anchor="middle" fill="#78716C" font-size="11">总用户</text></svg>
+<div style="display:flex;justify-content:center;gap:var(--s6);margin-top:var(--s4)">
+<div class="flex aic g1"><span style="width:8px;height:8px;border-radius:2px;background:var(--cn-500)"></span><span style="font-size:var(--txs);color:var(--cn-600)">免费 53%</span></div>
+<div class="flex aic g1"><span style="width:8px;height:8px;border-radius:2px;background:var(--ca-orange)"></span><span style="font-size:var(--txs);color:var(--cn-600)">标准 32%</span></div>
+<div class="flex aic g1"><span style="width:8px;height:8px;border-radius:2px;background:var(--ca-purple)"></span><span style="font-size:var(--txs);color:var(--cn-600)">专业 15%</span></div>
+</div>
+</div>
+</div>
+
+<!-- Top users -->
+<div class="cc"><div class="cc-h"><div class="cc-t">活跃用户 Top 10</div><button class="btn btn-sm btn-g">导出</button></div>
+<table class="tbl" style="margin:-20px">
+<thead><tr><th>排名</th><th>用户</th><th>会员</th><th>创作数</th><th>通过率</th><th>发布成功率</th><th>平均互动</th></tr></thead>
+<tbody>
+<tr><td><span style="width:22px;height:22px;border-radius:var(--rm);display:inline-flex;align-items:center;justify-content:center;font-size:var(--txs);font-weight:var(--fb);background:var(--cp-500);color:#fff">1</span></td><td>138****6721</td><td><span class="tag tag-p">专业版</span></td><td class="fnm">342</td><td style="color:var(--cs)">95%</td><td style="color:var(--cs)">99%</td><td class="fnm">892</td></tr>
+<tr><td><span style="width:22px;height:22px;border-radius:var(--rm);display:inline-flex;align-items:center;justify-content:center;font-size:var(--txs);font-weight:var(--fb);background:var(--cp-300);color:#fff">2</span></td><td>177****9901</td><td><span class="tag tag-p">专业版</span></td><td class="fnm">287</td><td style="color:var(--cs)">92%</td><td style="color:var(--cs)">98%</td><td class="fnm">756</td></tr>
+<tr><td><span style="width:22px;height:22px;border-radius:var(--rm);display:inline-flex;align-items:center;justify-content:center;font-size:var(--txs);font-weight:var(--fb);background:var(--ca-orange);color:#fff">3</span></td><td>182****2234</td><td><span class="tag tag-o">标准版</span></td><td class="fnm">234</td><td style="color:var(--cs)">88%</td><td style="color:var(--cs)">97%</td><td class="fnm">623</td></tr>
+</tbody>
+</table>
+</div>
+</div>
+
+<!-- ====== SYSTEM SETTINGS ====== -->
+<div class="pv" id="p-settings">
+<div style="font-size:var(--txl);font-weight:var(--fb);color:var(--cn-900);margin-bottom:var(--s1)">系统设置</div>
+<p style="font-size:var(--tsm);color:var(--cn-500);margin-bottom:var(--s6)">全局配置与安全设置</p>
+
+<div class="g2c">
+<div class="cc"><div class="cc-h"><div class="cc-t">安全设置</div></div>
+<div class="fg"><label>管理员密码策略</label><select class="ipt"><option>强密码（8位+字母+数字+特殊字符）</option><option>中等（6位+字母+数字）</option></select></div>
+<div class="fg"><label>登录失败锁定</label><div class="flex aic g3"><input class="ipt" type="number" value="5" style="width:80px"><span style="font-size:var(--tsm);color:var(--cn-600)">次失败后锁定</span></div></div>
+<div class="fg"><label>会话超时</label><div class="flex aic g3"><input class="ipt" type="number" value="30" style="width:80px"><span style="font-size:var(--tsm);color:var(--cn-600)">分钟</span></div></div>
+<div class="fg"><label>两步验证</label><div class="flex aic g3"><div class="tgl on" onclick="this.classList.toggle('on')"></div><span style="font-size:var(--tsm);color:var(--cn-600)">已启用 TOTP</span></div></div>
+</div>
+
+<div class="cc"><div class="cc-h"><div class="cc-t">系统配置</div></div>
+<div class="fg"><label>数据加密方式</label><select class="ipt"><option>AES-256-GCM</option><option>AES-128-CBC</option></select><div class="hint">用于加密存储小红书账号信息</div></div>
+<div class="fg"><label>日志保留天数</label><input class="ipt" type="number" value="90" style="width:120px"><div class="hint">超过保留期的日志将自动清理</div></div>
+<div class="fg"><label>发布重试次数</label><div class="flex aic g3"><input class="ipt" type="number" value="2" style="width:80px"><span style="font-size:var(--tsm);color:var(--cn-600)">次（间隔5分钟）</span></div></div>
+<div class="fg"><label>API 密钥轮换</label><div class="flex aic g3"><div class="tgl on" onclick="this.classList.toggle('on')"></div><span style="font-size:var(--tsm);color:var(--cn-600)">自动轮换（30天）</span></div></div>
+</div>
+</div>
+
+<div class="cc mt4"><div class="cc-h"><div class="cc-t">通知设置</div></div>
+<div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:var(--s5)">
+<div class="fg"><label style="display:flex;align-items:center;gap:var(--s2)"><input type="checkbox" checked> 违规内容告警</label><div class="hint">检测到违规内容时立即通知管理员</div></div>
+<div class="fg"><label style="display:flex;align-items:center;gap:var(--s2)"><input type="checkbox" checked> API 额度告警</label><div class="hint">API 额度使用超过 80% 时通知</div></div>
+<div class="fg"><label style="display:flex;align-items:center;gap:var(--s2)"><input type="checkbox" checked> 发布失败告警</label><div class="hint">自动发布连续失败 3 次时通知</div></div>
+<div class="fg"><label style="display:flex;align-items:center;gap:var(--s2)"><input type="checkbox"> 会员到期提醒</label><div class="hint">有会员即将到期时通知管理员</div></div>
+<div class="fg"><label style="display:flex;align-items:center;gap:var(--s2)"><input type="checkbox" checked> 系统异常告警</label><div class="hint">服务不可用或响应超时时通知</div></div>
+<div class="fg"><label style="display:flex;align-items:center;gap:var(--s2)"><input type="checkbox"> 每日数据汇总</label><div class="hint">每天发送平台运营数据汇总</div></div>
+</div></div>
+</div>
+
+</div><!-- pc -->
+</div><!-- mc -->
+</div><!-- app -->
+
+<!-- API Modal -->
+<div class="modal-overlay" id="modal-api">
+<div class="modal">
+<div class="modal-h"><h3>新增大模型 API</h3><button class="btn btn-g" onclick="document.getElementById('modal-api').classList.remove('show')"><svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M4 4L12 12M12 4L4 12" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg></button></div>
+<div class="modal-b">
+<div class="fg"><label>API 名称</label><input class="ipt" placeholder="如：GPT-4o、文心一言 4.0"></div>
+<div class="fg"><label>调用地址</label><input class="ipt" placeholder="https://api.example.com/v1/chat"></div>
+<div class="fg"><label>API 密钥</label><input class="ipt" type="password" placeholder="sk-xxxxxxxxxxxxxxxx"></div>
+<div class="fg"><label>请求参数（JSON）</label><textarea class="ipt" rows="4" placeholder='{"model":"gpt-4o","temperature":0.7}' style="font-family:var(--fm);font-size:var(--txs)"></textarea></div>
+<div class="fg"><label>频率限制</label><div class="flex aic g3"><input class="ipt" type="number" value="60" style="width:100px"><span style="font-size:var(--tsm);color:var(--cn-600)">次/分钟</span></div></div>
+<div class="fg"><label>状态</label><div class="flex aic g3"><div class="tgl on" onclick="this.classList.toggle('on')"></div><span style="font-size:var(--tsm);color:var(--cn-600)">启用</span></div></div>
+</div>
+<div class="modal-f"><button class="btn btn-g" onclick="document.getElementById('modal-api').classList.remove('show')">取消</button><button class="btn btn-p" onclick="document.getElementById('modal-api').classList.remove('show')">确认新增</button></div>
+</div>
+</div>
+
+<script>
+const pages={overview:'系统总览',users:'用户管理',membership:'会员管理','ai-models':'AI 大模型管理',agents:'Agent 管理',monitor:'调用监控',content:'内容管理',analytics:'数据分析',settings:'系统设置'};
+function go(id){
+  document.querySelectorAll('.pv').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.sb-item').forEach(s=>s.classList.remove('active'));
+  const page=document.getElementById('p-'+id);
+  if(page)page.classList.add('active');
+  const items=document.querySelectorAll('.sb-item');
+  const keys=Object.keys(pages);
+  keys.forEach((k,i)=>{if(k===id)items[i]?.classList.add('active')});
+  document.getElementById('pn').textContent=pages[id]||id;
+}
+</script>
+</body>
+</html>

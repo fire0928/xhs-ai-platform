@@ -1,0 +1,588 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=1280">
+<title>红书智创 - AI自动创作更新系统</title>
+<style>
+:root{--cp-50:#FFF1F3;--cp-100:#FFE0E5;--cp-200:#FFC6CF;--cp-300:#FF9DAD;--cp-400:#FF6480;--cp-500:#FE2C55;--cp-600:#E61A45;--cp-700:#C0133A;--cp-800:#9E1537;--cp-900:#841635;--ca-purple:#8B5CF6;--ca-purple-l:#EDE9FE;--ca-orange:#F59E0B;--ca-orange-l:#FEF3C7;--cn-50:#FAFAF9;--cn-100:#F5F5F4;--cn-200:#E7E5E4;--cn-300:#D6D3D1;--cn-400:#A8A29E;--cn-500:#78716C;--cn-600:#57534E;--cn-700:#44403C;--cn-800:#292524;--cn-900:#1C1917;--cs:#22C55E;--cw:#F59E0B;--ce:#EF4444;--ci:#3B82F6;--gb:linear-gradient(135deg,#FE2C55,#FF6480);--gai:linear-gradient(135deg,#FE2C55,#8B5CF6);--gai-glow:linear-gradient(135deg,#FFE0E5,#EDE9FE);--gg:linear-gradient(135deg,#22C55E,#F59E0B);--gw:linear-gradient(135deg,#FFF1F3,#FEF3C7);--gsa:linear-gradient(90deg,#FFF1F3,transparent);--ff:'Inter','PingFang SC','Microsoft YaHei',sans-serif;--fm:'JetBrains Mono','Fira Code',monospace;--txs:11px;--tsm:13px;--tb:14px;--tlg:16px;--txl:20px;--t2xl:24px;--t3xl:28px;--fn:400;--fm5:500;--fs6:600;--fb:700;--s1:4px;--s2:8px;--s3:12px;--s4:16px;--s5:20px;--s6:24px;--s8:32px;--s16:64px;--rs:4px;--rm:6px;--rl:8px;--rxl:12px;--r2xl:16px;--rf:9999px;--shxs:0 1px 2px rgba(0,0,0,.04);--shs:0 1px 3px rgba(0,0,0,.06),0 1px 2px rgba(0,0,0,.04);--shm:0 4px 6px -1px rgba(0,0,0,.07),0 2px 4px -1px rgba(0,0,0,.04);--shl:0 10px 15px -3px rgba(0,0,0,.08),0 4px 6px -2px rgba(0,0,0,.04);--sw:240px;--hh:56px}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}html{font-size:14px;-webkit-font-smoothing:antialiased}body{font-family:var(--ff);color:var(--cn-800);background:var(--cn-50);line-height:22px;overflow:hidden;height:100vh}a{color:var(--cp-500);text-decoration:none}button{cursor:pointer;font-family:inherit;border:none;background:none}input,textarea,select{font-family:inherit;font-size:inherit}
+.app{display:flex;height:100vh;width:100%}
+/* SIDEBAR */
+.sb{width:var(--sw);min-width:var(--sw);background:#fff;border-right:1px solid var(--cn-200);display:flex;flex-direction:column;z-index:10}
+.sb-brand{height:var(--hh);display:flex;align-items:center;padding:0 var(--s5);gap:var(--s3);border-bottom:1px solid var(--cn-100)}
+.sb-brand-icon{width:28px;height:28px;background:var(--gai);border-radius:var(--rm);display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.sb-brand-icon svg{width:16px;height:16px}
+.sb-brand-text{font-size:var(--tb);font-weight:var(--fs6);color:var(--cn-900);white-space:nowrap}
+.sb-brand-badge{font-size:var(--txs);background:var(--gai-glow);color:var(--cp-600);padding:2px 6px;border-radius:var(--rf);font-weight:var(--fm5);white-space:nowrap}
+.sb-nav{flex:1;padding:var(--s3);overflow-y:auto}
+.sb-lbl{font-size:var(--txs);font-weight:var(--fs6);color:var(--cn-500);text-transform:uppercase;letter-spacing:.05em;padding:var(--s4) var(--s3) var(--s1)}
+.sb-item{display:flex;align-items:center;gap:var(--s3);padding:var(--s2) var(--s3);border-radius:var(--rm);color:var(--cn-600);font-size:var(--tsm);font-weight:var(--fm5);cursor:pointer;transition:all .15s;position:relative;margin-bottom:2px}
+.sb-item:hover{background:var(--cn-100);color:var(--cn-800)}
+.sb-item.active{background:var(--gsa);color:var(--cp-600);font-weight:var(--fs6)}
+.sb-item.active::before{content:'';position:absolute;left:-3px;top:4px;bottom:4px;width:3px;background:var(--cp-500);border-radius:0 2px 2px 0}
+.sb-item svg{width:18px;height:18px;flex-shrink:0}
+.sb-item .ai-b{background:var(--gai);color:#fff;font-size:9px;padding:1px 5px;border-radius:var(--rf);font-weight:var(--fb)}
+.sb-item .cnt-b{background:var(--cp-500);color:#fff;font-size:10px;min-width:18px;height:18px;border-radius:var(--rf);display:flex;align-items:center;justify-content:center;font-weight:var(--fs6);margin-left:auto}
+.sb-user{padding:var(--s4);border-top:1px solid var(--cn-100);display:flex;align-items:center;gap:var(--s3)}
+.sb-avatar{width:32px;height:32px;border-radius:var(--rf);background:var(--gb);display:flex;align-items:center;justify-content:center;color:#fff;font-size:var(--tsm);font-weight:var(--fb);flex-shrink:0}
+.sb-user-info{flex:1;min-width:0}.sb-user-name{font-size:var(--tsm);font-weight:var(--fs6);color:var(--cn-800)}.sb-user-plan{font-size:var(--txs);color:var(--cn-400)}
+/* MAIN */
+.mc{flex:1;display:flex;flex-direction:column;overflow:hidden;min-width:0}
+.tb{height:var(--hh);min-height:var(--hh);background:#fff;border-bottom:1px solid var(--cn-200);display:flex;align-items:center;justify-content:space-between;padding:0 var(--s8)}
+.tb-bc{font-size:var(--tsm);color:var(--cn-400)}.tb-bc span{color:var(--cn-800);font-weight:var(--fm5)}
+.tb-right{display:flex;align-items:center;gap:var(--s4)}
+.tb-search{display:flex;align-items:center;gap:var(--s2);background:var(--cn-100);border-radius:var(--rl);padding:var(--s1) var(--s3);width:220px}
+.tb-search input{border:none;background:none;outline:none;font-size:var(--tsm);color:var(--cn-700);width:100%}
+.tb-search svg{width:14px;height:14px;color:var(--cn-400)}
+.tb-ib{width:32px;height:32px;display:flex;align-items:center;justify-content:center;border-radius:var(--rm);color:var(--cn-500);transition:all .15s;position:relative}
+.tb-ib:hover{background:var(--cn-100);color:var(--cn-700)}
+.tb-ib svg{width:18px;height:18px}
+.tb-ib .dot{position:absolute;top:4px;right:4px;width:6px;height:6px;background:var(--cp-500);border-radius:50%;border:1.5px solid #fff}
+.pc{flex:1;overflow-y:auto;padding:var(--s8)}
+.pv{display:none}.pv.active{display:block}
+/* BUTTONS */
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:var(--s2);padding:var(--s2) var(--s4);border-radius:var(--rl);font-size:var(--tsm);font-weight:var(--fm5);transition:all .15s;white-space:nowrap}
+.btn svg{width:16px;height:16px}
+.btn-p{background:var(--cp-500);color:#fff}.btn-p:hover{background:var(--cp-600)}
+.btn-s{background:#fff;color:var(--cp-500);border:1px solid var(--cp-300)}.btn-s:hover{background:var(--cp-50)}
+.btn-g{color:var(--cn-600)}.btn-g:hover{background:var(--cn-100)}
+.btn-ai{background:var(--gai);color:#fff;position:relative;overflow:hidden}
+.btn-ai::after{content:'';position:absolute;inset:0;background:linear-gradient(90deg,transparent 0%,rgba(255,255,255,.2) 50%,transparent 100%);transform:translateX(-100%);animation:btnShine 3s infinite}
+@keyframes btnShine{0%{transform:translateX(-100%)}50%,100%{transform:translateX(100%)}}
+.btn-sm{padding:var(--s1) var(--s3);font-size:var(--txs)}
+/* METRIC CARD */
+.mc-card{background:#fff;border-radius:var(--rxl);padding:var(--s5);box-shadow:var(--shs);border:1px solid var(--cn-100);position:relative;overflow:hidden;transition:transform .2s,box-shadow .2s}
+.mc-card:hover{transform:translateY(-2px);box-shadow:var(--shm)}
+.mc-card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:var(--gb)}
+.mc-label{font-size:var(--txs);color:var(--cn-500);font-weight:var(--fm5);margin-bottom:var(--s2);display:flex;align-items:center;gap:var(--s1)}
+.mc-label svg{width:14px;height:14px}
+.mc-val{font-family:var(--fm);font-size:var(--t3xl);font-weight:var(--fb);color:var(--cn-900);line-height:1.1;margin-bottom:var(--s2)}
+.mc-trend{display:flex;align-items:center;gap:var(--s1);font-size:var(--txs);font-weight:var(--fm5)}
+.mc-trend.up{color:var(--cs)}.mc-trend.down{color:var(--ce)}
+.mc-trend svg{width:12px;height:12px}
+.mc-spark{position:absolute;bottom:0;right:0;width:80px;height:40px;opacity:.4}
+.mc-deco{position:absolute;top:-20px;right:-20px;width:80px;height:80px;border-radius:50%;opacity:.06}
+/* STEPS */
+.step-ind{display:flex;align-items:center;justify-content:center;gap:0;margin-bottom:var(--s8)}
+.step-it{display:flex;align-items:center;gap:var(--s2)}
+.step-c{width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:var(--txs);font-weight:var(--fs6);position:relative}
+.step-c.done{background:var(--cs);color:#fff}
+.step-c.act{background:var(--cp-500);color:#fff}
+.step-c.act::after{content:'';position:absolute;inset:-4px;border-radius:50%;border:2px solid var(--cp-300);animation:stepPulse 2s infinite}
+.step-c.ai{background:var(--gai);color:#fff}
+.step-c.ai::after{content:'';position:absolute;inset:-4px;border-radius:50%;border:2px solid var(--ca-purple);animation:stepGlow 1.5s infinite}
+.step-c.pen{background:var(--cn-200);color:var(--cn-400)}
+@keyframes stepPulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.5;transform:scale(1.15)}}
+@keyframes stepGlow{0%,100%{opacity:1;box-shadow:0 0 0 0 rgba(139,92,246,.4)}50%{opacity:.7;box-shadow:0 0 8px 4px rgba(139,92,246,.15)}}
+.step-lbl{font-size:var(--tsm);font-weight:var(--fm5);color:var(--cn-400)}.step-lbl.act{color:var(--cn-800)}
+.step-conn{width:48px;height:2px;background:var(--cn-200);margin:0 var(--s2)}.step-conn.done{background:var(--cs)}.step-conn.act{background:var(--gb)}
+/* AI ZONE */
+.ai-zone{position:relative;border-radius:var(--rxl);padding:1px;background:var(--gai);animation:aiBorder 3s linear infinite}
+@keyframes aiBorder{0%{filter:hue-rotate(0deg);brightness(1)}50%{filter:hue-rotate(30deg);brightness(1.1)}100%{filter:hue-rotate(0deg);brightness(1)}}
+.ai-zone-inner{background:#fff;border-radius:11px;padding:var(--s6)}
+@keyframes typBlink{0%,100%{border-color:var(--cp-500)}50%{border-color:transparent}}
+.shimmer{background:linear-gradient(90deg,var(--cn-100) 25%,var(--cn-50) 50%,var(--cn-100) 75%);background-size:200% 100%;animation:shimmer 1.5s infinite}
+@keyframes shimmer{0%{background-position:200% 0}100%{background-position:-200% 0}}
+/* TAGS */
+.tag{display:inline-flex;align-items:center;gap:var(--s1);padding:2px var(--s2);border-radius:var(--rf);font-size:var(--txs);font-weight:var(--fm5)}
+.tag-r{background:var(--cp-50);color:var(--cp-600)}.tag-p{background:var(--ca-purple-l);color:var(--ca-purple)}
+.tag-o{background:var(--ca-orange-l);color:#B45309}.tag-g{background:#DCFCE7;color:#15803D}
+.tag-b{background:#DBEAFE;color:#1D4ED8}.tag-n{background:var(--cn-100);color:var(--cn-600)}
+/* INPUT */
+.ipt{width:100%;padding:var(--s2) var(--s3);border:1px solid var(--cn-300);border-radius:var(--rl);font-size:var(--tsm);color:var(--cn-800);background:#fff;outline:none;transition:border-color .15s,box-shadow .15s}
+.ipt:focus{border-color:var(--cp-400);box-shadow:0 0 0 3px rgba(254,44,85,.1)}
+.ipt::placeholder{color:var(--cn-400)}
+/* CHART CARD */
+.cc{background:#fff;border-radius:var(--rxl);padding:var(--s5);box-shadow:var(--shs);border:1px solid var(--cn-100)}
+.cc-h{display:flex;align-items:center;justify-content:space-between;margin-bottom:var(--s5)}
+.cc-t{font-size:var(--tb);font-weight:var(--fs6);color:var(--cn-800)}
+.cc-st{font-size:var(--txs);color:var(--cn-500)}
+/* HBAR */
+.hb{display:flex;align-items:center;gap:var(--s3);margin-bottom:var(--s3)}
+.hb-l{font-size:var(--txs);color:var(--cn-500);width:90px;text-align:right;flex-shrink:0}
+.hb-t{flex:1;height:20px;background:var(--cn-100);border-radius:var(--rf);overflow:hidden}
+.hb-f{height:100%;border-radius:var(--rf);transition:width .5s ease;display:flex;align-items:center;padding-left:var(--s2);font-size:var(--txs);font-weight:var(--fs6);color:#fff;min-width:24px}
+/* DASHBOARD GRID */
+.met-row{display:grid;grid-template-columns:repeat(4,1fr);gap:var(--s5);margin-bottom:var(--s6)}
+.chart-row{display:grid;grid-template-columns:1.6fr 1fr;gap:var(--s5);margin-bottom:var(--s6)}
+.bot-row{display:grid;grid-template-columns:1.4fr 1fr;gap:var(--s5)}
+/* REVIEW */
+.rev-layout{display:grid;grid-template-columns:340px 1fr;gap:0;height:calc(100vh - var(--hh) - 64px);margin:-32px;margin-top:0}
+.rev-filters{display:flex;align-items:center;gap:var(--s3);padding:var(--s4) var(--s5);border-bottom:1px solid var(--cn-100)}
+.ftab{padding:var(--s1) var(--s3);border-radius:var(--rf);font-size:var(--tsm);font-weight:var(--fm5);color:var(--cn-500);cursor:pointer;transition:all .15s}
+.ftab:hover{color:var(--cn-700);background:var(--cn-100)}.ftab.act{background:var(--cp-50);color:var(--cp-600)}
+.rev-search{margin-left:auto;display:flex;align-items:center;gap:var(--s2);background:var(--cn-100);border-radius:var(--rf);padding:var(--s1) var(--s3)}
+.rev-search input{border:none;background:none;outline:none;font-size:var(--txs);width:120px}
+.rev-search svg{width:14px;height:14px;color:var(--cn-400)}
+.rev-feed{overflow-y:auto;padding:var(--s3);border-right:1px solid var(--cn-100);background:#fff}
+.rev-fc{display:flex;gap:var(--s3);padding:var(--s3);border-radius:var(--rl);cursor:pointer;transition:all .15s;margin-bottom:var(--s2)}
+.rev-fc:hover{background:var(--cn-50)}.rev-fc.act{background:var(--cp-50)}
+.rev-fc-th{width:80px;height:100px;border-radius:var(--rm);overflow:hidden;flex-shrink:0;background:var(--cn-100)}
+.rev-fc-th svg{width:100%;height:100%}
+.rev-fc-info{flex:1;min-width:0;padding-top:var(--s1)}
+.rev-fc-tt{font-size:var(--tsm);font-weight:var(--fs6);color:var(--cn-800);margin-bottom:var(--s1);display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.rev-fc-tags{display:flex;gap:var(--s1);flex-wrap:wrap;margin-bottom:var(--s2)}
+.rev-fc-src{font-size:var(--txs);color:var(--cn-400);display:flex;align-items:center;gap:var(--s1)}
+.rev-det{display:flex;flex-direction:column;padding:var(--s5);overflow-y:auto}
+.rev-det-img{width:100%;aspect-ratio:4/3;border-radius:var(--rxl);overflow:hidden;background:var(--cn-100);margin-bottom:var(--s5)}
+.rev-det-img svg{width:100%;height:100%}
+.rev-det-tt{font-size:var(--txl);font-weight:var(--fb);color:var(--cn-900);margin-bottom:var(--s3)}
+.rev-det-ct{font-size:var(--tsm);line-height:24px;color:var(--cn-600);margin-bottom:var(--s5)}
+.rev-det-tags{display:flex;gap:var(--s2);flex-wrap:wrap;margin-bottom:var(--s5)}
+.rev-ai{background:var(--gai-glow);border-radius:var(--rxl);padding:var(--s4);margin-bottom:var(--s5)}
+.rev-ai h5{font-size:var(--tsm);font-weight:var(--fs6);color:var(--cn-700);margin-bottom:var(--s3);display:flex;align-items:center;gap:var(--s2)}
+.ai-sr{display:flex;align-items:center;gap:var(--s3);margin-bottom:var(--s2)}
+.ai-sr-l{font-size:var(--txs);color:var(--cn-600);width:60px;flex-shrink:0}
+.ai-sr-b{flex:1;height:6px;background:var(--cn-200);border-radius:var(--rf);overflow:hidden}
+.ai-sr-f{height:100%;border-radius:var(--rf)}
+.ai-sr-v{font-size:var(--txs);font-weight:var(--fs6);color:var(--cn-700);width:32px}
+.rev-acts{display:flex;gap:var(--s3);padding-top:var(--s4);border-top:1px solid var(--cn-100);margin-top:auto}
+.rev-ab{flex:1;display:flex;align-items:center;justify-content:center;gap:var(--s2);padding:var(--s3);border-radius:var(--rl);font-size:var(--tsm);font-weight:var(--fs6);cursor:pointer;transition:all .15s}
+.rev-ab.ap{background:#DCFCE7;color:#15803D}.rev-ab.ap:hover{background:#BBF7D0}
+.rev-ab.ed{background:#DBEAFE;color:#1D4ED8}.rev-ab.ed:hover{background:#BFDBFE}
+.rev-ab.rj{background:#FEE2E2;color:#B91C1C}.rev-ab.rj:hover{background:#FECACA}
+/* QUEUE */
+.ql{display:grid;grid-template-columns:1fr 280px;gap:var(--s5)}
+.qdg{margin-bottom:var(--s6)}
+.qdh{font-size:var(--tsm);font-weight:var(--fs6);color:var(--cn-500);margin-bottom:var(--s3);display:flex;align-items:center;gap:var(--s2)}
+.qdh .dd{width:6px;height:6px;border-radius:50%;background:var(--cp-500)}
+.qc{display:flex;align-items:center;gap:var(--s4);padding:var(--s3) var(--s4);background:#fff;border-radius:var(--rxl);border:1px solid var(--cn-100);margin-bottom:var(--s2);transition:all .15s;cursor:grab}
+.qc:hover{box-shadow:var(--shm);border-color:var(--cn-200)}
+.qc-drag{color:var(--cn-300);cursor:grab}.qc-drag svg{width:16px;height:16px}
+.qc-th{width:48px;height:48px;border-radius:var(--rm);overflow:hidden;flex-shrink:0;background:var(--cn-100)}.qc-th svg{width:100%;height:100%}
+.qc-info{flex:1;min-width:0}.qc-tt{font-size:var(--tsm);font-weight:var(--fs6);color:var(--cn-800);margin-bottom:2px}.qc-time{font-size:var(--txs);color:var(--cn-400)}
+.qc-st{padding:2px var(--s2);border-radius:var(--rf);font-size:var(--txs);font-weight:var(--fs6)}
+.qc-st.pend{background:#DBEAFE;color:#1D4ED8}.qc-st.sched{background:var(--ca-orange-l);color:#B45309}
+.qc-st.pubg{background:var(--cp-50);color:var(--cp-600);animation:pglow 2s infinite}.qc-st.pubd{background:#DCFCE7;color:#15803D}
+@keyframes pglow{0%,100%{opacity:1}50%{opacity:.6}}
+.qs{background:#fff;border-radius:var(--rxl);padding:var(--s5);box-shadow:var(--shs);border:1px solid var(--cn-100);position:sticky;top:0}
+.qs h4{font-size:var(--tb);font-weight:var(--fs6);color:var(--cn-800);margin-bottom:var(--s5)}
+.qs-it{display:flex;align-items:center;justify-content:space-between;padding:var(--s3) 0;border-bottom:1px solid var(--cn-100)}.qs-it:last-child{border-bottom:none}
+.qs-lb{font-size:var(--tsm);color:var(--cn-500)}.qs-vl{font-family:var(--fm);font-size:var(--tlg);font-weight:var(--fb);color:var(--cn-800)}
+.qs-bar{margin-top:var(--s4)}.qs-bar-lb{font-size:var(--txs);color:var(--cn-500);margin-bottom:var(--s2)}
+.qs-bar-tr{height:8px;background:var(--cn-100);border-radius:var(--rf);overflow:hidden}.qs-bar-fl{height:100%;border-radius:var(--rf);transition:width .5s ease}
+/* ANALYTICS */
+.atr{display:flex;gap:var(--s2);margin-bottom:var(--s6)}
+.att{padding:var(--s2) var(--s4);border-radius:var(--rf);font-size:var(--tsm);font-weight:var(--fm5);color:var(--cn-500);cursor:pointer;transition:all .15s}
+.att:hover{color:var(--cn-700);background:var(--cn-100)}.att.act{background:var(--cn-800);color:#fff}
+.am-row{display:grid;grid-template-columns:repeat(4,1fr);gap:var(--s4);margin-bottom:var(--s6)}
+.am{background:#fff;border-radius:var(--rxl);padding:var(--s5);box-shadow:var(--shs);border:1px solid var(--cn-100)}
+.am-lb{font-size:var(--txs);color:var(--cn-500);font-weight:var(--fm5);margin-bottom:var(--s2)}
+.am-vl{font-family:var(--fm);font-size:var(--t2xl);font-weight:var(--fb);color:var(--cn-900)}
+.am-ch{font-size:var(--txs);font-weight:var(--fm5);margin-top:var(--s1)}
+.ab-row{display:grid;grid-template-columns:1fr 1fr;gap:var(--s5)}
+.rki{display:flex;align-items:center;gap:var(--s3);padding:var(--s3) 0;border-bottom:1px solid var(--cn-50)}.rki:last-child{border-bottom:none}
+.rkn{width:22px;height:22px;border-radius:var(--rm);display:flex;align-items:center;justify-content:center;font-size:var(--txs);font-weight:var(--fb);flex-shrink:0}
+.rkn.top{background:var(--cp-500);color:#fff}.rkn.nm{background:var(--cn-100);color:var(--cn-500)}
+.rkth{width:36px;height:36px;border-radius:var(--rm);background:var(--cn-100);flex-shrink:0;overflow:hidden}.rkth svg{width:100%;height:100%}
+.rkinfo{flex:1;min-width:0}.rktt{font-size:var(--tsm);font-weight:var(--fm5);color:var(--cn-700);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.rkvl{font-family:var(--fm);font-size:var(--tsm);font-weight:var(--fs6);color:var(--cn-800)}
+/* ACCOUNTS */
+.acc-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:var(--s5);max-width:800px}
+.acc-card{background:#fff;border-radius:var(--rxl);padding:var(--s5);box-shadow:var(--shs);border:1px solid var(--cn-100);text-align:center;transition:all .2s}
+.acc-card:hover{box-shadow:var(--shm)}
+.acc-av{width:56px;height:56px;border-radius:var(--rf);margin:0 auto var(--s3);overflow:hidden;background:var(--cn-100)}.acc-av svg{width:100%;height:100%}
+.acc-nm{font-size:var(--tb);font-weight:var(--fs6);color:var(--cn-800);margin-bottom:var(--s1)}
+.acc-id{font-size:var(--txs);color:var(--cn-400);margin-bottom:var(--s3)}
+.acc-add{border:2px dashed var(--cn-300);background:transparent;cursor:pointer}
+.acc-add:hover{border-color:var(--cp-300);background:var(--cp-50)}
+.acc-add .add-ic{width:40px;height:40px;border-radius:var(--rf);background:var(--cn-100);display:flex;align-items:center;justify-content:center;margin:0 auto var(--s3)}
+.acc-add .add-ic svg{width:20px;height:20px;color:var(--cn-400)}
+/* LOGIN */
+.lp{display:flex;height:100vh;width:100vw;position:fixed;inset:0;z-index:100}
+.lp-brand{flex:1;background:#1C1917;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:var(--s16);position:relative;overflow:hidden}
+.lp-brand::before{content:'';position:absolute;width:600px;height:600px;border-radius:50%;background:rgba(254,44,85,.12);top:-200px;right:-200px}
+.lp-brand::after{content:'';position:absolute;width:400px;height:400px;border-radius:50%;background:rgba(139,92,246,.08);bottom:-100px;left:-100px}
+.lp-c{position:relative;z-index:1;text-align:center;color:#fff}
+.lp-logo{width:64px;height:64px;background:var(--gai);border-radius:var(--rxl);display:flex;align-items:center;justify-content:center;margin:0 auto var(--s6)}
+.lp-logo svg{width:32px;height:32px}
+.lp-tt{font-size:var(--t3xl);font-weight:var(--fb);margin-bottom:var(--s3)}
+.lp-sub{font-size:var(--tlg);opacity:.85;margin-bottom:var(--s8)}
+.lp-feats{display:flex;gap:var(--s6)}
+.lp-feat{display:flex;flex-direction:column;align-items:center;gap:var(--s2)}
+.lp-feat-ic{width:44px;height:44px;background:rgba(254,44,85,.15);border-radius:var(--rl);display:flex;align-items:center;justify-content:center}
+.lp-feat-ic svg{width:22px;height:22px}
+.lp-feat span{font-size:var(--tsm);opacity:.9}
+.lp-form{width:480px;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:var(--s16);background:#fff}
+.lp-fc{width:100%;max-width:340px}
+.lp-ft{font-size:var(--t2xl);font-weight:var(--fb);color:var(--cn-900);margin-bottom:var(--s2)}
+.lp-fd{font-size:var(--tsm);color:var(--cn-500);margin-bottom:var(--s8)}
+.lp-fl{margin-bottom:var(--s4)}
+.lp-fl label{display:block;font-size:var(--tsm);font-weight:var(--fm5);color:var(--cn-700);margin-bottom:var(--s2)}
+.lp-fl .ipt{padding:var(--s3) var(--s4);font-size:var(--tb)}
+.lp-btn{width:100%;padding:var(--s3);font-size:var(--tb);font-weight:var(--fs6);border-radius:var(--rl);background:var(--cp-500);color:#fff;cursor:pointer;transition:all .15s;border:none;margin-top:var(--s2)}
+.lp-btn:hover{background:var(--cp-600)}
+.lp-foot{margin-top:var(--s6);font-size:var(--txs);color:var(--cn-400);text-align:center}
+.lp-foot a{color:var(--cp-500)}
+/* SETTINGS */
+.sl{max-width:680px}
+.ss{margin-bottom:var(--s8)}
+.ss-tt{font-size:var(--tlg);font-weight:var(--fs6);color:var(--cn-800);margin-bottom:var(--s4);padding-bottom:var(--s3);border-bottom:1px solid var(--cn-200)}
+.si{display:flex;align-items:center;justify-content:space-between;padding:var(--s4) 0;border-bottom:1px solid var(--cn-50)}.si:last-child{border-bottom:none}
+.si-lb{font-size:var(--tsm);font-weight:var(--fm5);color:var(--cn-700)}.si-desc{font-size:var(--txs);color:var(--cn-400);margin-top:2px}
+.tgl{width:36px;height:20px;background:var(--cn-300);border-radius:var(--rf);position:relative;cursor:pointer;transition:background .2s}
+.tgl.on{background:var(--cp-500)}
+.tgl::after{content:'';width:16px;height:16px;background:#fff;border-radius:50%;position:absolute;top:2px;left:2px;transition:transform .2s;box-shadow:var(--shxs)}
+.tgl.on::after{transform:translateX(16px)}
+/* ADMIN */
+.adm-m{display:grid;grid-template-columns:repeat(4,1fr);gap:var(--s4);margin-bottom:var(--s6)}
+.adm-c{display:grid;grid-template-columns:1.5fr 1fr;gap:var(--s5);margin-bottom:var(--s5)}
+/* SCROLLBAR */
+::-webkit-scrollbar{width:6px}::-webkit-scrollbar-track{background:transparent}::-webkit-scrollbar-thumb{background:var(--cn-200);border-radius:3px}::-webkit-scrollbar-thumb:hover{background:var(--cn-300)}
+/* TITLE CARD (AI创作页标题候选) */
+.title-card{display:flex;align-items:center;gap:var(--s3);padding:var(--s3) var(--s4);border-radius:var(--rl);border:1px solid var(--cn-200);margin-bottom:var(--s2);transition:all .15s;cursor:pointer}
+.title-card:hover{border-color:var(--cn-300);background:var(--cn-50)}
+.title-card.selected{border-color:var(--cp-500);background:var(--cp-50)}
+.title-card-num{width:24px;height:24px;border-radius:50%;background:var(--cn-100);display:flex;align-items:center;justify-content:center;font-size:var(--txs);font-weight:var(--fs6);color:var(--cn-500);flex-shrink:0}
+.title-card.selected .title-card-num{background:var(--cp-500);color:#fff}
+.title-card-text{flex:1;min-width:0}
+.title-card-actions{flex-shrink:0}
+/* REVIEW PREVIEW CARD (Dashboard待审核) */
+.rev-preview-card{display:flex;gap:var(--s3);padding:var(--s3);border-radius:var(--rl);cursor:pointer;transition:all .15s;margin-bottom:var(--s2)}
+.rev-preview-card:hover{background:var(--cn-50)}
+.rev-preview-info{flex:1;min-width:0;padding-top:var(--s1)}
+.rev-preview-title{font-size:var(--tsm);font-weight:var(--fs6);color:var(--cn-800);margin-bottom:var(--s1);display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.rev-preview-meta{font-size:var(--txs);color:var(--cn-400);display:flex;align-items:center;gap:var(--s1)}
+/* EMPTY STATE */
+.empty-state{display:flex;flex-direction:column;align-items:center;justify-content:center;padding:var(--s16) var(--s8);text-align:center}
+.empty-state-svg{width:160px;height:120px;margin-bottom:var(--s6);opacity:.7}
+.empty-state-title{font-size:var(--tlg);font-weight:var(--fs6);color:var(--cn-700);margin-bottom:var(--s2)}
+.empty-state-desc{font-size:var(--tsm);color:var(--cn-500);margin-bottom:var(--s5);max-width:320px}
+/* HEADING UTILS */
+.h-xl{font-size:var(--txl);font-weight:var(--fb);color:var(--cn-900)}
+.h-lg{font-size:var(--tlg);font-weight:var(--fs6);color:var(--cn-800)}
+/* ACCESSIBILITY */
+@media(prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important}}
+/* UTILS */
+.flex{display:flex}.fcol{flex-direction:column}.aic{align-items:center}.jbt{justify-content:space-between}
+.g1{gap:var(--s1)}.g2{gap:var(--s2)}.g3{gap:var(--s3)}.g4{gap:var(--s4)}.g5{gap:var(--s5)}
+.mb3{margin-bottom:var(--s3)}.mb4{margin-bottom:var(--s4)}.mb5{margin-bottom:var(--s5)}.mb6{margin-bottom:var(--s6)}.mb8{margin-bottom:var(--s8)}
+.mt4{margin-top:var(--s4)}
+</style>
+</head>
+<body>
+<div class="app">
+<aside class="sb">
+<div class="sb-brand">
+<div class="sb-brand-icon"><svg viewBox="0 0 16 16" fill="none"><path d="M8 2L12 5.5V10.5L8 14L4 10.5V5.5L8 2Z" fill="white" opacity=".9"/><path d="M8 4L10.5 6V10L8 12L5.5 10V6L8 4Z" fill="white"/><circle cx="8" cy="8" r="1.5" fill="rgba(254,44,85,.6)"/></svg></div>
+<span class="sb-brand-text">红书智创</span>
+<span class="sb-brand-badge">AI</span>
+</div>
+<nav class="sb-nav">
+<div class="sb-lbl">工作台</div>
+<div class="sb-item active" onclick="go('dashboard')"><svg viewBox="0 0 18 18" fill="none"><rect x="2" y="2" width="6" height="6" rx="1.5" fill="currentColor" opacity=".6"/><rect x="10" y="2" width="6" height="6" rx="1.5" fill="currentColor" opacity=".4"/><rect x="2" y="10" width="6" height="6" rx="1.5" fill="currentColor" opacity=".4"/><rect x="10" y="10" width="6" height="6" rx="1.5" fill="currentColor" opacity=".6"/></svg><span>数据看板</span></div>
+<div class="sb-item" onclick="go('ai-create')"><svg viewBox="0 0 18 18" fill="none"><path d="M9 2L11 7H16L12 10.5L13.5 16L9 12.5L4.5 16L6 10.5L2 7H7L9 2Z" fill="currentColor" opacity=".6"/></svg><span>AI 创作</span><span class="ai-b">AI</span></div>
+<div class="sb-item" onclick="go('review')"><svg viewBox="0 0 18 18" fill="none"><path d="M3 3H15C15.55 3 16 3.45 16 4V14C16 14.55 15.55 15 15 15H3C2.45 15 2 14.55 2 14V4C2 3.45 2.45 3 3 3Z" stroke="currentColor" stroke-width="1.5" fill="none"/><path d="M6 7H12M6 10H10" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg><span>图文审核</span><span class="cnt-b">5</span></div>
+<div class="sb-item" onclick="go('queue')"><svg viewBox="0 0 18 18" fill="none"><rect x="2" y="3" width="14" height="2.5" rx="1" fill="currentColor" opacity=".5"/><rect x="2" y="7.75" width="14" height="2.5" rx="1" fill="currentColor" opacity=".5"/><rect x="2" y="12.5" width="14" height="2.5" rx="1" fill="currentColor" opacity=".5"/><circle cx="5" cy="4.25" r="1" fill="currentColor"/><circle cx="5" cy="9" r="1" fill="currentColor"/><circle cx="5" cy="13.75" r="1" fill="currentColor"/></svg><span>发布队列</span></div>
+<div class="sb-item" onclick="go('analytics')"><svg viewBox="0 0 18 18" fill="none"><path d="M3 15V8M7 15V5M11 15V10M15 15V3" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg><span>数据分析</span></div>
+<div class="sb-lbl">系统</div>
+<div class="sb-item" onclick="go('accounts')"><svg viewBox="0 0 18 18" fill="none"><circle cx="7" cy="7" r="3.5" stroke="currentColor" stroke-width="1.5" fill="none"/><path d="M1 15C1 12 3.5 10 7 10C10.5 10 13 12 13 15" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" fill="none"/><circle cx="14" cy="6" r="2.5" stroke="currentColor" stroke-width="1.2" fill="none" opacity=".5"/><path d="M14 10C16 10 17 11.5 17 13" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" fill="none" opacity=".5"/></svg><span>账号绑定</span></div>
+<div class="sb-item" onclick="go('settings')"><svg viewBox="0 0 18 18" fill="none"><circle cx="9" cy="9" r="2.5" stroke="currentColor" stroke-width="1.5" fill="none"/><path d="M9 1.5V3.5M9 14.5V16.5M1.5 9H3.5M14.5 9H16.5M3.4 3.4L4.8 4.8M13.2 13.2L14.6 14.6M14.6 3.4L13.2 4.8M4.8 13.2L3.4 14.6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg><span>个人设置</span></div>
+<div class="sb-item" onclick="go('admin')"><svg viewBox="0 0 18 18" fill="none"><path d="M3 3H7V7H3V3ZM11 3H15V7H11V3ZM3 11H7V15H3V11ZM11 11H15V15H11V11Z" stroke="currentColor" stroke-width="1.5" fill="none"/></svg><span>管理后台</span></div>
+<div class="sb-item" onclick="go('login')"><svg viewBox="0 0 18 18" fill="none"><path d="M11 2H15C15.55 2 16 2.45 16 3V15C16 15.55 15.55 16 15 16H11M7 6L3 9.5L7 13M3 9.5H12" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg><span>登录页预览</span></div>
+</nav>
+<div class="sb-user"><div class="sb-avatar">小</div><div class="sb-user-info"><div class="sb-user-name">小红创作者</div><div class="sb-user-plan">专业版 · 到期 2026/12</div></div></div>
+</aside>
+
+<div class="mc">
+<header class="tb">
+<div class="tb-bc">红书智创 / <span id="pn">数据看板</span></div>
+<div class="tb-right">
+<div class="tb-search"><svg viewBox="0 0 14 14" fill="none"><circle cx="6" cy="6" r="4.5" stroke="currentColor" stroke-width="1.5"/><path d="M9.5 9.5L13 13" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg><input type="text" placeholder="搜索内容、功能..."></div>
+<button class="tb-ib"><svg viewBox="0 0 18 18" fill="none"><path d="M9 2L11.5 7H16.5L12.5 10.5L14 16L9 12.5L4 16L5.5 10.5L1.5 7H6.5L9 2Z" stroke="currentColor" stroke-width="1.5" fill="none"/></svg></button>
+<button class="tb-ib"><svg viewBox="0 0 18 18" fill="none"><path d="M4 7C4 4.79 6.24 3 9 3C11.76 3 14 4.79 14 7V11L15 14H3L4 11V7Z" stroke="currentColor" stroke-width="1.5" fill="none"/><path d="M7 14C7 15.1 7.9 16 9 16C10.1 16 11 15.1 11 14" stroke="currentColor" stroke-width="1.5"/></svg><span class="dot"></span></button>
+</div>
+</header>
+<div class="pc">
+
+<!-- ====== DASHBOARD ====== -->
+<div class="pv active" id="p-dashboard">
+<div class="flex aic jbt mb6">
+<div class="flex aic g4">
+<div class="sb-avatar" style="width:44px;height:44px;font-size:var(--tlg)">小</div>
+<div><div style="font-size:var(--txl);font-weight:var(--fb);color:var(--cn-900)">早上好，创作者 <svg width="18" height="18" viewBox="0 0 18 18" fill="none" style="vertical-align:text-bottom"><circle cx="9" cy="9" r="3.5" fill="#F59E0B"/><path d="M9 1V3.5M9 14.5V17M1 9H3.5M14.5 9H17M3.5 3.5L5 5M13 13L14.5 14.5M14.5 3.5L13 5M5 13L3.5 14.5" stroke="#F59E0B" stroke-width="1.5" stroke-linecap="round"/></svg></div><div style="font-size:var(--tsm);color:var(--cn-500);display:flex;align-items:center;gap:var(--s1)">今日有 <span style="color:var(--cp-500);font-weight:var(--fs6)">3 篇内容</span> 待发布</div></div>
+</div>
+<div class="flex aic g3">
+<button class="btn btn-g"><svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M8 2V14M2 8H14" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>导出报告</button>
+<button class="btn btn-ai"><svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M8 1L10 6H15L11 9.5L12.5 15L8 11.5L3.5 15L5 9.5L1 6H6L8 1Z" fill="white"/></svg>AI 一键创作</button>
+</div>
+</div>
+<div class="met-row">
+<div class="mc-card"><div class="mc-label"><svg viewBox="0 0 14 14" fill="none"><rect x="1" y="4" width="5" height="9" rx="1" fill="#FE2C55" opacity=".7"/><rect x="8" y="1" width="5" height="12" rx="1" fill="#FE2C55" opacity=".4"/></svg>今日发布</div><div class="mc-val">7</div><div class="mc-trend up"><svg viewBox="0 0 12 12" fill="none"><path d="M6 2L10 7H2L6 2Z" fill="currentColor"/></svg>+2 较昨日</div><svg class="mc-spark" viewBox="0 0 80 40"><polyline points="0,35 10,28 20,32 30,20 40,24 50,15 60,18 70,8 80,12" fill="none" stroke="#FE2C55" stroke-width="2" opacity=".5"/><linearGradient id="sg1" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#FE2C55" stop-opacity=".2"/><stop offset="100%" stop-color="#FE2C55" stop-opacity="0"/></linearGradient><polygon points="0,35 10,28 20,32 30,20 40,24 50,15 60,18 70,8 80,12 80,40 0,40" fill="url(#sg1)"/></svg><div class="mc-deco" style="background:var(--cp-500)"></div></div>
+<div class="mc-card"><div class="mc-label"><svg viewBox="0 0 14 14" fill="none"><path d="M7 2L8.5 5.5H12L9.25 7.5L10.5 11L7 8.75L3.5 11L4.75 7.5L2 5.5H5.5L7 2Z" fill="#F59E0B" opacity=".7"/></svg>总互动量</div><div class="mc-val">2,847</div><div class="mc-trend up"><svg viewBox="0 0 12 12" fill="none"><path d="M6 2L10 7H2L6 2Z" fill="currentColor"/></svg>+18.5%</div><svg class="mc-spark" viewBox="0 0 80 40"><polyline points="0,30 10,25 20,28 30,18 40,22 50,12 60,15 70,8 80,5" fill="none" stroke="#F59E0B" stroke-width="2" opacity=".5"/><linearGradient id="sg2" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#F59E0B" stop-opacity=".2"/><stop offset="100%" stop-color="#F59E0B" stop-opacity="0"/></linearGradient><polygon points="0,30 10,25 20,28 30,18 40,22 50,12 60,15 70,8 80,5 80,40 0,40" fill="url(#sg2)"/></svg><div class="mc-deco" style="background:var(--ca-orange)"></div></div>
+<div class="mc-card"><div class="mc-label"><svg viewBox="0 0 14 14" fill="none"><circle cx="7" cy="5" r="3" stroke="#22C55E" stroke-width="1.5" fill="none"/><path d="M2 13C2 10 4 8.5 7 8.5C10 8.5 12 10 12 13" stroke="#22C55E" stroke-width="1.5" stroke-linecap="round" fill="none"/></svg>粉丝增长</div><div class="mc-val">+156</div><div class="mc-trend up"><svg viewBox="0 0 12 12" fill="none"><path d="M6 2L10 7H2L6 2Z" fill="currentColor"/></svg>+23 较上周</div><svg class="mc-spark" viewBox="0 0 80 40"><polyline points="0,32 10,30 20,26 30,28 40,20 50,16 60,18 70,10 80,6" fill="none" stroke="#22C55E" stroke-width="2" opacity=".5"/><linearGradient id="sg3" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#22C55E" stop-opacity=".2"/><stop offset="100%" stop-color="#22C55E" stop-opacity="0"/></linearGradient><polygon points="0,32 10,30 20,26 30,28 40,20 50,16 60,18 70,10 80,6 80,40 0,40" fill="url(#sg3)"/></svg><div class="mc-deco" style="background:var(--cs)"></div></div>
+<div class="mc-card"><div class="mc-label"><svg viewBox="0 0 14 14" fill="none"><path d="M7 1L8.5 4.5H12L9.25 6.5L10.5 10L7 7.75L3.5 10L4.75 6.5L2 4.5H5.5L7 1Z" fill="#8B5CF6" opacity=".7"/></svg>AI 创作次数</div><div class="mc-val">42</div><div class="mc-trend up"><svg viewBox="0 0 12 12" fill="none"><path d="M6 2L10 7H2L6 2Z" fill="currentColor"/></svg>+8 本周</div><svg class="mc-spark" viewBox="0 0 80 40"><polyline points="0,34 10,30 20,32 30,24 40,26 50,18 60,20 70,10 80,14" fill="none" stroke="#8B5CF6" stroke-width="2" opacity=".5"/><linearGradient id="sg4" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#8B5CF6" stop-opacity=".2"/><stop offset="100%" stop-color="#8B5CF6" stop-opacity="0"/></linearGradient><polygon points="0,34 10,30 20,32 30,24 40,26 50,18 60,20 70,10 80,14 80,40 0,40" fill="url(#sg4)"/></svg><div class="mc-deco" style="background:var(--ca-purple)"></div></div>
+</div>
+<div class="chart-row">
+<div class="cc"><div class="cc-h"><div><div class="cc-t">近 7 天趋势</div><div class="cc-st">发布量 & 互动量双轴对比</div></div><div class="flex aic g3"><span class="flex aic g1" style="font-size:11px;color:var(--cn-400)"><span style="width:8px;height:3px;background:var(--cp-500);border-radius:2px;display:inline-block"></span>发布量</span><span class="flex aic g1" style="font-size:11px;color:var(--cn-400)"><span style="width:8px;height:3px;background:var(--ca-orange);border-radius:2px;display:inline-block"></span>互动量</span></div></div>
+<svg viewBox="0 0 520 180" style="width:100%"><line x1="40" y1="20" x2="40" y2="155" stroke="#E7E5E4" stroke-width=".5"/><line x1="40" y1="155" x2="510" y2="155" stroke="#E7E5E4" stroke-width=".5"/><line x1="40" y1="87" x2="510" y2="87" stroke="#E7E5E4" stroke-width=".5" stroke-dasharray="4"/><line x1="40" y1="20" x2="510" y2="20" stroke="#E7E5E4" stroke-width=".5" stroke-dasharray="4"/><text x="35" y="158" text-anchor="end" fill="#A8A29E" font-size="10">0</text><text x="35" y="90" text-anchor="end" fill="#A8A29E" font-size="10">50</text><text x="35" y="23" text-anchor="end" fill="#A8A29E" font-size="10">100</text><text x="107" y="172" text-anchor="middle" fill="#A8A29E" font-size="10">周一</text><text x="174" y="172" text-anchor="middle" fill="#A8A29E" font-size="10">周二</text><text x="241" y="172" text-anchor="middle" fill="#A8A29E" font-size="10">周三</text><text x="308" y="172" text-anchor="middle" fill="#A8A29E" font-size="10">周四</text><text x="375" y="172" text-anchor="middle" fill="#A8A29E" font-size="10">周五</text><text x="442" y="172" text-anchor="middle" fill="#A8A29E" font-size="10">周六</text><text x="509" y="172" text-anchor="middle" fill="#A8A29E" font-size="10">周日</text><polyline points="107,120 174,95 241,108 308,75 375,62 442,82 509,48" fill="none" stroke="#FE2C55" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/><linearGradient id="tf" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#FE2C55" stop-opacity=".15"/><stop offset="100%" stop-color="#FE2C55" stop-opacity="0"/></linearGradient><polygon points="107,120 174,95 241,108 308,75 375,62 442,82 509,48 509,155 107,155" fill="url(#tf)"/><polyline points="107,130 174,110 241,115 308,88 375,72 442,92 509,55" fill="none" stroke="#F59E0B" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" stroke-dasharray="6 3"/><circle cx="509" cy="48" r="4" fill="#FE2C55" stroke="#fff" stroke-width="2"/></svg></div>
+<div class="cc"><div class="cc-h"><div><div class="cc-t">内容效果 Top 5</div><div class="cc-st">按互动量排行</div></div></div>
+<div class="hb"><div class="hb-l">春日穿搭</div><div class="hb-t"><div class="hb-f" style="width:92%;background:var(--gb)">892</div></div></div>
+<div class="hb"><div class="hb-l">咖啡探店</div><div class="hb-t"><div class="hb-f" style="width:75%;background:var(--cp-300)">723</div></div></div>
+<div class="hb"><div class="hb-l">护肤分享</div><div class="hb-t"><div class="hb-f" style="width:60%;background:var(--cp-200)">584</div></div></div>
+<div class="hb"><div class="hb-l">周末出游</div><div class="hb-t"><div class="hb-f" style="width:48%;background:var(--cp-100);color:var(--cp-600)">467</div></div></div>
+<div class="hb"><div class="hb-l">美食教程</div><div class="hb-t"><div class="hb-f" style="width:38%;background:var(--cp-50);color:var(--cp-500)">352</div></div></div>
+</div>
+</div>
+<div class="bot-row">
+<div class="cc"><div class="cc-h"><div class="cc-t">待审核内容</div><button class="btn btn-sm btn-g">查看全部</button></div>
+<div class="rev-preview-card"><div class="rev-fc-th" style="width:72px;height:72px"><svg viewBox="0 0 72 72"><rect width="72" height="72" fill="#FFE0E5"/><circle cx="36" cy="28" r="12" fill="#FF9DAD"/><rect x="16" y="44" width="40" height="20" rx="4" fill="#FF9DAD" opacity=".6"/></svg></div><div class="rev-preview-info"><div class="rev-preview-title">春日樱花限定甜品，颜值超绝</div><div class="flex g1 mb3"><span class="tag tag-r">美食</span><span class="tag tag-p">AI生成</span></div><div class="rev-preview-meta">来自 生活分享Agent · 2分钟前</div></div></div>
+<div class="rev-preview-card"><div class="rev-fc-th" style="width:72px;height:72px"><svg viewBox="0 0 72 72"><rect width="72" height="72" fill="#EDE9FE"/><rect x="12" y="20" width="22" height="35" rx="3" fill="#8B5CF6" opacity=".4"/><rect x="38" y="15" width="22" height="40" rx="3" fill="#8B5CF6" opacity=".3"/></svg></div><div class="rev-preview-info"><div class="rev-preview-title">周末city walk路线推荐，文艺感拉满</div><div class="flex g1 mb3"><span class="tag tag-o">旅行</span><span class="tag tag-p">AI生成</span></div><div class="rev-preview-meta">来自 旅行攻略Agent · 15分钟前</div></div></div>
+<div class="rev-preview-card"><div class="rev-fc-th" style="width:72px;height:72px"><svg viewBox="0 0 72 72"><rect width="72" height="72" fill="#FEF3C7"/><ellipse cx="36" cy="36" rx="20" ry="22" fill="#F59E0B" opacity=".3"/><circle cx="36" cy="32" r="10" fill="#F59E0B" opacity=".5"/></svg></div><div class="rev-preview-info"><div class="rev-preview-title">居家好物分享，提升幸福感的小物件</div><div class="flex g1 mb3"><span class="tag tag-g">生活</span><span class="tag tag-n">手动</span></div><div class="rev-preview-meta">手动上传 · 1小时前</div></div></div>
+</div>
+<div class="cc"><div class="cc-h"><div class="cc-t">快捷操作</div></div>
+<div style="display:grid;grid-template-columns:1fr 1fr;gap:var(--s3)">
+<div style="display:flex;flex-direction:column;align-items:center;justify-content:center;padding:var(--s5);border-radius:var(--rxl);border:1px solid var(--cp-200);background:var(--gai-glow);gap:var(--s2);cursor:pointer"><svg viewBox="0 0 24 24" fill="none" style="width:24px;height:24px;color:var(--cp-500)"><path d="M12 2L14.5 8.5H21L15.75 12.5L17.75 19L12 15L6.25 19L8.25 12.5L3 8.5H9.5L12 2Z" fill="currentColor"/></svg><span style="font-size:var(--tsm);font-weight:var(--fm5);color:var(--cp-600)">新建 AI 创作</span></div>
+<div style="display:flex;flex-direction:column;align-items:center;justify-content:center;padding:var(--s5);border-radius:var(--rxl);border:1px solid var(--cn-100);gap:var(--s2);cursor:pointer"><svg viewBox="0 0 24 24" fill="none" style="width:24px;height:24px;color:var(--cn-500)"><rect x="3" y="4" width="18" height="3" rx="1" fill="currentColor" opacity=".5"/><rect x="3" y="10" width="18" height="3" rx="1" fill="currentColor" opacity=".5"/><rect x="3" y="16" width="18" height="3" rx="1" fill="currentColor" opacity=".5"/></svg><span style="font-size:var(--tsm);font-weight:var(--fm5);color:var(--cn-700)">发布队列</span></div>
+<div style="display:flex;flex-direction:column;align-items:center;justify-content:center;padding:var(--s5);border-radius:var(--rxl);border:1px solid var(--cn-100);gap:var(--s2);cursor:pointer"><svg viewBox="0 0 24 24" fill="none" style="width:24px;height:24px;color:var(--cn-500)"><circle cx="12" cy="8" r="4" stroke="currentColor" stroke-width="2" fill="none"/><path d="M4 20C4 16.5 7 14 12 14C17 14 20 16.5 20 20" stroke="currentColor" stroke-width="2" stroke-linecap="round" fill="none"/></svg><span style="font-size:var(--tsm);font-weight:var(--fm5);color:var(--cn-700)">账号管理</span></div>
+<div style="display:flex;flex-direction:column;align-items:center;justify-content:center;padding:var(--s5);border-radius:var(--rxl);border:1px solid var(--cn-100);gap:var(--s2);cursor:pointer"><svg viewBox="0 0 24 24" fill="none" style="width:24px;height:24px;color:var(--cn-500)"><path d="M3 3H9V9H3V3ZM15 3H21V9H15V3ZM3 15H9V21H3V15ZM15 15H21V21H15V15Z" stroke="currentColor" stroke-width="2" fill="none"/></svg><span style="font-size:var(--tsm);font-weight:var(--fm5);color:var(--cn-700)">数据报告</span></div>
+</div></div>
+</div>
+</div>
+
+<!-- ====== AI CREATE ====== -->
+<div class="pv" id="p-ai-create">
+<div style="max-width:960px;margin:0 auto">
+<div class="step-ind">
+<div class="step-it"><div class="step-c done"><svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M2.5 6L5 8.5L9.5 3.5" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></div><span class="step-lbl act">选择 Agent</span></div>
+<div class="step-conn done"></div>
+<div class="step-it"><div class="step-c done"><svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M2.5 6L5 8.5L9.5 3.5" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></div><span class="step-lbl act">创作输入</span></div>
+<div class="step-conn act"></div>
+<div class="step-it"><div class="step-c ai"><svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M6 2L7 4.5H9.5L7.5 6L8.5 8.5L6 7L3.5 8.5L4.5 6L2.5 4.5H5L6 2Z" fill="white"/></svg></div><span class="step-lbl act">标题确认</span></div>
+<div class="step-conn"></div>
+<div class="step-it"><div class="step-c pen">4</div><span class="step-lbl">文案配图生成</span></div>
+</div>
+
+<div style="margin-bottom:var(--s6)"><div class="flex aic g3 mb4"><span class="tag tag-g" style="padding:3px 8px"><svg width="10" height="10" viewBox="0 0 10 10" fill="none"><path d="M2 5L4.5 7.5L8 3" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>已选择</span><span style="font-size:var(--tsm);color:var(--cn-500)">生活分享 Agent</span><button class="btn btn-sm btn-g" style="margin-left:auto;font-size:var(--txs)">更换</button></div></div>
+<div style="margin-bottom:var(--s6)"><div class="flex aic g3 mb4"><span class="tag tag-g" style="padding:3px 8px"><svg width="10" height="10" viewBox="0 0 10 10" fill="none"><path d="M2 5L4.5 7.5L8 3" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>已输入</span><span style="font-size:var(--tsm);color:var(--cn-500)">主题：春日野餐攻略 · 人群：25-30岁女生</span><button class="btn btn-sm btn-g" style="margin-left:auto;font-size:var(--txs)">修改</button></div></div>
+
+<div class="ai-zone mb6"><div class="ai-zone-inner">
+<div class="flex aic g2 mb5"><svg width="18" height="18" viewBox="0 0 18 18" fill="none"><path d="M9 1L10.5 5H15L11.5 7.5L13 12L9 9L5 12L6.5 7.5L3 5H7.5L9 1Z" fill="#8B5CF6"/></svg><span style="font-size:var(--tb);font-weight:var(--fs6);color:var(--cn-800)">AI 已生成 3 个标题候选</span><span class="tag tag-p" style="margin-left:auto;cursor:pointer"><svg width="10" height="10" viewBox="0 0 10 10" fill="none"><path d="M5 1V9M1 5H9" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>重新生成</span></div>
+<div class="title-card selected"><div class="title-card-num">1</div><div class="title-card-text" style="flex:1;font-size:var(--tb);font-weight:var(--fm5);color:var(--cn-700)">🌸 春日野餐全攻略：从装备到美食，一篇文章搞定</div><div class="title-card-actions"><button class="btn btn-sm btn-p">选用</button></div></div>
+<div class="title-card"><div class="title-card-num">2</div><div class="title-card-text" style="flex:1;font-size:var(--tb);font-weight:var(--fm5);color:var(--cn-700)">周末野餐指南 | 这些好吃好拍的绝美地点你必须知道</div><div class="title-card-actions"><button class="btn btn-sm btn-g">选用</button></div></div>
+<div class="title-card"><div class="title-card-num">3</div><div class="title-card-text" style="flex:1;font-size:var(--tb);font-weight:var(--fm5);color:var(--cn-700)">野餐拍照出片攻略 | 学会这几点朋友圈获赞无数</div><div class="title-card-actions"><button class="btn btn-sm btn-g">选用</button></div></div>
+</div></div>
+
+<div class="ai-zone mb6"><div class="ai-zone-inner">
+<div class="flex aic g2 mb5"><svg width="18" height="18" viewBox="0 0 18 18" fill="none"><path d="M9 1L10.5 5H15L11.5 7.5L13 12L9 9L5 12L6.5 7.5L3 5H7.5L9 1Z" fill="#8B5CF6"><animate attributeName="opacity" values=".5;1;.5" dur="1.5s" repeatCount="indefinite"/></animate></svg><span style="font-size:var(--tb);font-weight:var(--fs6);color:var(--cn-800)">AI 正在生成文案与配图...</span><span class="shimmer" style="width:60px;height:8px;border-radius:4px;margin-left:8px"></span></div>
+<div style="display:grid;grid-template-columns:1fr 1fr;gap:var(--s5);margin-bottom:var(--s6)">
+<div style="background:#fff;border-radius:var(--rxl);padding:var(--s5);border:1px solid var(--cn-100);min-height:300px"><h4 style="font-size:var(--tsm);font-weight:var(--fs6);color:var(--cn-500);margin-bottom:var(--s3);display:flex;align-items:center;gap:var(--s2)"><svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M2 3H12M2 7H10M2 11H8" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>文案内容</h4><div style="font-size:var(--tsm);line-height:24px;color:var(--cn-700)"><p>🌸 春日野餐全攻略：从装备到美食，一篇文章搞定</p><br><p>春天来了，怎么能少得了一场美美的野餐呢？🧺</p><br><p>今天给大家整理了一份超全的野餐攻略，从装备选择到美食准备，再到拍照出片技巧，一篇文章全搞定！</p><br><p>📍 <b>地点推荐</b></p><p>城市公园的草坪区是首选，既方便又有自然光。湖边、花园旁都是绝佳位置~</p><br><p>🧺 <b>装备清单</b></p><p>野餐垫是必备的，选格纹的更有氛围感。加上一个藤编篮子<span style="display:inline-block;width:2px;height:16px;background:var(--cp-500);vertical-align:text-bottom;animation:typBlink .8s step-end infinite"></span></p></div></div>
+<div style="background:#fff;border-radius:var(--rxl);padding:var(--s5);border:1px solid var(--cn-100)"><h4 style="font-size:var(--tsm);font-weight:var(--fs6);color:var(--cn-500);margin-bottom:var(--s3);display:flex;align-items:center;gap:var(--s2)"><svg width="14" height="14" viewBox="0 0 14 14" fill="none"><rect x="1" y="2" width="12" height="10" rx="1.5" stroke="currentColor" stroke-width="1.5" fill="none"/><circle cx="4.5" cy="5.5" r="1.5" stroke="currentColor" stroke-width="1" fill="none"/><path d="M1 10L4.5 7L7 9L9.5 6.5L13 10" stroke="currentColor" stroke-width="1" fill="none"/></svg>AI 配图</h4><div style="display:grid;grid-template-columns:1fr 1fr;gap:var(--s3)"><div style="aspect-ratio:3/4;border-radius:var(--rl);overflow:hidden;background:var(--cn-100)"><svg viewBox="0 0 120 160"><defs><linearGradient id="i1" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#FFE0E5"/><stop offset="100%" stop-color="#FFC6CF"/></linearGradient></defs><rect width="120" height="160" fill="url(#i1)"/><rect x="20" y="40" width="80" height="50" rx="4" fill="#FF9DAD" opacity=".5"/><circle cx="40" cy="60" r="8" fill="#FE2C55" opacity=".3"/><rect x="30" y="100" width="60" height="8" rx="2" fill="#FF9DAD" opacity=".4"/></svg></div><div style="aspect-ratio:3/4;border-radius:var(--rl);overflow:hidden;background:var(--cn-100)"><svg viewBox="0 0 120 160"><defs><linearGradient id="i2" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#EDE9FE"/><stop offset="100%" stop-color="#DDD6FE"/></linearGradient></defs><rect width="120" height="160" fill="url(#i2)"/><ellipse cx="60" cy="70" rx="35" ry="30" fill="#8B5CF6" opacity=".2"/><rect x="25" y="50" width="70" height="45" rx="6" fill="#8B5CF6" opacity=".3"/></svg></div><div style="aspect-ratio:3/4;border-radius:var(--rl);overflow:hidden;background:var(--cn-100)"><svg viewBox="0 0 120 160"><defs><linearGradient id="i3" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#FEF3C7"/><stop offset="100%" stop-color="#FDE68A"/></linearGradient></defs><rect width="120" height="160" fill="url(#i3)"/><circle cx="60" cy="55" r="25" fill="#F59E0B" opacity=".3"/><rect x="25" y="85" width="70" height="35" rx="4" fill="#F59E0B" opacity=".25"/></svg></div><div class="shimmer" style="aspect-ratio:3/4;border-radius:var(--rl)"></div></div></div>
+</div>
+<div style="display:flex;align-items:center;justify-content:space-between;padding:var(--s4);background:#fff;border-radius:var(--rxl);border:1px solid var(--cn-100)">
+<div class="flex aic g3">
+<button class="btn btn-g"><svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M2 8C2 8 4 3 8 3C12 3 14 8 14 8C14 8 12 13 8 13C4 13 2 8 2 8Z" stroke="currentColor" stroke-width="1.5" fill="none"/><circle cx="8" cy="8" r="2" stroke="currentColor" stroke-width="1.5" fill="none"/></svg>预览</button>
+<button class="btn btn-s"><svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M12 4L4 12M4 4L12 12" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>重新生成</button>
+<button class="btn btn-s"><svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M8 2V10M4 6L8 2L12 6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/><path d="M2 11V13C2 13.55 2.45 14 3 14H13C13.55 14 14 13.55 14 13V11" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>修改文案</button>
+</div>
+<button class="btn btn-ai" style="min-width:160px;padding:var(--s3) var(--s5)"><svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M4 8H12M8 4V12" stroke="white" stroke-width="1.5" stroke-linecap="round"/></svg>加入发布队列</button>
+</div>
+</div></div>
+
+<details style="margin-bottom:var(--s6)"><summary style="cursor:pointer;font-size:var(--tsm);font-weight:var(--fs6);color:var(--cn-500);margin-bottom:var(--s4);outline:none">▶ 展开 Agent 选择面板</summary>
+<div style="display:grid;grid-template-columns:repeat(2,1fr);gap:var(--s4)">
+<div class="acc-card" style="text-align:left;border:2px solid var(--cp-500);background:var(--cp-50);position:relative;overflow:hidden"><div style="width:40px;height:40px;border-radius:var(--rl);background:var(--cp-50);display:flex;align-items:center;justify-content:center;margin-bottom:var(--s3)"><svg viewBox="0 0 22 22" fill="none"><path d="M11 3L13 8H18L14 11L15.5 16L11 13L6.5 16L8 11L4 8H9L11 3Z" fill="#FE2C55" opacity=".7"/></svg></div><div style="font-size:var(--tb);font-weight:var(--fs6);color:var(--cn-800);margin-bottom:var(--s1)">生活分享 Agent</div><div style="font-size:var(--txs);color:var(--cn-500);margin-bottom:var(--s3);line-height:20px">擅长日常生活类内容创作，风格轻松自然</div><div style="display:flex;gap:var(--s1);flex-wrap:wrap"><span class="tag tag-r">生活方式</span><span class="tag tag-o">好物推荐</span></div></div>
+<div class="acc-card" style="text-align:left"><div style="width:40px;height:40px;border-radius:var(--rl);background:var(--ca-orange-l);display:flex;align-items:center;justify-content:center;margin-bottom:var(--s3)"><svg viewBox="0 0 22 22" fill="none"><circle cx="11" cy="8" r="4" stroke="#F59E0B" stroke-width="2" fill="none"/><path d="M5 19C5 15.5 7.5 13 11 13C14.5 13 17 15.5 17 19" stroke="#F59E0B" stroke-width="2" stroke-linecap="round" fill="none"/></svg></div><div style="font-size:var(--tb);font-weight:var(--fs6);color:var(--cn-800);margin-bottom:var(--s1)">美食探店 Agent</div><div style="font-size:var(--txs);color:var(--cn-500);margin-bottom:var(--s3);line-height:20px">专注美食领域，写出令人食欲大开的探店内容</div><div style="display:flex;gap:var(--s1);flex-wrap:wrap"><span class="tag tag-o">美食探店</span><span class="tag tag-r">食谱分享</span></div></div>
+<div class="acc-card" style="text-align:left"><div style="width:40px;height:40px;border-radius:var(--rl);background:#DCFCE7;display:flex;align-items:center;justify-content:center;margin-bottom:var(--s3)"><svg viewBox="0 0 22 22" fill="none"><path d="M4 17L8 7L12 13L16 4L18 10" stroke="#22C55E" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill="none"/></svg></div><div style="font-size:var(--tb);font-weight:var(--fs6);color:var(--cn-800);margin-bottom:var(--s1)">旅行攻略 Agent</div><div style="font-size:var(--txs);color:var(--cn-500);margin-bottom:var(--s3);line-height:20px">编写详细的旅行攻略和路线推荐</div><div style="display:flex;gap:var(--s1);flex-wrap:wrap"><span class="tag tag-g">旅行攻略</span><span class="tag tag-b">路线推荐</span></div></div>
+<div class="acc-card" style="text-align:left"><div style="width:40px;height:40px;border-radius:var(--rl);background:var(--ca-purple-l);display:flex;align-items:center;justify-content:center;margin-bottom:var(--s3)"><svg viewBox="0 0 22 22" fill="none"><circle cx="11" cy="11" r="7" stroke="#8B5CF6" stroke-width="2" fill="none"/><path d="M11 7V11L14 14" stroke="#8B5CF6" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></div><div style="font-size:var(--tb);font-weight:var(--fs6);color:var(--cn-800);margin-bottom:var(--s1)">自定义 Agent</div><div style="font-size:var(--txs);color:var(--cn-500);margin-bottom:var(--s3);line-height:20px">根据你的需求定制专属创作风格</div><div style="display:flex;gap:var(--s1);flex-wrap:wrap"><span class="tag tag-p">自定义</span><span class="tag tag-n">灵活配置</span></div></div>
+</div></details>
+</div>
+</div>
+
+<!-- ====== REVIEW ====== -->
+<div class="pv" id="p-review">
+<div class="rev-layout">
+<div class="rev-feed">
+<div class="rev-filters"><span class="ftab">全部</span><span class="ftab act">待审核</span><span class="ftab">已通过</span><span class="ftab">已拒绝</span><div class="rev-search"><svg viewBox="0 0 14 14" fill="none"><circle cx="6" cy="6" r="4.5" stroke="currentColor" stroke-width="1.5"/><path d="M9.5 9.5L13 13" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg><input type="text" placeholder="搜索..."></div></div>
+<div class="rev-fc act"><div class="rev-fc-th"><svg viewBox="0 0 80 100"><rect width="80" height="100" fill="#FFE0E5"/><circle cx="40" cy="35" r="15" fill="#FF9DAD" opacity=".6"/><rect x="15" y="55" width="50" height="30" rx="4" fill="#FF9DAD" opacity=".4"/></svg></div><div class="rev-fc-info"><div class="rev-fc-tt">春日樱花限定甜品，颜值超绝</div><div class="rev-fc-tags"><span class="tag tag-r">美食</span><span class="tag tag-p">AI</span></div><div class="rev-fc-src"><svg width="10" height="10" viewBox="0 0 10 10" fill="none"><path d="M5 1L6 3.5H9L6.5 5L7.5 8L5 6L2.5 8L3.5 5L1 3.5H4L5 1Z" fill="#8B5CF6"/></svg>生活分享Agent</div></div></div>
+<div class="rev-fc"><div class="rev-fc-th"><svg viewBox="0 0 80 100"><rect width="80" height="100" fill="#EDE9FE"/><rect x="15" y="20" width="25" height="35" rx="3" fill="#8B5CF6" opacity=".3"/><rect x="40" y="25" width="25" height="30" rx="3" fill="#8B5CF6" opacity=".2"/></svg></div><div class="rev-fc-info"><div class="rev-fc-tt">周末city walk路线推荐</div><div class="rev-fc-tags"><span class="tag tag-o">旅行</span><span class="tag tag-p">AI</span></div><div class="rev-fc-src"><svg width="10" height="10" viewBox="0 0 10 10" fill="none"><path d="M5 1L6 3.5H9L6.5 5L7.5 8L5 6L2.5 8L3.5 5L1 3.5H4L5 1Z" fill="#8B5CF6"/></svg>旅行攻略Agent</div></div></div>
+<div class="rev-fc"><div class="rev-fc-th"><svg viewBox="0 0 80 100"><rect width="80" height="100" fill="#FEF3C7"/><circle cx="40" cy="40" r="20" fill="#F59E0B" opacity=".3"/></svg></div><div class="rev-fc-info"><div class="rev-fc-tt">居家好物分享：提升幸福感</div><div class="rev-fc-tags"><span class="tag tag-g">生活</span><span class="tag tag-n">手动</span></div><div class="rev-fc-src">手动上传</div></div></div>
+<div class="rev-fc"><div class="rev-fc-th"><svg viewBox="0 0 80 100"><rect width="80" height="100" fill="#DCFCE7"/><ellipse cx="40" cy="45" rx="25" ry="30" fill="#22C55E" opacity=".2"/></svg></div><div class="rev-fc-info"><div class="rev-fc-tt">健康轻食搭配一周食谱</div><div class="rev-fc-tags"><span class="tag tag-g">健康</span><span class="tag tag-p">AI</span></div><div class="rev-fc-src"><svg width="10" height="10" viewBox="0 0 10 10" fill="none"><path d="M5 1L6 3.5H9L6.5 5L7.5 8L5 6L2.5 8L3.5 5L1 3.5H4L5 1Z" fill="#8B5CF6"/></svg>美食探店Agent</div></div></div>
+</div>
+<div class="rev-det">
+<div class="rev-det-img"><svg viewBox="0 0 480 360"><defs><linearGradient id="rdi" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#FFE0E5"/><stop offset="50%" stop-color="#FFC6CF"/><stop offset="100%" stop-color="#FFE0E5"/></linearGradient></defs><rect width="480" height="360" fill="url(#rdi)"/><rect x="60" y="40" width="200" height="140" rx="12" fill="#FF9DAD" opacity=".4"/><circle cx="140" cy="100" r="30" fill="#FE2C55" opacity=".25"/><rect x="280" y="60" width="140" height="100" rx="8" fill="#FF9DAD" opacity=".3"/><rect x="100" y="210" width="280" height="12" rx="3" fill="#FF9DAD" opacity=".35"/></svg></div>
+<div class="rev-det-tt">🌸 春日樱花限定甜品，颜值超绝</div>
+<div class="rev-det-ct">春天来了，怎么能错过限定樱花甜品呢！今天去了三家店，每一家都美到尖叫 🌸<br><br>📍 第一家：花见和果子 — 樱花大福，外皮Q弹，内馅细腻<br>📍 第二家：Café de Fleur — 樱花拿铁，拉花超美<br>📍 第三家：甜品实验室 — 樱花千层，层层叠叠的粉嫩<br><br>每一家都值得打卡！快约上闺蜜一起去吧~</div>
+<div class="rev-det-tags"><span class="tag tag-r">美食探店</span><span class="tag tag-p">樱花限定</span><span class="tag tag-o">甜品推荐</span><span class="tag tag-n">春日打卡</span></div>
+<div class="rev-ai"><h5><svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M8 1L9.5 5H14L10.5 7.5L12 12L8 9L4 12L5.5 7.5L2 5H6.5L8 1Z" fill="#8B5CF6"/></svg>AI 内容评分</h5>
+<div class="ai-sr"><span class="ai-sr-l">吸引力</span><div class="ai-sr-b"><div class="ai-sr-f" style="width:88%;background:var(--gb)"></div></div><span class="ai-sr-v">88</span></div>
+<div class="ai-sr"><span class="ai-sr-l">可读性</span><div class="ai-sr-b"><div class="ai-sr-f" style="width:92%;background:var(--gg)"></div></div><span class="ai-sr-v">92</span></div>
+<div class="ai-sr"><span class="ai-sr-l">标签匹配</span><div class="ai-sr-b"><div class="ai-sr-f" style="width:85%;background:var(--ca-purple)"></div></div><span class="ai-sr-v">85</span></div>
+<div class="ai-sr"><span class="ai-sr-l">平台适配</span><div class="ai-sr-b"><div class="ai-sr-f" style="width:90%;background:var(--ci)"></div></div><span class="ai-sr-v">90</span></div>
+</div>
+<div class="rev-acts"><button class="rev-ab ap"><svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M3 8L6.5 11.5L13 4" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>通过</button><button class="rev-ab ed"><svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M11.5 2.5L13.5 4.5L5 13H3V11L11.5 2.5Z" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>修改</button><button class="rev-ab rj"><svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M4 4L12 12M12 4L4 12" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>拒绝</button></div>
+</div>
+</div>
+</div>
+
+<!-- ====== QUEUE ====== -->
+<div class="pv" id="p-queue">
+<div class="flex aic jbt mb6"><div><h2 style="font-size:var(--txl);font-weight:var(--fb);color:var(--cn-900);margin-bottom:var(--s1)">发布队列</h2><p style="font-size:var(--tsm);color:var(--cn-500)">管理内容发布计划，拖拽调整顺序</p></div><button class="btn btn-p"><svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M8 3V13M3 8H13" stroke="white" stroke-width="1.5" stroke-linecap="round"/></svg>添加到队列</button></div>
+<div class="ql">
+<div>
+<div class="qdg"><div class="qdh"><span class="dd"></span> 今天 · 6月15日 周日</div>
+<div class="qc"><div class="qc-drag"><svg viewBox="0 0 16 16" fill="none"><circle cx="4" cy="4" r="1.5" fill="currentColor"/><circle cx="12" cy="4" r="1.5" fill="currentColor"/><circle cx="4" cy="8" r="1.5" fill="currentColor"/><circle cx="12" cy="8" r="1.5" fill="currentColor"/><circle cx="4" cy="12" r="1.5" fill="currentColor"/><circle cx="12" cy="12" r="1.5" fill="currentColor"/></svg></div><div class="qc-th"><svg viewBox="0 0 48 48"><rect width="48" height="48" fill="#FFE0E5"/><circle cx="24" cy="20" r="8" fill="#FF9DAD" opacity=".5"/></svg></div><div class="qc-info"><div class="qc-tt">春日樱花限定甜品</div><div class="qc-time">预定 10:00 发布</div></div><span class="qc-st sched">定时中</span></div>
+<div class="qc"><div class="qc-drag"><svg viewBox="0 0 16 16" fill="none"><circle cx="4" cy="4" r="1.5" fill="currentColor"/><circle cx="12" cy="4" r="1.5" fill="currentColor"/><circle cx="4" cy="8" r="1.5" fill="currentColor"/><circle cx="12" cy="8" r="1.5" fill="currentColor"/><circle cx="4" cy="12" r="1.5" fill="currentColor"/><circle cx="12" cy="12" r="1.5" fill="currentColor"/></svg></div><div class="qc-th"><svg viewBox="0 0 48 48"><rect width="48" height="48" fill="#EDE9FE"/><rect x="10" y="10" width="28" height="28" rx="4" fill="#8B5CF6" opacity=".3"/></svg></div><div class="qc-info"><div class="qc-tt">周末city walk路线推荐</div><div class="qc-time">预定 14:00 发布</div></div><span class="qc-st pend">待发布</span></div>
+<div class="qc"><div class="qc-drag"><svg viewBox="0 0 16 16" fill="none"><circle cx="4" cy="4" r="1.5" fill="currentColor"/><circle cx="12" cy="4" r="1.5" fill="currentColor"/><circle cx="4" cy="8" r="1.5" fill="currentColor"/><circle cx="12" cy="8" r="1.5" fill="currentColor"/><circle cx="4" cy="12" r="1.5" fill="currentColor"/><circle cx="12" cy="12" r="1.5" fill="currentColor"/></svg></div><div class="qc-th"><svg viewBox="0 0 48 48"><rect width="48" height="48" fill="#FEF3C7"/><circle cx="24" cy="24" r="12" fill="#F59E0B" opacity=".3"/></svg></div><div class="qc-info"><div class="qc-tt">居家好物分享</div><div class="qc-time">预定 18:00 发布</div></div><span class="qc-st pubg">发布中</span></div>
+</div>
+<div class="qdg"><div class="qdh"><span class="dd" style="background:var(--ca-orange)"></span> 明天 · 6月16日 周一</div>
+<div class="qc"><div class="qc-drag"><svg viewBox="0 0 16 16" fill="none"><circle cx="4" cy="4" r="1.5" fill="currentColor"/><circle cx="12" cy="4" r="1.5" fill="currentColor"/><circle cx="4" cy="8" r="1.5" fill="currentColor"/><circle cx="12" cy="8" r="1.5" fill="currentColor"/><circle cx="4" cy="12" r="1.5" fill="currentColor"/><circle cx="12" cy="12" r="1.5" fill="currentColor"/></svg></div><div class="qc-th"><svg viewBox="0 0 48 48"><rect width="48" height="48" fill="#DCFCE7"/><ellipse cx="24" cy="24" rx="16" ry="14" fill="#22C55E" opacity=".25"/></svg></div><div class="qc-info"><div class="qc-tt">健康轻食搭配一周食谱</div><div class="qc-time">预定 09:00 发布</div></div><span class="qc-st pend">待发布</span></div>
+</div>
+</div>
+<div class="qs"><h4>队列统计</h4>
+<div class="qs-it"><span class="qs-lb">今日待发</span><span class="qs-vl">3</span></div>
+<div class="qs-it"><span class="qs-lb">本周计划</span><span class="qs-vl">12</span></div>
+<div class="qs-it"><span class="qs-lb">发布成功率</span><span class="qs-vl" style="color:var(--cs)">96%</span></div>
+<div class="qs-bar"><div class="qs-bar-lb">本周完成进度</div><div class="qs-bar-tr"><div class="qs-bar-fl" style="width:65%;background:var(--gb)"></div></div></div>
+<div class="qs-bar" style="margin-top:var(--s3)"><div class="qs-bar-lb">AI 创作占比</div><div class="qs-bar-tr"><div class="qs-bar-fl" style="width:78%;background:var(--gai)"></div></div></div>
+</div>
+</div>
+</div>
+
+<!-- ====== ANALYTICS ====== -->
+<div class="pv" id="p-analytics">
+<div class="atr"><span class="att">7天</span><span class="att act">30天</span><span class="att">90天</span><span class="att">自定义</span></div>
+<div class="am-row">
+<div class="am"><div class="am-lb">总阅读量</div><div class="am-vl">128.5K</div><div class="am-ch" style="color:var(--cs)">↑ 24.3%</div></div>
+<div class="am"><div class="am-lb">总互动量</div><div class="am-vl">42.8K</div><div class="am-ch" style="color:var(--cs)">↑ 18.5%</div></div>
+<div class="am"><div class="am-lb">平均互动率</div><div class="am-vl">5.7%</div><div class="am-ch" style="color:var(--cs)">↑ 0.8%</div></div>
+<div class="am"><div class="am-lb">爆款数量</div><div class="am-vl">8</div><div class="am-ch" style="color:var(--ca-orange)">→ 持平</div></div>
+</div>
+<div class="cc mb6"><div class="cc-h"><div><div class="cc-t">阅读量 & 互动量趋势</div></div></div>
+<svg viewBox="0 0 520 180" style="width:100%"><line x1="40" y1="155" x2="510" y2="155" stroke="#E7E5E4" stroke-width=".5"/><line x1="40" y1="87" x2="510" y2="87" stroke="#E7E5E4" stroke-width=".5" stroke-dasharray="4"/><line x1="40" y1="20" x2="510" y2="20" stroke="#E7E5E4" stroke-width=".5" stroke-dasharray="4"/><text x="35" y="158" text-anchor="end" fill="#A8A29E" font-size="10">0</text><text x="35" y="90" text-anchor="end" fill="#A8A29E" font-size="10">50K</text><text x="35" y="23" text-anchor="end" fill="#A8A29E" font-size="10">100K</text><text x="107" y="172" text-anchor="middle" fill="#A8A29E" font-size="10">第1周</text><text x="241" y="172" text-anchor="middle" fill="#A8A29E" font-size="10">第2周</text><text x="375" y="172" text-anchor="middle" fill="#A8A29E" font-size="10">第3周</text><text x="509" y="172" text-anchor="middle" fill="#A8A29E" font-size="10">第4周</text><polyline points="107,110 241,75 375,55 509,35" fill="none" stroke="#FE2C55" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/><linearGradient id="af" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#FE2C55" stop-opacity=".15"/><stop offset="100%" stop-color="#FE2C55" stop-opacity="0"/></linearGradient><polygon points="107,110 241,75 375,55 509,35 509,155 107,155" fill="url(#af)"/><polyline points="107,125 241,100 375,80 509,65" fill="none" stroke="#F59E0B" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" stroke-dasharray="6 3"/><circle cx="509" cy="35" r="4" fill="#FE2C55" stroke="#fff" stroke-width="2"/></svg></div>
+<div class="ab-row">
+<div class="cc"><div class="cc-h"><div class="cc-t">内容效果 Top 10</div></div>
+<div class="rki"><div class="rkn top">1</div><div class="rkth"><svg viewBox="0 0 36 36"><rect width="36" height="36" fill="#FFE0E5"/><circle cx="18" cy="14" r="6" fill="#FF9DAD" opacity=".6"/></svg></div><div class="rkinfo"><div class="rktt">春日穿搭灵感合集</div></div><div class="rkvl">2,847</div></div>
+<div class="rki"><div class="rkn top">2</div><div class="rkth"><svg viewBox="0 0 36 36"><rect width="36" height="36" fill="#EDE9FE"/><rect x="8" y="8" width="20" height="20" rx="3" fill="#8B5CF6" opacity=".3"/></svg></div><div class="rkinfo"><div class="rktt">咖啡探店：隐藏菜单</div></div><div class="rkvl">2,156</div></div>
+<div class="rki"><div class="rkn top">3</div><div class="rkth"><svg viewBox="0 0 36 36"><rect width="36" height="36" fill="#FEF3C7"/><circle cx="18" cy="18" r="10" fill="#F59E0B" opacity=".3"/></svg></div><div class="rkinfo"><div class="rktt">护肤分享：换季必备</div></div><div class="rkvl">1,923</div></div>
+<div class="rki"><div class="rkn nm">4</div><div class="rkth"><svg viewBox="0 0 36 36"><rect width="36" height="36" fill="#DCFCE7"/><ellipse cx="18" cy="18" rx="12" ry="10" fill="#22C55E" opacity=".2"/></svg></div><div class="rkinfo"><div class="rktt">周末出游：近郊推荐</div></div><div class="rkvl">1,654</div></div>
+<div class="rki"><div class="rkn nm">5</div><div class="rkth"><svg viewBox="0 0 36 36"><rect width="36" height="36" fill="#DBEAFE"/><circle cx="18" cy="18" r="10" fill="#3B82F6" opacity=".2"/></svg></div><div class="rkinfo"><div class="rktt">居家好物提升幸福感</div></div><div class="rkvl">1,432</div></div>
+</div>
+<div class="cc"><div class="cc-h"><div class="cc-t">AI 创作 vs 手动创作</div></div>
+<div class="hb"><div class="hb-l">AI 创作</div><div class="hb-t"><div class="hb-f" style="width:78%;background:var(--gai)">78%</div></div></div>
+<div class="hb"><div class="hb-l">手动创作</div><div class="hb-t"><div class="hb-f" style="width:22%;background:var(--cn-300)">22%</div></div></div>
+<div style="margin-top:var(--s5);padding:var(--s4);background:var(--gai-glow);border-radius:var(--rxl)">
+<div style="font-size:var(--tsm);font-weight:var(--fs6);color:var(--cn-700);margin-bottom:var(--s2)">AI 创作效果对比</div>
+<div style="display:grid;grid-template-columns:1fr 1fr;gap:var(--s3)">
+<div style="text-align:center"><div style="font-family:var(--fm);font-size:var(--txl);font-weight:var(--fb);color:var(--ca-purple)">6.2%</div><div style="font-size:var(--txs);color:var(--cn-500)">AI 平均互动率</div></div>
+<div style="text-align:center"><div style="font-family:var(--fm);font-size:var(--txl);font-weight:var(--fb);color:var(--cn-600)">4.8%</div><div style="font-size:var(--txs);color:var(--cn-500)">手动平均互动率</div></div>
+</div></div>
+</div>
+</div>
+</div>
+
+<!-- ====== ACCOUNTS ====== -->
+<div class="pv" id="p-accounts">
+<h2 style="font-size:var(--txl);font-weight:var(--fb);color:var(--cn-900);margin-bottom:var(--s1)">账号绑定</h2>
+<p style="font-size:var(--tsm);color:var(--cn-500);margin-bottom:var(--s6)">管理你的小红书账号，支持多账号同时运营</p>
+<div class="acc-grid">
+<div class="acc-card"><div class="acc-av"><svg viewBox="0 0 56 56"><rect width="56" height="56" fill="#FFE0E5"/><circle cx="28" cy="22" r="10" fill="#FF9DAD"/><rect x="14" y="36" width="28" height="14" rx="3" fill="#FF9DAD" opacity=".6"/></svg></div><div class="acc-nm">小红的日常</div><div class="acc-id">XHS_28910</div><span class="tag tag-g">已连接</span></div>
+<div class="acc-card"><div class="acc-av"><svg viewBox="0 0 56 56"><rect width="56" height="56" fill="#EDE9FE"/><circle cx="28" cy="22" r="10" fill="#8B5CF6" opacity=".4"/><rect x="14" y="36" width="28" height="14" rx="3" fill="#8B5CF6" opacity=".3"/></svg></div><div class="acc-nm">美食探店记</div><div class="acc-id">XHS_56231</div><span class="tag tag-g">已连接</span></div>
+<div class="acc-card acc-add"><div class="add-ic"><svg viewBox="0 0 20 20" fill="none"><path d="M10 4V16M4 10H16" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg></div><div style="font-size:var(--tb);font-weight:var(--fs6);color:var(--cn-500)">添加账号</div><div style="font-size:var(--txs);color:var(--cn-400)">扫码绑定小红书账号</div></div>
+</div>
+</div>
+
+<!-- ====== LOGIN ====== -->
+<div class="pv" id="p-login" style="padding:0;margin:-32px">
+<div class="lp">
+<div class="lp-brand"><div class="lp-c">
+<div class="lp-logo"><svg viewBox="0 0 32 32" fill="none"><path d="M16 4L22 9V23L16 28L10 23V9L16 4Z" fill="white" opacity=".9"/><path d="M16 8L19 10.5V21.5L16 24L13 21.5V10.5L16 8Z" fill="white"/></svg></div>
+<div class="lp-tt">红书智创</div>
+<div class="lp-sub">AI 赋能，让小红书运营更轻松</div>
+<div class="lp-feats">
+<div class="lp-feat"><div class="lp-feat-ic"><svg viewBox="0 0 22 22" fill="none"><path d="M11 2L13 7H18L14 10.5L15.5 16L11 12.5L6.5 16L8 10.5L4 7H9L11 2Z" fill="white"/></svg></div><span>AI 智能创作</span></div>
+<div class="lp-feat"><div class="lp-feat-ic"><svg viewBox="0 0 22 22" fill="none"><rect x="3" y="4" width="16" height="14" rx="2" stroke="white" stroke-width="1.5" fill="none"/><path d="M7 10H15M7 14H12" stroke="white" stroke-width="1.5" stroke-linecap="round"/></svg></div><span>批量管理</span></div>
+<div class="lp-feat"><div class="lp-feat-ic"><svg viewBox="0 0 22 22" fill="none"><path d="M3 16V8M7 16V5M11 16V10M15 16V3M19 16V7" stroke="white" stroke-width="2" stroke-linecap="round"/></svg></div><span>数据洞察</span></div>
+</div>
+</div></div>
+<div class="lp-form"><div class="lp-fc">
+<div class="lp-ft">欢迎回来</div><div class="lp-fd">登录你的红书智创账号</div>
+<div class="lp-fl"><label>手机号</label><input class="ipt" type="text" placeholder="请输入手机号"></div>
+<div class="lp-fl"><label>验证码</label><div style="display:flex;gap:var(--s2)"><input class="ipt" type="text" placeholder="请输入验证码" style="flex:1"><button class="btn btn-s" style="white-space:nowrap">获取验证码</button></div></div>
+<button class="lp-btn">登 录</button>
+<div class="lp-foot">登录即表示同意 <a href="#">用户协议</a> 和 <a href="#">隐私政策</a></div>
+</div></div>
+</div>
+</div>
+
+<!-- ====== SETTINGS ====== -->
+<div class="pv" id="p-settings">
+<h2 style="font-size:var(--txl);font-weight:var(--fb);color:var(--cn-900);margin-bottom:var(--s1)">个人设置</h2>
+<p style="font-size:var(--tsm);color:var(--cn-500);margin-bottom:var(--s6)">管理你的账户和偏好设置</p>
+<div class="sl">
+<div class="ss"><div class="ss-tt">账户信息</div>
+<div class="si"><div><div class="si-lb">手机号</div><div class="si-desc">138****6789</div></div><button class="btn btn-sm btn-g">修改</button></div>
+<div class="si"><div><div class="si-lb">邮箱</div><div class="si-desc">creator@example.com</div></div><button class="btn btn-sm btn-g">修改</button></div>
+<div class="si"><div><div class="si-lb">密码</div><div class="si-desc">已设置，上次修改 30 天前</div></div><button class="btn btn-sm btn-g">修改</button></div>
+</div>
+<div class="ss"><div class="ss-tt">通知偏好</div>
+<div class="si"><div><div class="si-lb">内容审核通知</div><div class="si-desc">内容通过或被拒绝时通知</div></div><div class="tgl on" onclick="this.classList.toggle('on')"></div></div>
+<div class="si"><div><div class="si-lb">发布成功通知</div><div class="si-desc">内容发布成功后通知</div></div><div class="tgl on" onclick="this.classList.toggle('on')"></div></div>
+<div class="si"><div><div class="si-lb">数据报告</div><div class="si-desc">每周发送数据周报</div></div><div class="tgl" onclick="this.classList.toggle('on')"></div></div>
+</div>
+<div class="ss"><div class="ss-tt">AI 偏好</div>
+<div class="si"><div><div class="si-lb">默认创作风格</div><div class="si-desc">轻松自然</div></div><button class="btn btn-sm btn-g">更改</button></div>
+<div class="si"><div><div class="si-lb">AI 生成语言</div><div class="si-desc">简体中文</div></div><button class="btn btn-sm btn-g">更改</button></div>
+<div class="si"><div><div class="si-lb">标题候选数量</div><div class="si-desc">3 个（推荐）</div></div><button class="btn btn-sm btn-g">更改</button></div>
+</div>
+</div>
+</div>
+
+<!-- ====== ADMIN ====== -->
+<div class="pv" id="p-admin">
+<h2 style="font-size:var(--txl);font-weight:var(--fb);color:var(--cn-900);margin-bottom:var(--s1)">管理后台</h2>
+<p style="font-size:var(--tsm);color:var(--cn-500);margin-bottom:var(--s6)">全局数据概览与用户管理</p>
+<div class="adm-m">
+<div class="am"><div class="am-lb">总用户数</div><div class="am-vl">1,284</div><div class="am-ch" style="color:var(--cs)">↑ 12.3%</div></div>
+<div class="am"><div class="am-lb">日活用户</div><div class="am-vl">428</div><div class="am-ch" style="color:var(--cs)">↑ 8.5%</div></div>
+<div class="am"><div class="am-lb">AI 创作总量</div><div class="am-vl">52.6K</div><div class="am-ch" style="color:var(--cs)">↑ 24.1%</div></div>
+<div class="am"><div class="am-lb">系统健康度</div><div class="am-vl" style="color:var(--cs)">99.8%</div><div class="am-ch" style="color:var(--cn-500)">正常运行</div></div>
+</div>
+<div class="adm-c">
+<div class="cc"><div class="cc-h"><div class="cc-t">用户活跃度趋势</div></div>
+<svg viewBox="0 0 520 180" style="width:100%"><line x1="40" y1="155" x2="510" y2="155" stroke="#E7E5E4" stroke-width=".5"/><line x1="40" y1="87" x2="510" y2="87" stroke="#E7E5E4" stroke-width=".5" stroke-dasharray="4"/><text x="35" y="158" text-anchor="end" fill="#A8A29E" font-size="10">0</text><text x="35" y="90" text-anchor="end" fill="#A8A29E" font-size="10">300</text><polyline points="107,120 174,105 241,95 308,80 375,65 442,55 509,45" fill="none" stroke="#8B5CF6" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/><linearGradient id="avf" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#8B5CF6" stop-opacity=".15"/><stop offset="100%" stop-color="#8B5CF6" stop-opacity="0"/></linearGradient><polygon points="107,120 174,105 241,95 308,80 375,65 442,55 509,45 509,155 107,155" fill="url(#avf)"/><circle cx="509" cy="45" r="4" fill="#8B5CF6" stroke="#fff" stroke-width="2"/></svg></div>
+<div class="cc"><div class="cc-h"><div class="cc-t">功能使用分布</div></div>
+<div class="hb"><div class="hb-l">AI 创作</div><div class="hb-t"><div class="hb-f" style="width:82%;background:var(--gai)">82%</div></div></div>
+<div class="hb"><div class="hb-l">内容审核</div><div class="hb-t"><div class="hb-f" style="width:65%;background:var(--cp-300)">65%</div></div></div>
+<div class="hb"><div class="hb-l">发布队列</div><div class="hb-t"><div class="hb-f" style="width:48%;background:var(--ca-orange)">48%</div></div></div>
+<div class="hb"><div class="hb-l">数据分析</div><div class="hb-t"><div class="hb-f" style="width:35%;background:var(--ci)">35%</div></div></div>
+</div>
+</div>
+</div>
+
+</div><!-- pc -->
+</div><!-- mc -->
+</div><!-- app -->
+
+<script>
+const pages={dashboard:'数据看板','ai-create':'AI 创作',review:'图文审核',queue:'发布队列',analytics:'数据分析',accounts:'账号绑定',settings:'个人设置',admin:'管理后台',login:'登录页预览'};
+function go(id){
+  document.querySelectorAll('.pv').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.sb-item').forEach(s=>s.classList.remove('active'));
+  const page=document.getElementById('p-'+id);
+  if(page)page.classList.add('active');
+  const items=document.querySelectorAll('.sb-item');
+  const keys=Object.keys(pages);
+  keys.forEach((k,i)=>{if(k===id)items[i]?.classList.add('active')});
+  document.getElementById('pn').textContent=pages[id]||id;
+}
+// Toggle login sidebar visibility
+const loginPage=document.getElementById('p-login');
+if(loginPage){
+  const observer=new MutationObserver(()=>{
+    if(loginPage.classList.contains('active')){
+      document.querySelector('.sb').style.display='none';
+      document.querySelector('.tb').style.display='none';
+      document.querySelector('.pc').style.padding='0';
+    }else{
+      document.querySelector('.sb').style.display='';
+      document.querySelector('.tb').style.display='';
+      document.querySelector('.pc').style.padding='';
+    }
+  });
+  observer.observe(loginPage,{attributes:true,attributeFilter:['class']});
+}
+</script>
+</body>
+</html>
