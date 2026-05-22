@@ -14,6 +14,7 @@ public class User {
     private LocalDateTime registerTime;
     private LocalDateTime lastLoginTime;
     private Integer status;        // 0-禁用, 1-正常
+    private String role;           // 角色: USER/ADMIN
     private Long defaultAgentId;
     private String registerTerminal;
     private Integer memberLevel;   // 0-免费, 1-标准, 2-专业
@@ -29,6 +30,7 @@ public class User {
     public LocalDateTime getRegisterTime() { return registerTime; } public void setRegisterTime(LocalDateTime t) { this.registerTime = t; }
     public LocalDateTime getLastLoginTime() { return lastLoginTime; } public void setLastLoginTime(LocalDateTime t) { this.lastLoginTime = t; }
     public Integer getStatus() { return status; } public void setStatus(Integer status) { this.status = status; }
+    public String getRole() { return role; } public void setRole(String role) { this.role = role; }
     public Long getDefaultAgentId() { return defaultAgentId; } public void setDefaultAgentId(Long id) { this.defaultAgentId = id; }
     public String getRegisterTerminal() { return registerTerminal; } public void setRegisterTerminal(String t) { this.registerTerminal = t; }
     public Integer getMemberLevel() { return memberLevel; } public void setMemberLevel(Integer l) { this.memberLevel = l; }

@@ -15,6 +15,7 @@ CREATE TABLE IF NOT EXISTS `user` (
     `register_time` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '注册时间',
     `last_login_time` DATETIME DEFAULT NULL COMMENT '最后登录时间',
     `status` TINYINT NOT NULL DEFAULT 1 COMMENT '状态: 0-禁用, 1-正常',
+    `role` VARCHAR(20) NOT NULL DEFAULT 'USER' COMMENT '角色: USER/ADMIN',
     `default_agent_id` BIGINT DEFAULT NULL COMMENT '默认Agent ID',
     `register_terminal` VARCHAR(20) NOT NULL DEFAULT 'computer' COMMENT '注册终端: computer/harmony/mini_program',
     `member_level` TINYINT DEFAULT 0 COMMENT '会员等级: 0-免费, 1-标准, 2-专业',
@@ -191,6 +192,10 @@ CREATE TABLE IF NOT EXISTS `system_config` (
 -- ============================================
 -- 初始化默认数据
 -- ============================================
+
+-- 默认超级管理员 (手机号: 13800000000, 密码: admin123456)
+INSERT INTO `user` (`phone`, `password`, `nickname`, `email`, `register_time`, `status`, `role`, `register_terminal`, `member_level`) VALUES
+('13800000000', 'ecfda3814781cbf585669833af918e00', '超级管理员', 'admin@hongshu.ai', NOW(), 1, 'ADMIN', 'computer', 0);
 
 -- 默认Agent
 INSERT INTO `agent` (`name`, `description`, `style`, `domain`, `sort_order`, `prompt_template`) VALUES
