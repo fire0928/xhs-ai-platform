@@ -85,7 +85,7 @@ minio:
 
 # AES Encryption
 aes:
-  key: XhsAES256Key!!@2024Secure32Byte!!
+  key: XhsAES256SecretKey!@2024Secure!!
 
 # AI Service (configurable via admin panel)
 ai:

@@ -25,7 +25,7 @@ public class AiController {
     // ===== Agent =====
     @GetMapping("/agents")
     public ApiResponse<List<Agent>> getAgents() {
-        return ApiResponse.ok(aiService.getAvailableAgents());
+        return ApiResponse.ok(aiService.getAllAgents());
     }
 
     @PostMapping("/agents")
@@ -36,6 +36,12 @@ public class AiController {
     @PutMapping("/agents/{id}")
     public ApiResponse<Agent> updateAgent(@PathVariable Long id, @RequestBody Agent agent) {
         return ApiResponse.ok(aiService.updateAgent(id, agent));
+    }
+
+    @DeleteMapping("/agents/{id}")
+    public ApiResponse<?> deleteAgent(@PathVariable Long id) {
+        aiService.deleteAgent(id);
+        return ApiResponse.ok();
     }
 
     // ===== API Models =====

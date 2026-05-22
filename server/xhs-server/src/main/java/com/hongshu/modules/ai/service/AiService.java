@@ -62,6 +62,16 @@ public class AiService extends ServiceImpl<AgentMapper, Agent> {
         return getById(id);
     }
 
+    public void deleteAgent(Long id) {
+        if (getById(id) == null) throw new BusinessException(404, "Agent不存在");
+        removeById(id);
+    }
+
+    public List<Agent> getAllAgents() {
+        return list(new LambdaQueryWrapper<Agent>()
+                .orderByAsc(Agent::getSortOrder));
+    }
+
     // ===== API模型管理 =====
 
     public List<AiModelApi> getApis() {

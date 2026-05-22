@@ -84,7 +84,7 @@ services:
       MINIO_ACCESS_KEY: xhs_admin
       MINIO_SECRET_KEY: XhsMinio@2024
       JWT_SECRET: XhsJwtSecretKey2024!@#Secure256BitKey!A
-      AES_KEY: XhsAES256Key!!@2024Secure
+      AES_KEY: "XhsAES256SecretKey!@2024Secure!!"
     ports:
       - "8080:8080"
     networks:
@@ -126,6 +126,7 @@ services:
     volumes:
       - ./nginx/nginx.conf:/etc/nginx/nginx.conf
       - ./nginx/conf.d:/etc/nginx/conf.d
+      - ./nginx/html:/usr/share/nginx/html:ro
     depends_on:
       - xhs-server
       - publish-engine
