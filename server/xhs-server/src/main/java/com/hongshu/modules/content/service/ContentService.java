@@ -10,8 +10,8 @@ import com.hongshu.modules.content.entity.AiContent;
 import com.hongshu.modules.content.mapper.AiContentMapper;
 import io.minio.*;
 import io.minio.http.Method;
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -21,10 +21,10 @@ import java.time.LocalDateTime;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
 
-@Slf4j
 @Service
-@RequiredArgsConstructor
 public class ContentService extends ServiceImpl<AiContentMapper, AiContent> {
+
+    private static final Logger log = LoggerFactory.getLogger(ContentService.class);
 
     private final MinioClient minioClient;
 
@@ -33,6 +33,10 @@ public class ContentService extends ServiceImpl<AiContentMapper, AiContent> {
 
     @Value("${minio.endpoint}")
     private String minioEndpoint;
+
+    public ContentService(MinioClient minioClient) {
+        this.minioClient = minioClient;
+    }
 
     // ===== 内容CRUD =====
 

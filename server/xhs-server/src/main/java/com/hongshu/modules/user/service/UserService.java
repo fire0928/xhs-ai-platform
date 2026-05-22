@@ -11,7 +11,6 @@ import com.hongshu.common.util.CryptoUtil;
 import com.hongshu.modules.user.entity.User;
 import com.hongshu.modules.user.mapper.UserMapper;
 import com.hongshu.modules.user.dto.*;
-import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.redis.core.RedisTemplate;
@@ -22,7 +21,6 @@ import java.time.LocalDateTime;
 import java.util.concurrent.TimeUnit;
 
 @Service
-@RequiredArgsConstructor
 public class UserService extends ServiceImpl<UserMapper, User> {
 
     private static final Logger logger = LoggerFactory.getLogger(UserService.class);
@@ -30,6 +28,12 @@ public class UserService extends ServiceImpl<UserMapper, User> {
     private final CryptoUtil cryptoUtil;
     private final JwtUtil jwtUtil;
     private final RedisTemplate<String, Object> redisTemplate;
+
+    public UserService(CryptoUtil cryptoUtil, JwtUtil jwtUtil, RedisTemplate<String, Object> redisTemplate) {
+        this.cryptoUtil = cryptoUtil;
+        this.jwtUtil = jwtUtil;
+        this.redisTemplate = redisTemplate;
+    }
 
     private static final String CODE_PREFIX = "sms:code:";
     private static final int CODE_EXPIRE_MINUTES = 5;

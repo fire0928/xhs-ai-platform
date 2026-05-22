@@ -9,7 +9,6 @@ import com.hongshu.modules.publish.entity.PublishQueue;
 import com.hongshu.modules.publish.entity.PublishLog;
 import com.hongshu.modules.publish.mapper.PublishQueueMapper;
 import com.hongshu.modules.publish.mapper.PublishLogMapper;
-import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -23,7 +22,6 @@ import java.util.List;
 import java.util.Map;
 
 @Service
-@RequiredArgsConstructor
 public class PublishService extends ServiceImpl<PublishQueueMapper, PublishQueue> {
 
     private static final Logger logger = LoggerFactory.getLogger(PublishService.class);
@@ -36,6 +34,11 @@ public class PublishService extends ServiceImpl<PublishQueueMapper, PublishQueue
 
     @Value("${publish.max-retry}")
     private int maxRetry;
+
+    public PublishService(PublishLogMapper publishLogMapper, RedisTemplate<String, Object> redisTemplate) {
+        this.publishLogMapper = publishLogMapper;
+        this.redisTemplate = redisTemplate;
+    }
 
     private static final String QUEUE_STREAM_KEY = "publish:queue:stream";
     private static final int MAX_RETRY_COUNT = 2;

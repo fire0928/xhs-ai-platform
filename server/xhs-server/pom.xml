@@ -100,12 +100,6 @@
             <version>5.8.27</version>
         </dependency>
 
-        <!-- Lombok -->
-        <dependency>
-            <groupId>org.projectlombok</groupId>
-            <artifactId>lombok</artifactId>
-        </dependency>
-
         <!-- Quartz -->
         <dependency>
             <groupId>org.springframework.boot</groupId>

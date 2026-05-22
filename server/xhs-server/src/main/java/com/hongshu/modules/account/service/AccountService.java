@@ -9,7 +9,6 @@ import com.hongshu.modules.account.entity.XiaohongshuAccount;
 import com.hongshu.modules.account.entity.XhAccountData;
 import com.hongshu.modules.account.mapper.XiaohongshuAccountMapper;
 import com.hongshu.modules.account.mapper.XhAccountDataMapper;
-import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -18,11 +17,15 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 @Service
-@RequiredArgsConstructor
 public class AccountService extends ServiceImpl<XiaohongshuAccountMapper, XiaohongshuAccount> {
 
     private final XhAccountDataMapper xhAccountDataMapper;
     private final CryptoUtil cryptoUtil;
+
+    public AccountService(XhAccountDataMapper xhAccountDataMapper, CryptoUtil cryptoUtil) {
+        this.xhAccountDataMapper = xhAccountDataMapper;
+        this.cryptoUtil = cryptoUtil;
+    }
 
     private static final int MAX_BIND_COUNT = 3;
 
