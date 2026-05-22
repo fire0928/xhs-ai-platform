@@ -17,6 +17,7 @@ import com.hongshu.modules.publish.mapper.PublishQueueMapper;
 import com.hongshu.modules.account.mapper.XiaohongshuAccountMapper;
 import com.hongshu.modules.admin.entity.OperationLog;
 import com.hongshu.modules.admin.mapper.OperationLogMapper;
+import com.hongshu.modules.admin.dto.CreateUserRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -25,6 +26,7 @@ import org.springframework.data.redis.core.RedisTemplate;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.*;
+import java.util.concurrent.ThreadLocalRandom;
 
 @Service
 public class AdminService {
@@ -54,13 +56,109 @@ public class AdminService {
         this.cryptoUtil = cryptoUtil;
     }
 
-    public IPage<?> pageUsers(int page, int pageSize, String keyword, Integer status, String terminal) {
+    public IPage<UserDTO> pageUsers(int page, int pageSize, String keyword, Integer status, String terminal) {
         LambdaQueryWrapper<User> wrapper = new LambdaQueryWrapper<>();
-        if (keyword != null) wrapper.like(User::getPhone, keyword);
+        if (keyword != null && !keyword.isEmpty()) wrapper.like(User::getPhone, keyword);
         if (status != null) wrapper.eq(User::getStatus, status);
-        if (terminal != null) wrapper.eq(User::getRegisterTerminal, terminal);
+        if (terminal != null && !terminal.isEmpty()) wrapper.eq(User::getRegisterTerminal, terminal);
         wrapper.orderByDesc(User::getRegisterTime);
-        return userMapper.selectPage(new Page<>(page, pageSize), wrapper);
+        return userMapper.selectPage(new Page<>(page, pageSize), wrapper).convert(this::toDTO);
+    }
+
+    /** 创建用户 */
+    @Transactional
+    public UserDTO createUser(CreateUserRequest req) {
+        if (req.getPhone() == null || req.getPhone().isEmpty())
+            throw new BusinessException(400, "手机号不能为空");
+        if (req.getPassword() == null || req.getPassword().length() < 6)
+            throw new BusinessException(400, "密码至少6位");
+
+        LambdaQueryWrapper<User> exist = new LambdaQueryWrapper<>();
+        exist.eq(User::getPhone, req.getPhone());
+        if (userMapper.selectCount(exist) > 0)
+            throw new BusinessException(400, "该手机号已注册");
+
+        User user = new User();
+        user.setPhone(req.getPhone());
+        user.setPassword(cryptoUtil.encodePassword(req.getPassword()));
+        user.setNickname(req.getNickname() != null ? req.getNickname() : "");
+        user.setEmail(req.getEmail());
+        user.setRegisterTime(LocalDateTime.now());
+        user.setStatus(1);
+        user.setRole("USER");
+        user.setMemberLevel(req.getMemberLevel() != null ? req.getMemberLevel() : 0);
+        user.setRegisterTerminal(req.getRegisterTerminal() != null ? req.getRegisterTerminal() : "computer");
+        userMapper.insert(user);
+        return toDTO(user);
+    }
+
+    /** 更新用户信息(管理后台) */
+    @Transactional
+    public void updateUser(Long userId, com.hongshu.modules.admin.dto.UpdateUserRequest req) {
+        User user = userMapper.selectById(userId);
+        if (user == null) throw new BusinessException(404, "用户不存在");
+        if (req.getNickname() != null) user.setNickname(req.getNickname());
+        if (req.getEmail() != null) user.setEmail(req.getEmail());
+        if (req.getMemberLevel() != null) user.setMemberLevel(req.getMemberLevel());
+        if (req.getRegisterTerminal() != null) user.setRegisterTerminal(req.getRegisterTerminal());
+        userMapper.updateById(user);
+    }
+
+    /** 用户统计数据 */
+    public Map<String, Object> getUserStats() {
+        long totalUsers = userMapper.selectCount(null);
+        long activeUsers = userMapper.countActiveUsers();
+        long todayNew = userMapper.selectCount(
+                new LambdaQueryWrapper<User>()
+                        .ge(User::getRegisterTime, LocalDate.now().atStartOfDay()));
+        long disabledUsers = userMapper.selectCount(
+                new LambdaQueryWrapper<User>().eq(User::getStatus, 0));
+
+        Map<String, Object> stats = new LinkedHashMap<>();
+        stats.put("totalUsers", totalUsers);
+        stats.put("activeUsers", activeUsers);
+        stats.put("todayNew", todayNew);
+        stats.put("disabledUsers", disabledUsers);
+        return stats;
+    }
+
+    /** 生成随机测试用户 */
+    @Transactional
+    public int generateTestUsers(int count) {
+        String[] nicknames = {"星辰大海", "旅行者", "美食侦探", "电影控", "音乐达人", "摄影爱好者",
+                "读书笔记", "健身达人", "咖啡控", "极客玩家", "猫咪铲屎官", "绘画师",
+                "时尚博主", "数码控", "园艺师", "手账er", "烘焙师", "瑜伽修行者",
+                "程序猿", "设计师小陈", "文案喵", "运营小张", "产品经理", "前端阿杰",
+                "后端老刘", "测试小王", "运维小李", "数据分析师", "AI探索者", "创业青年"};
+        String[] terminals = {"computer", "harmony", "mini_program"};
+        String[] emails = {"", "", "test@qq.com", "hello@163.com", "user@gmail.com"};
+
+        int created = 0;
+        for (int i = 0; i < count; i++) {
+            String phone = "1" + (3 + ThreadLocalRandom.current().nextInt(6))
+                    + String.format("%09d", ThreadLocalRandom.current().nextLong(10_0000_0000L));
+
+            LambdaQueryWrapper<User> exist = new LambdaQueryWrapper<>();
+            exist.eq(User::getPhone, phone);
+            if (userMapper.selectCount(exist) > 0) continue;
+
+            User user = new User();
+            user.setPhone(phone);
+            user.setPassword(cryptoUtil.encodePassword("123456"));
+            user.setNickname(nicknames[ThreadLocalRandom.current().nextInt(nicknames.length)]);
+            user.setEmail(emails[ThreadLocalRandom.current().nextInt(emails.length)]);
+            user.setRegisterTime(LocalDateTime.now()
+                    .minusDays(ThreadLocalRandom.current().nextInt(60))
+                    .minusHours(ThreadLocalRandom.current().nextInt(24))
+                    .minusMinutes(ThreadLocalRandom.current().nextInt(60)));
+            user.setStatus(ThreadLocalRandom.current().nextInt(10) == 0 ? 0 : 1);
+            user.setRole("USER");
+            user.setMemberLevel(ThreadLocalRandom.current().nextInt(3));
+            user.setRegisterTerminal(terminals[ThreadLocalRandom.current().nextInt(terminals.length)]);
+            userMapper.insert(user);
+            created++;
+        }
+        return created;
     }
 
     public void toggleUserStatus(Long userId, Integer status) {
@@ -76,6 +174,30 @@ public class AdminService {
         if (user == null) throw new BusinessException(404, "用户不存在");
         user.setPassword(cryptoUtil.encodePassword(newPassword));
         userMapper.updateById(user);
+    }
+
+    // ---- 辅助方法 ----
+    private UserDTO toDTO(User user) {
+        UserDTO dto = new UserDTO();
+        dto.setId(user.getId());
+        dto.setPhone(maskPhone(user.getPhone()));
+        dto.setNickname(user.getNickname());
+        dto.setEmail(user.getEmail());
+        dto.setRegisterTime(user.getRegisterTime());
+        dto.setLastLoginTime(user.getLastLoginTime());
+        dto.setStatus(user.getStatus());
+        dto.setMemberLevel(user.getMemberLevel());
+        dto.setMemberExpireTime(user.getMemberExpireTime());
+        dto.setRegisterTerminal(user.getRegisterTerminal());
+        dto.setDefaultAgentId(user.getDefaultAgentId());
+        return dto;
+    }
+
+    private String maskPhone(String phone) {
+        if (phone != null && phone.length() == 11) {
+            return phone.substring(0, 3) + "****" + phone.substring(7);
+        }
+        return phone;
     }
 
     public Map<String, Object> getSystemOverview() {

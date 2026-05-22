@@ -5,6 +5,7 @@ import com.hongshu.common.model.ApiResponse;
 import com.hongshu.common.model.PageResult;
 import com.hongshu.modules.admin.service.AdminService;
 import com.hongshu.modules.admin.entity.OperationLog;
+import com.hongshu.modules.admin.dto.CreateUserRequest;
 import com.hongshu.modules.user.dto.*;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
@@ -33,6 +34,29 @@ public class AdminController {
             @RequestParam(required = false) String terminal) {
         IPage<?> result = adminService.pageUsers(page, pageSize, keyword, status, terminal);
         return ApiResponse.ok(PageResult.of(result.getTotal(), page, pageSize, result.getRecords()));
+    }
+
+    @GetMapping("/users/stats")
+    public ApiResponse<Map<String, Object>> getUserStats() {
+        return ApiResponse.ok(adminService.getUserStats());
+    }
+
+    @PostMapping("/users")
+    public ApiResponse<?> createUser(@RequestBody CreateUserRequest req) {
+        return ApiResponse.ok(adminService.createUser(req));
+    }
+
+    @PutMapping("/users/{userId}")
+    public ApiResponse<?> updateUser(@PathVariable Long userId,
+                                     @RequestBody com.hongshu.modules.admin.dto.UpdateUserRequest req) {
+        adminService.updateUser(userId, req);
+        return ApiResponse.ok();
+    }
+
+    @PostMapping("/users/generate")
+    public ApiResponse<?> generateTestUsers(@RequestParam(defaultValue = "30") int count) {
+        int created = adminService.generateTestUsers(count);
+        return ApiResponse.ok(Map.of("created", created, "message", "成功生成 " + created + " 条测试用户"));
     }
 
     @PutMapping("/users/{userId}/toggle-status")
