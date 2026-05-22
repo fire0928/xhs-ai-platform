@@ -82,10 +82,11 @@
 </template>
 
 <script setup>
-import { onMounted, ref } from 'vue'
+import { computed, onMounted, ref } from 'vue'
 import { useAdminStore } from '@/store'
 
 const store = useAdminStore()
+const stats = computed(() => store.stats)
 const loading = ref(false)
 
 const services = ref([
