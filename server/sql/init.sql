@@ -197,6 +197,10 @@ CREATE TABLE IF NOT EXISTS `system_config` (
 INSERT INTO `user` (`phone`, `password`, `nickname`, `email`, `register_time`, `status`, `role`, `register_terminal`, `member_level`) VALUES
 ('13800000000', 'ecfda3814781cbf585669833af918e00', '超级管理员', 'admin@hongshu.ai', NOW(), 1, 'ADMIN', 'computer', 0);
 
+-- 默认测试用户 (手机号: 13900000001, 密码: user123456)
+INSERT INTO `user` (`phone`, `password`, `nickname`, `email`, `register_time`, `status`, `role`, `register_terminal`, `member_level`) VALUES
+('13900000001', 'ba93116dffb57d4af13c5c51678039d2', '测试用户', 'test@hongshu.ai', NOW(), 1, 'USER', 'computer', 0);
+
 -- 默认Agent
 INSERT INTO `agent` (`name`, `description`, `style`, `domain`, `sort_order`, `prompt_template`) VALUES
 ('生活分享 Agent', '擅长日常生活类内容创作，风格轻松自然，适合生活方式博主', '轻松自然', '生活方式', 1, '你是一个擅长生活分享的小红书博主，创作风格轻松自然。请根据用户输入的主题创作高质量的文案。'),
