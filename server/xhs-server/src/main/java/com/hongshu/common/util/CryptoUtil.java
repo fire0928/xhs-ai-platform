@@ -4,7 +4,8 @@ import cn.hutool.core.util.StrUtil;
 import cn.hutool.crypto.SecureUtil;
 import cn.hutool.crypto.symmetric.SymmetricAlgorithm;
 import cn.hutool.crypto.symmetric.SymmetricCrypto;
-import lombok.extern.slf4j.Slf4j;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
@@ -16,9 +17,10 @@ import java.nio.charset.StandardCharsets;
  * - MD5+盐值 用于密码
  * - AES-256 用于敏感数据
  */
-@Slf4j
 @Component
 public class CryptoUtil {
+
+    private static final Logger log = LoggerFactory.getLogger(CryptoUtil.class);
 
     @Value("${aes.key}")
     private String aesKey;
