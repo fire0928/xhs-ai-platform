@@ -83,7 +83,7 @@ services:
       MINIO_ENDPOINT: http://minio:9000
       MINIO_ACCESS_KEY: xhs_admin
       MINIO_SECRET_KEY: XhsMinio@2024
-      JWT_SECRET: XhsJwtSecretKey2024!@#$
+      JWT_SECRET: XhsJwtSecretKey2024Secure256bit!!
       AES_KEY: XhsAES256Key!!@2024Secure
     ports:
       - "8080:8080"
