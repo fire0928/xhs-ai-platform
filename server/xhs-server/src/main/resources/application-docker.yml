@@ -1,6 +1,6 @@
 spring:
   datasource:
-    url: jdbc:mysql://${DB_HOST:mysql}:${DB_PORT:3306}/${DB_NAME:xhs_db}?useUnicode=true&characterEncoding=utf8mb4&serverTimezone=Asia/Shanghai&useSSL=false&allowPublicKeyRetrieval=true
+    url: jdbc:mysql://${DB_HOST:mysql}:${DB_PORT:3306}/${DB_NAME:xhs_db}?characterEncoding=UTF-8&serverTimezone=Asia/Shanghai&useSSL=false&allowPublicKeyRetrieval=true
     username: ${DB_USER:xhs_user}
     password: ${DB_PASS:Xhs@2024!user}
   data:
@@ -15,4 +15,4 @@ minio:
   secret-key: ${MINIO_SECRET_KEY:XhsMinio@2024}
 
 jwt:
-  secret: ${JWT_SECRET:XhsJwtSecretKey2024!@#$}
+  secret: ${JWT_SECRET:XhsJwtSecretKey2024Secure256bit!!}
