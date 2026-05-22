@@ -13,7 +13,7 @@ FROM eclipse-temurin:21-jre
 
 WORKDIR /app
 
-RUN addgroup -S appgroup && adduser -S appuser -G appgroup
+RUN groupadd -r appgroup && useradd -r -g appgroup appuser
 
 COPY --from=builder /build/target/*.jar app.jar
 
