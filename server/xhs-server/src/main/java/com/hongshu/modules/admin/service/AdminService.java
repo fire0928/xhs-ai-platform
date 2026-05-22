@@ -70,7 +70,9 @@ public class AdminService {
     public Map<String, Object> getSystemOverview() {
         long totalUsers = userMapper.selectCount(null);
         long activeUsers = userMapper.countActiveUsers();
+        long dau = userMapper.countDau();
         long totalContents = contentMapper.selectCount(null);
+        long aiTotal = callLogMapper.selectCount(null);
         long pendingPublishes = publishQueueMapper.selectCount(
                 new LambdaQueryWrapper<PublishQueue>().eq(PublishQueue::getPublishStatus, 0));
         long publishedToday = publishQueueMapper.selectCount(
@@ -81,7 +83,9 @@ public class AdminService {
         return Map.of(
                 "totalUsers", totalUsers,
                 "activeUsers", activeUsers,
+                "dau", dau,
                 "totalContents", totalContents,
+                "aiTotal", aiTotal,
                 "pendingPublishes", pendingPublishes,
                 "publishedToday", publishedToday,
                 "systemHealth", "99.8%"
