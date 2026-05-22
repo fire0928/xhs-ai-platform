@@ -2,6 +2,9 @@ FROM python:3.11-slim
 
 WORKDIR /app
 
+# 使用国内镜像源加速 apt-get
+RUN sed -i 's|deb.debian.org|mirrors.tuna.tsinghua.edu.cn|g' /etc/apt/sources.list.d/debian.sources
+
 # Install system dependencies (all in one layer for efficiency)
 RUN apt-get update && apt-get install -y \
     wget \
