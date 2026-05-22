@@ -2,6 +2,7 @@ import { createRouter, createWebHashHistory } from 'vue-router'
 
 const routes = [
   { path: '/', redirect: '/overview' },
+  { path: '/login', name: 'Login', component: () => import('@/views/Login.vue') },
   { path: '/overview', name: 'Overview', component: () => import('@/views/Overview.vue') },
   { path: '/users', name: 'Users', component: () => import('@/views/Users.vue') },
   { path: '/membership', name: 'Membership', component: () => import('@/views/Membership.vue') },
@@ -19,6 +20,8 @@ router.beforeEach((to, from, next) => {
   const token = localStorage.getItem('admin_token')
   if (!token && to.path !== '/login') {
     next('/login')
+  } else if (token && to.path === '/login') {
+    next('/overview')
   } else {
     next()
   }

@@ -8,8 +8,8 @@ export const useAdminStore = defineStore('admin', {
     stats: { totalUsers: 0, dau: 0, aiTotal: 0, health: 0 }
   }),
   actions: {
-    async login(username, password) {
-      const res = await api.post('/login', { username, password })
+    async login(phone, password) {
+      const res = await api.post('/login', { phone, password })
       if (res.data.code === 200) {
         this.token = res.data.data.token
         localStorage.setItem('admin_token', this.token)
