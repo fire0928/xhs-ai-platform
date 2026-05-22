@@ -58,9 +58,23 @@
         <div class="sb-user-name">超级管理员</div>
         <div class="sb-user-plan">admin@hongshu.ai</div>
       </div>
+      <button class="sb-logout" title="退出登录" @click="handleLogout">
+        <svg viewBox="0 0 16 16" fill="none"><path d="M6 2H3C2.45 2 2 2.45 2 3V13C2 13.55 2.45 14 3 14H6M11 11L14 8L11 5M14 8H6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </button>
     </div>
   </aside>
 </template>
+
+<script setup>
+import { useRouter } from 'vue-router'
+
+const router = useRouter()
+
+function handleLogout() {
+  localStorage.removeItem('admin_token')
+  router.push('/login')
+}
+</script>
 
 <style scoped>
 .sb{width:var(--sw);min-width:var(--sw);background:var(--cn-900);display:flex;flex-direction:column;z-index:10}
@@ -83,4 +97,7 @@
 .sb-user-info{flex:1;min-width:0}
 .sb-user-name{font-size:13px;font-weight:600;color:rgba(255,255,255,.9)}
 .sb-user-plan{font-size:11px;color:rgba(255,255,255,.4)}
+.sb-logout{width:28px;height:28px;background:none;border:none;border-radius:6px;display:flex;align-items:center;justify-content:center;color:rgba(255,255,255,.35);cursor:pointer;transition:all .15s;flex-shrink:0}
+.sb-logout:hover{background:rgba(254,44,85,.15);color:var(--cp-400)}
+.sb-logout svg{width:14px;height:14px}
 </style>

@@ -173,21 +173,83 @@ public class AiService extends ServiceImpl<AgentMapper, Agent> {
 
     private String callAiApi(AiModelApi api, String systemPrompt, String userPrompt) {
         try {
-            Map<String, Object> body = new HashMap<>();
-            body.put("model", api.getModelName() != null ? api.getModelName() : "gpt-3.5-turbo");
-            List<Map<String, String>> messages = new ArrayList<>();
-            messages.add(Map.of("role", "system", "content", systemPrompt));
-            messages.add(Map.of("role", "user", "content", userPrompt));
-            body.put("messages", messages);
-            body.put("temperature", 0.7);
+            String provider = api.getProvider() != null ? api.getProvider() : "openai";
+            String url = api.getApiUrl();
+            String modelName = api.getModelName() != null ? api.getModelName() : "gpt-3.5-turbo";
 
             HttpHeaders headers = new HttpHeaders();
             headers.setContentType(MediaType.APPLICATION_JSON);
-            headers.set("Authorization", "Bearer " + cryptoUtil.aesDecrypt(api.getApiKey()));
-            HttpEntity<String> entity = new HttpEntity<>(objectMapper.writeValueAsString(body), headers);
+            HttpEntity<String> entity;
+            String endpoint;
 
-            ResponseEntity<String> response = restTemplate.postForEntity(
-                    api.getApiUrl() + "/chat/completions", entity, String.class);
+            switch (provider) {
+                case "doubao": // 字节跳动豆包
+                    endpoint = url + "/chat/completions";
+                    headers.set("Authorization", "Bearer " + cryptoUtil.aesDecrypt(api.getApiKey()));
+                    Map<String, Object> doubaoBody = new HashMap<>();
+                    doubaoBody.put("model", modelName);
+                    List<Map<String, String>> doubaoMessages = new ArrayList<>();
+                    doubaoMessages.add(Map.of("role", "system", "content", systemPrompt));
+                    doubaoMessages.add(Map.of("role", "user", "content", userPrompt));
+                    doubaoBody.put("messages", doubaoMessages);
+                    doubaoBody.put("temperature", 0.7);
+                    entity = new HttpEntity<>(objectMapper.writeValueAsString(doubaoBody), headers);
+                    break;
+
+                case "baidu": // 百度文心一言
+                    endpoint = url + "/chat/completions";
+                    headers.set("Authorization", "Bearer " + cryptoUtil.aesDecrypt(api.getApiKey()));
+                    Map<String, Object> baiduBody = new HashMap<>();
+                    baiduBody.put("model", modelName);
+                    List<Map<String, String>> baiduMessages = new ArrayList<>();
+                    baiduMessages.add(Map.of("role", "system", "content", systemPrompt));
+                    baiduMessages.add(Map.of("role", "user", "content", userPrompt));
+                    baiduBody.put("messages", baiduMessages);
+                    baiduBody.put("temperature", 0.7);
+                    entity = new HttpEntity<>(objectMapper.writeValueAsString(baiduBody), headers);
+                    break;
+
+                case "aliyun": // 阿里通义千问
+                    endpoint = url + "/chat/completions";
+                    headers.set("Authorization", "Bearer " + cryptoUtil.aesDecrypt(api.getApiKey()));
+                    Map<String, Object> aliBody = new HashMap<>();
+                    aliBody.put("model", modelName);
+                    List<Map<String, String>> aliMessages = new ArrayList<>();
+                    aliMessages.add(Map.of("role", "system", "content", systemPrompt));
+                    aliMessages.add(Map.of("role", "user", "content", userPrompt));
+                    aliBody.put("messages", aliMessages);
+                    aliBody.put("temperature", 0.7);
+                    entity = new HttpEntity<>(objectMapper.writeValueAsString(aliBody), headers);
+                    break;
+
+                case "deepseek": // DeepSeek
+                    endpoint = url + "/chat/completions";
+                    headers.set("Authorization", "Bearer " + cryptoUtil.aesDecrypt(api.getApiKey()));
+                    Map<String, Object> dsBody = new HashMap<>();
+                    dsBody.put("model", modelName);
+                    List<Map<String, String>> dsMessages = new ArrayList<>();
+                    dsMessages.add(Map.of("role", "system", "content", systemPrompt));
+                    dsMessages.add(Map.of("role", "user", "content", userPrompt));
+                    dsBody.put("messages", dsMessages);
+                    dsBody.put("temperature", 0.7);
+                    entity = new HttpEntity<>(objectMapper.writeValueAsString(dsBody), headers);
+                    break;
+
+                default: // OpenAI 标准格式
+                    endpoint = url + "/chat/completions";
+                    headers.set("Authorization", "Bearer " + cryptoUtil.aesDecrypt(api.getApiKey()));
+                    Map<String, Object> openaiBody = new HashMap<>();
+                    openaiBody.put("model", modelName);
+                    List<Map<String, String>> openaiMessages = new ArrayList<>();
+                    openaiMessages.add(Map.of("role", "system", "content", systemPrompt));
+                    openaiMessages.add(Map.of("role", "user", "content", userPrompt));
+                    openaiBody.put("messages", openaiMessages);
+                    openaiBody.put("temperature", 0.7);
+                    entity = new HttpEntity<>(objectMapper.writeValueAsString(openaiBody), headers);
+                    break;
+            }
+
+            ResponseEntity<String> response = restTemplate.postForEntity(endpoint, entity, String.class);
 
             if (response.getStatusCode().is2xxSuccessful()) {
                 Map<String, Object> result = objectMapper.readValue(response.getBody(), Map.class);

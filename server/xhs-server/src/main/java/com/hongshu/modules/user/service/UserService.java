@@ -220,7 +220,7 @@ public class UserService extends ServiceImpl<UserMapper, User> {
     }
 
     private LoginResponse buildLoginResponse(User user) {
-        String role = "USER";
+        String role = user.getRole() != null ? user.getRole() : "USER";
         String token = jwtUtil.generateToken(user.getId(), user.getPhone(), role);
         String refreshToken = jwtUtil.generateRefreshToken(user.getId());
 

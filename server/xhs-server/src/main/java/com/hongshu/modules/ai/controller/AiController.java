@@ -4,6 +4,7 @@ import com.hongshu.common.model.ApiResponse;
 import com.hongshu.modules.ai.entity.Agent;
 import com.hongshu.modules.ai.entity.AiModelApi;
 import com.hongshu.modules.ai.service.AiService;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
@@ -11,7 +12,8 @@ import java.util.List;
 import java.util.Map;
 
 @RestController
-@RequestMapping("/ai")
+@RequestMapping("/admin/ai")
+@PreAuthorize("hasRole('ADMIN')")
 public class AiController {
 
     private final AiService aiService;

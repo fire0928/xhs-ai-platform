@@ -15,6 +15,7 @@ CREATE TABLE IF NOT EXISTS `user` (
     `register_time` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '注册时间',
     `last_login_time` DATETIME DEFAULT NULL COMMENT '最后登录时间',
     `status` TINYINT NOT NULL DEFAULT 1 COMMENT '状态: 0-禁用, 1-正常',
+    `role` VARCHAR(20) NOT NULL DEFAULT 'USER' COMMENT '角色: USER/ADMIN',
     `default_agent_id` BIGINT DEFAULT NULL COMMENT '默认Agent ID',
     `register_terminal` VARCHAR(20) NOT NULL DEFAULT 'computer' COMMENT '注册终端: computer/harmony/mini_program',
     `member_level` TINYINT DEFAULT 0 COMMENT '会员等级: 0-免费, 1-标准, 2-专业',
@@ -64,6 +65,7 @@ CREATE TABLE IF NOT EXISTS `agent` (
 CREATE TABLE IF NOT EXISTS `ai_model_api` (
     `id` BIGINT AUTO_INCREMENT PRIMARY KEY,
     `name` VARCHAR(100) NOT NULL COMMENT 'API名称',
+    `provider` VARCHAR(50) DEFAULT 'openai' COMMENT '厂商: openai,doubao,baidu,aliyun,deepseek,other',
     `api_url` VARCHAR(500) NOT NULL COMMENT '调用地址',
     `api_key` VARCHAR(500) NOT NULL COMMENT 'API密钥(加密)',
     `model_name` VARCHAR(100) DEFAULT NULL COMMENT '模型名称',
@@ -177,6 +179,52 @@ CREATE TABLE IF NOT EXISTS `operation_log` (
     INDEX `idx_create_time` (`create_time`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='操作日志表';
 
+-- 会员套餐表
+CREATE TABLE IF NOT EXISTS `member_plan` (
+    `id` BIGINT AUTO_INCREMENT PRIMARY KEY,
+    `name` VARCHAR(100) NOT NULL COMMENT '套餐名称',
+    `description` VARCHAR(500) DEFAULT NULL COMMENT '描述',
+    `level` INT NOT NULL COMMENT '等级: 0-免费, 1-标准, 2-专业',
+    `price` INT DEFAULT 0 COMMENT '价格(分)',
+    `period` VARCHAR(20) DEFAULT '永久' COMMENT '周期',
+    `daily_ai_create` INT DEFAULT 3 COMMENT '每日AI创作次数',
+    `max_accounts` INT DEFAULT 1 COMMENT '最大绑定账号数',
+    `max_agents` INT DEFAULT 2 COMMENT '最大Agent数',
+    `analysis_level` VARCHAR(20) DEFAULT '基础' COMMENT '分析级别',
+    `batch_enabled` TINYINT DEFAULT 0 COMMENT '批量操作: 0-否, 1-是',
+    `schedule_enabled` TINYINT DEFAULT 0 COMMENT '定时发布: 0-否, 1-是',
+    `export_enabled` TINYINT DEFAULT 0 COMMENT '数据导出: 0-否, 1-是',
+    `custom_agent_enabled` TINYINT DEFAULT 0 COMMENT '自定义Agent: 0-否, 1-是',
+    `sort_order` INT DEFAULT 0 COMMENT '排序',
+    `status` TINYINT DEFAULT 1 COMMENT '状态: 0-禁用, 1-启用',
+    `color` VARCHAR(20) DEFAULT 'var(--cn-400)' COMMENT '主题色',
+    `create_time` DATETIME DEFAULT CURRENT_TIMESTAMP,
+    `update_time` DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    `deleted` TINYINT DEFAULT 0,
+    INDEX `idx_level` (`level`),
+    INDEX `idx_status` (`status`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='会员套餐表';
+
+-- 会员订单表
+CREATE TABLE IF NOT EXISTS `member_order` (
+    `id` BIGINT AUTO_INCREMENT PRIMARY KEY,
+    `order_no` VARCHAR(64) NOT NULL UNIQUE COMMENT '订单号',
+    `user_id` BIGINT NOT NULL COMMENT '用户ID',
+    `user_name` VARCHAR(50) DEFAULT NULL COMMENT '用户名',
+    `plan_id` BIGINT NOT NULL COMMENT '套餐ID',
+    `plan_name` VARCHAR(100) DEFAULT NULL COMMENT '套餐名称',
+    `amount` INT NOT NULL COMMENT '金额(分)',
+    `status` TINYINT DEFAULT 0 COMMENT '状态: 0-待支付, 1-已支付, 2-已取消',
+    `pay_type` VARCHAR(20) DEFAULT NULL COMMENT '支付方式',
+    `remark` VARCHAR(500) DEFAULT NULL COMMENT '备注',
+    `pay_time` DATETIME DEFAULT NULL COMMENT '支付时间',
+    `create_time` DATETIME DEFAULT CURRENT_TIMESTAMP,
+    `deleted` TINYINT DEFAULT 0,
+    INDEX `idx_user_id` (`user_id`),
+    INDEX `idx_status` (`status`),
+    INDEX `idx_create_time` (`create_time`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='会员订单表';
+
 -- 系统配置表
 CREATE TABLE IF NOT EXISTS `system_config` (
     `id` BIGINT AUTO_INCREMENT PRIMARY KEY,
@@ -192,12 +240,26 @@ CREATE TABLE IF NOT EXISTS `system_config` (
 -- 初始化默认数据
 -- ============================================
 
+-- 默认超级管理员 (手机号: 13800000000, 密码: admin123456)
+INSERT INTO `user` (`phone`, `password`, `nickname`, `email`, `register_time`, `status`, `role`, `register_terminal`, `member_level`) VALUES
+('13800000000', 'ecfda3814781cbf585669833af918e00', '超级管理员', 'admin@hongshu.ai', NOW(), 1, 'ADMIN', 'computer', 0);
+
+-- 默认测试用户 (手机号: 13900000001, 密码: user123456)
+INSERT INTO `user` (`phone`, `password`, `nickname`, `email`, `register_time`, `status`, `role`, `register_terminal`, `member_level`) VALUES
+('13900000001', 'ba93116dffb57d4af13c5c51678039d2', '测试用户', 'test@hongshu.ai', NOW(), 1, 'USER', 'computer', 0);
+
 -- 默认Agent
 INSERT INTO `agent` (`name`, `description`, `style`, `domain`, `sort_order`, `prompt_template`) VALUES
 ('生活分享 Agent', '擅长日常生活类内容创作，风格轻松自然，适合生活方式博主', '轻松自然', '生活方式', 1, '你是一个擅长生活分享的小红书博主，创作风格轻松自然。请根据用户输入的主题创作高质量的文案。'),
 ('美食探店 Agent', '专注美食领域，写出令人食欲大开的探店内容和食谱分享', '生动诱人', '美食探店', 2, '你是一个美食探店博主，擅长写出令人食欲大开的美食内容。请根据用户输入的主题创作诱人的探店文案。'),
 ('旅行攻略 Agent', '编写详细的旅行攻略和路线推荐，适合旅行博主', '干货详细', '旅行攻略', 3, '你是一个旅行攻略博主，擅长编写详细的旅行指南和路线推荐。请根据用户输入的目的地创作实用的攻略内容。'),
 ('穿搭时尚 Agent', '时尚穿搭内容创作，了解流行趋势和搭配技巧', '时尚专业', '穿搭时尚', 4, '你是一个时尚穿搭博主，对流行趋势和搭配技巧了如指掌。请根据用户需求创作时尚的穿搭分享。');
+
+-- 默认会员套餐
+INSERT INTO `member_plan` (`name`, `description`, `level`, `price`, `period`, `daily_ai_create`, `max_accounts`, `max_agents`, `analysis_level`, `batch_enabled`, `schedule_enabled`, `export_enabled`, `custom_agent_enabled`, `sort_order`, `status`, `color`) VALUES
+('免费版', '适合个人用户体验', 0, 0, '永久', 3, 1, 2, '基础', 0, 0, 0, 0, 1, 1, 'var(--cn-400)'),
+('标准版', '适合内容创作者日常使用', 1, 4900, '月', 20, 2, 10, '高级', 1, 0, 1, 0, 2, 1, 'var(--ca-orange)'),
+('专业版', '适合专业运营团队', 2, 9900, '月', -1, 3, 50, '全功能', 1, 1, 1, 1, 3, 1, 'var(--ca-purple)');
 
 -- 默认系统配置
 INSERT INTO `system_config` (`config_key`, `config_value`, `description`) VALUES

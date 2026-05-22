@@ -16,13 +16,29 @@
     </div>
     <div class="lp-form">
       <div class="lp-fc">
-        <div class="lp-ft">欢迎回来</div>
-        <div class="lp-fd">登录你的红书智创账号</div>
+        <div class="lp-ft">{{ isRegister ? '创建账号' : '欢迎回来' }}</div>
+        <div class="lp-fd">{{ isRegister ? '注册红书智创账号，开启AI创作之旅' : '登录你的红书智创账号' }}</div>
+
+        <!-- 模式切换标签 -->
+        <div class="lp-tabs">
+          <button :class="['lp-tab', { active: !isRegister }]" @click="switchMode(false)">密码登录</button>
+          <button :class="['lp-tab', { active: isRegister }]" @click="switchMode(true)">手机注册</button>
+        </div>
+
+        <!-- 手机号 -->
         <div class="lp-fl">
           <label>手机号</label>
           <input v-model="phone" class="ipt" type="text" placeholder="请输入手机号" maxlength="11">
         </div>
+
+        <!-- 密码 -->
         <div class="lp-fl">
+          <label>密码</label>
+          <input v-model="password" class="ipt" type="password" placeholder="请输入密码" maxlength="16">
+        </div>
+
+        <!-- 注册特有：验证码 -->
+        <div v-if="isRegister" class="lp-fl">
           <label>验证码</label>
           <div class="code-row">
             <input v-model="code" class="ipt" type="text" placeholder="请输入验证码" maxlength="6">
@@ -31,11 +47,29 @@
             </button>
           </div>
         </div>
+
+        <!-- 注册特有：确认密码 -->
+        <div v-if="isRegister" class="lp-fl">
+          <label>确认密码</label>
+          <input v-model="confirmPassword" class="ipt" type="password" placeholder="请再次输入密码" maxlength="16">
+        </div>
+
         <button class="lp-btn" @click="doLogin" :disabled="loading">
-          {{ loading ? '登录中...' : '登 录' }}
+          {{ loading ? '处理中...' : (isRegister ? '注 册' : '登 录') }}
         </button>
+
         <div v-if="error" class="error-msg">{{ error }}</div>
-        <div class="lp-foot">登录即表示同意 <a href="#">用户协议</a> 和 <a href="#">隐私政策</a></div>
+
+        <div class="lp-foot">
+          <span v-if="!isRegister">
+            还没有账号？<a href="#" @click.prevent="switchMode(true)">立即注册</a>
+          </span>
+          <span v-if="isRegister">
+            已有账号？<a href="#" @click.prevent="switchMode(false)">去登录</a>
+          </span>
+          <span class="lp-sp">|</span>
+          登录即表示同意 <a href="#">用户协议</a> 和 <a href="#">隐私政策</a>
+        </div>
       </div>
     </div>
   </div>
@@ -50,28 +84,39 @@ import api from '@/api'
 const router = useRouter()
 const userStore = useUserStore()
 const phone = ref('')
+const password = ref('')
 const code = ref('')
+const confirmPassword = ref('')
 const loading = ref(false)
 const error = ref('')
+const isRegister = ref(false)
 const counting = ref(false)
 const countdown = ref(60)
 let timer = null
+
+function switchMode(register) {
+  isRegister.value = register
+  error.value = ''
+  code.value = ''
+  confirmPassword.value = ''
+}
 
 async function sendCode() {
   if (!phone.value || phone.value.length < 11) {
     error.value = '请输入正确的手机号'
     return
   }
+  error.value = ''
   try {
     const res = await api.post('/user/send-code', { phone: phone.value })
     if (res.data.code === 200) {
       counting.value = true
+      countdown.value = 60
       timer = setInterval(() => {
         countdown.value--
         if (countdown.value <= 0) {
           clearInterval(timer)
           counting.value = false
-          countdown.value = 60
         }
       }, 1000)
     }
@@ -81,22 +126,68 @@ async function sendCode() {
 }
 
 async function doLogin() {
-  if (!phone.value || !code.value) {
-    error.value = '请填写手机号和验证码'
+  error.value = ''
+  if (!phone.value || phone.value.length < 11) {
+    error.value = '请输入正确的手机号'
     return
   }
+  if (!password.value) {
+    error.value = '请输入密码'
+    return
+  }
+  if (password.value.length < 6) {
+    error.value = '密码至少6位'
+    return
+  }
+
+  // 注册模式
+  if (isRegister.value) {
+    if (!code.value) {
+      error.value = '请输入验证码'
+      return
+    }
+    if (password.value !== confirmPassword.value) {
+      error.value = '两次密码不一致'
+      return
+    }
+    loading.value = true
+    try {
+      const res = await api.post('/user/register', {
+        phone: phone.value,
+        password: password.value,
+        code: code.value,
+        terminal: 'computer'
+      })
+      if (res.data.code === 200) {
+        localStorage.setItem('token', res.data.data.token)
+        router.push('/dashboard')
+      } else {
+        error.value = res.data.message || '注册失败'
+      }
+    } catch (e) {
+      error.value = e.response?.data?.message || '注册失败，请重试'
+    } finally {
+      loading.value = false
+    }
+    return
+  }
+
+  // 登录模式
   loading.value = true
-  error.value = ''
   try {
-    const res = await api.post('/user/login', { phone: phone.value, code: code.value })
+    const res = await api.post('/user/login', {
+      phone: phone.value,
+      password: password.value
+    })
     if (res.data.code === 200) {
       localStorage.setItem('token', res.data.data.token)
+      localStorage.setItem('refreshToken', res.data.data.refreshToken)
       router.push('/dashboard')
     } else {
       error.value = res.data.message || '登录失败'
     }
   } catch (e) {
-    error.value = '网络错误，请重试'
+    error.value = e.response?.data?.message || '手机号或密码错误'
   } finally {
     loading.value = false
   }
@@ -118,13 +209,16 @@ async function doLogin() {
 .lp-feat-ic { width: 44px; height: 44px; background: rgba(254,44,85,.15); border-radius: 8px; display: flex; align-items: center; justify-content: center; }
 .lp-feat-ic svg { width: 22px; height: 22px; }
 .lp-feat span { font-size: 13px; opacity: .9; }
-.lp-form { width: 480px; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 64px; background: #fff; }
+.lp-form { width: 480px; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 48px 64px; background: #fff; }
 .lp-fc { width: 100%; max-width: 340px; }
 .lp-ft { font-size: 24px; font-weight: 700; color: var(--cn-900); margin-bottom: 8px; }
-.lp-fd { font-size: 13px; color: var(--cn-500); margin-bottom: 32px; }
+.lp-fd { font-size: 13px; color: var(--cn-500); margin-bottom: 24px; }
+.lp-tabs { display: flex; gap: 0; margin-bottom: 24px; background: var(--cn-100); border-radius: 8px; padding: 3px; }
+.lp-tab { flex: 1; padding: 8px 0; border: none; border-radius: 6px; font-size: 13px; font-weight: 500; color: var(--cn-500); background: transparent; cursor: pointer; transition: all .15s; }
+.lp-tab.active { background: #fff; color: var(--cn-900); box-shadow: 0 1px 3px rgba(0,0,0,.08); }
 .lp-fl { margin-bottom: 16px; }
 .lp-fl label { display: block; font-size: 13px; font-weight: 500; color: var(--cn-700); margin-bottom: 8px; }
-.lp-fl .ipt { width: 100%; padding: 12px 16px; border: 1px solid var(--cn-300); border-radius: 8px; font-size: 14px; outline: none; transition: border-color .15s; }
+.lp-fl .ipt { width: 100%; padding: 12px 16px; border: 1px solid var(--cn-300); border-radius: 8px; font-size: 14px; outline: none; transition: border-color .15s; box-sizing: border-box; }
 .lp-fl .ipt:focus { border-color: var(--cp-400); box-shadow: 0 0 0 3px rgba(254,44,85,.1); }
 .code-row { display: flex; gap: 8px; }
 .code-row .ipt { flex: 1; }
@@ -135,5 +229,7 @@ async function doLogin() {
 .lp-btn:hover { background: var(--cp-600); }
 .lp-btn:disabled { opacity: .6; cursor: not-allowed; }
 .error-msg { color: var(--ce); font-size: 13px; margin-top: 12px; text-align: center; }
-.lp-foot { margin-top: 24px; font-size: 11px; color: var(--cn-400); text-align: center; }
+.lp-foot { margin-top: 20px; font-size: 11px; color: var(--cn-400); text-align: center; line-height: 1.8; }
+.lp-foot a { color: var(--cp-500); text-decoration: none; }
+.lp-sp { margin: 0 6px; }
 </style>

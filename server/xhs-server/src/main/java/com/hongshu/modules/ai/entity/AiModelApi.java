@@ -1,6 +1,7 @@
 package com.hongshu.modules.ai.entity;
 
 import com.baomidou.mybatisplus.annotation.*;
+import com.fasterxml.jackson.annotation.JsonFormat;
 import java.time.LocalDateTime;
 
 @TableName("ai_model_api")
@@ -8,6 +9,7 @@ public class AiModelApi {
     @TableId(type = IdType.AUTO)
     private Long id;
     private String name;
+    private String provider;       // openai, baidu, aliyun, doubao, deepseek 等
     private String apiUrl;
     private String apiKey;
     private String modelName;
@@ -16,12 +18,14 @@ public class AiModelApi {
     private Integer status;        // 0-禁用, 1-启用
     private Long usedTokens;
     private Long totalTokens;
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "Asia/Shanghai")
     private LocalDateTime createTime;
     @TableLogic
     private Integer deleted;
 
     public Long getId() { return id; } public void setId(Long id) { this.id = id; }
     public String getName() { return name; } public void setName(String n) { this.name = n; }
+    public String getProvider() { return provider; } public void setProvider(String p) { this.provider = p; }
     public String getApiUrl() { return apiUrl; } public void setApiUrl(String u) { this.apiUrl = u; }
     public String getApiKey() { return apiKey; } public void setApiKey(String k) { this.apiKey = k; }
     public String getModelName() { return modelName; } public void setModelName(String n) { this.modelName = n; }

@@ -5,11 +5,18 @@ export const useAdminStore = defineStore('admin', {
   state: () => ({
     token: localStorage.getItem('admin_token') || '',
     adminInfo: null,
-    stats: { totalUsers: 0, dau: 0, aiTotal: 0, health: 0 }
+    stats: {
+      totalUsers: 0, activeUsers: 0, dau: 0,
+      totalContents: 0, aiTotal: 0,
+      pendingPublishes: 0, publishedToday: 0,
+      systemHealth: '--',
+      services: []
+    },
+    logs: []
   }),
   actions: {
-    async login(username, password) {
-      const res = await api.post('/login', { username, password })
+    async login(phone, password) {
+      const res = await api.post('/login', { phone, password })
       if (res.data.code === 200) {
         this.token = res.data.data.token
         localStorage.setItem('admin_token', this.token)
@@ -24,8 +31,14 @@ export const useAdminStore = defineStore('admin', {
     },
     async fetchStats() {
       try {
-        const res = await api.get('/stats')
+        const res = await api.get('/overview')
         if (res.data.code === 200) Object.assign(this.stats, res.data.data)
+      } catch { }
+    },
+    async fetchLogs() {
+      try {
+        const res = await api.get('/logs?limit=10')
+        if (res.data.code === 200) this.logs = res.data.data
       } catch { }
     }
   }
