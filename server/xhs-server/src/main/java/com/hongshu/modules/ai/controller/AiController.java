@@ -4,7 +4,6 @@ import com.hongshu.common.model.ApiResponse;
 import com.hongshu.modules.ai.entity.Agent;
 import com.hongshu.modules.ai.entity.AiModelApi;
 import com.hongshu.modules.ai.service.AiService;
-import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
@@ -13,10 +12,13 @@ import java.util.Map;
 
 @RestController
 @RequestMapping("/ai")
-@RequiredArgsConstructor
 public class AiController {
 
     private final AiService aiService;
+
+    public AiController(AiService aiService) {
+        this.aiService = aiService;
+    }
 
     // ===== Agent =====
     @GetMapping("/agents")

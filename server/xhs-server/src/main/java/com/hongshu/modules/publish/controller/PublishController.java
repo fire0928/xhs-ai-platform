@@ -3,7 +3,6 @@ package com.hongshu.modules.publish.controller;
 import com.hongshu.common.model.ApiResponse;
 import com.hongshu.modules.publish.entity.PublishQueue;
 import com.hongshu.modules.publish.service.PublishService;
-import lombok.RequiredArgsConstructor;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
@@ -14,10 +13,13 @@ import java.util.Map;
 
 @RestController
 @RequestMapping("/publish")
-@RequiredArgsConstructor
 public class PublishController {
 
     private final PublishService publishService;
+
+    public PublishController(PublishService publishService) {
+        this.publishService = publishService;
+    }
 
     /**
      * 添加到发布队列

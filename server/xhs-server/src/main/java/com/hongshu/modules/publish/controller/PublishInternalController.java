@@ -5,8 +5,8 @@ import com.hongshu.common.util.CryptoUtil;
 import com.hongshu.modules.account.entity.XiaohongshuAccount;
 import com.hongshu.modules.account.mapper.XiaohongshuAccountMapper;
 import com.hongshu.modules.publish.service.PublishService;
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Map;
@@ -15,15 +15,22 @@ import java.util.Map;
  * 发布引擎内部回调API
  * 仅供Python发布引擎调用，不走JWT认证（通过内网/密钥验证）
  */
-@Slf4j
 @RestController
 @RequestMapping("/publish/internal")
-@RequiredArgsConstructor
 public class PublishInternalController {
+
+    private static final Logger log = LoggerFactory.getLogger(PublishInternalController.class);
 
     private final XiaohongshuAccountMapper xhAccountMapper;
     private final PublishService publishService;
     private final CryptoUtil cryptoUtil;
+
+    public PublishInternalController(XiaohongshuAccountMapper xhAccountMapper,
+                                      PublishService publishService, CryptoUtil cryptoUtil) {
+        this.xhAccountMapper = xhAccountMapper;
+        this.publishService = publishService;
+        this.cryptoUtil = cryptoUtil;
+    }
 
     private static final String INTERNAL_KEY = "XhsEngineInternal2024";
 

@@ -5,7 +5,6 @@ import com.hongshu.common.model.ApiResponse;
 import com.hongshu.common.model.PageResult;
 import com.hongshu.modules.content.entity.AiContent;
 import com.hongshu.modules.content.service.ContentService;
-import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -15,10 +14,13 @@ import java.util.Map;
 
 @RestController
 @RequestMapping("/content")
-@RequiredArgsConstructor
 public class ContentController {
 
     private final ContentService contentService;
+
+    public ContentController(ContentService contentService) {
+        this.contentService = contentService;
+    }
 
     // ===== CRUD =====
     @PostMapping

@@ -15,7 +15,6 @@ import com.hongshu.modules.ai.mapper.ApiCallLogMapper;
 import com.hongshu.modules.publish.entity.PublishQueue;
 import com.hongshu.modules.publish.mapper.PublishQueueMapper;
 import com.hongshu.modules.account.mapper.XiaohongshuAccountMapper;
-import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -24,7 +23,6 @@ import java.time.LocalDateTime;
 import java.util.Map;
 
 @Service
-@RequiredArgsConstructor
 public class AdminService {
 
     private final UserMapper userMapper;
@@ -33,6 +31,17 @@ public class AdminService {
     private final PublishQueueMapper publishQueueMapper;
     private final XiaohongshuAccountMapper accountMapper;
     private final CryptoUtil cryptoUtil;
+
+    public AdminService(UserMapper userMapper, AiContentMapper contentMapper,
+                        ApiCallLogMapper callLogMapper, PublishQueueMapper publishQueueMapper,
+                        XiaohongshuAccountMapper accountMapper, CryptoUtil cryptoUtil) {
+        this.userMapper = userMapper;
+        this.contentMapper = contentMapper;
+        this.callLogMapper = callLogMapper;
+        this.publishQueueMapper = publishQueueMapper;
+        this.accountMapper = accountMapper;
+        this.cryptoUtil = cryptoUtil;
+    }
 
     public IPage<?> pageUsers(int page, int pageSize, String keyword, Integer status, String terminal) {
         LambdaQueryWrapper<User> wrapper = new LambdaQueryWrapper<>();

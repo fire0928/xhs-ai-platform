@@ -4,16 +4,18 @@ import com.hongshu.common.model.ApiResponse;
 import com.hongshu.modules.user.service.UserService;
 import com.hongshu.modules.user.dto.*;
 import jakarta.validation.Valid;
-import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/user")
-@RequiredArgsConstructor
 public class UserController {
 
     private final UserService userService;
+
+    public UserController(UserService userService) {
+        this.userService = userService;
+    }
 
     @PostMapping("/send-code")
     public ApiResponse<?> sendCode(@RequestParam String phone) {

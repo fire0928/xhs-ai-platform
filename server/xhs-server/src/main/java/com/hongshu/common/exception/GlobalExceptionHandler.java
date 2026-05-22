@@ -1,7 +1,8 @@
 package com.hongshu.common.exception;
 
 import com.hongshu.common.model.ApiResponse;
-import lombok.extern.slf4j.Slf4j;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.core.AuthenticationException;
@@ -14,9 +15,10 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 /**
  * 全局异常处理
  */
-@Slf4j
 @RestControllerAdvice
 public class GlobalExceptionHandler {
+
+    private static final Logger log = LoggerFactory.getLogger(GlobalExceptionHandler.class);
 
     @ExceptionHandler(BusinessException.class)
     public ApiResponse<?> handleBusinessException(BusinessException e) {

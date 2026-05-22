@@ -12,8 +12,8 @@ import com.hongshu.modules.ai.entity.ApiCallLog;
 import com.hongshu.modules.ai.mapper.AgentMapper;
 import com.hongshu.modules.ai.mapper.AiModelApiMapper;
 import com.hongshu.modules.ai.mapper.ApiCallLogMapper;
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
@@ -23,10 +23,10 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import java.time.LocalDateTime;
 import java.util.*;
 
-@Slf4j
 @Service
-@RequiredArgsConstructor
 public class AiService extends ServiceImpl<AgentMapper, Agent> {
+
+    private static final Logger log = LoggerFactory.getLogger(AiService.class);
 
     private final AiModelApiMapper apiMapper;
     private final ApiCallLogMapper callLogMapper;
@@ -34,6 +34,14 @@ public class AiService extends ServiceImpl<AgentMapper, Agent> {
     private final RedisTemplate<String, Object> redisTemplate;
     private final RestTemplate restTemplate = new RestTemplate();
     private final ObjectMapper objectMapper = new ObjectMapper();
+
+    public AiService(AiModelApiMapper apiMapper, ApiCallLogMapper callLogMapper,
+                     CryptoUtil cryptoUtil, RedisTemplate<String, Object> redisTemplate) {
+        this.apiMapper = apiMapper;
+        this.callLogMapper = callLogMapper;
+        this.cryptoUtil = cryptoUtil;
+        this.redisTemplate = redisTemplate;
+    }
 
     // ===== Agent管理 =====
 

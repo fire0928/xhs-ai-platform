@@ -5,7 +5,6 @@ import com.hongshu.common.model.ApiResponse;
 import com.hongshu.common.model.PageResult;
 import com.hongshu.modules.admin.service.AdminService;
 import com.hongshu.modules.user.dto.*;
-import lombok.RequiredArgsConstructor;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
@@ -14,10 +13,13 @@ import java.util.Map;
 @RestController
 @RequestMapping("/admin")
 @PreAuthorize("hasRole('ADMIN')")
-@RequiredArgsConstructor
 public class AdminController {
 
     private final AdminService adminService;
+
+    public AdminController(AdminService adminService) {
+        this.adminService = adminService;
+    }
 
     // ===== 用户管理 =====
     @GetMapping("/users")

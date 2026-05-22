@@ -1,7 +1,6 @@
 package com.hongshu.modules.analytics.controller;
 
 import com.hongshu.common.model.ApiResponse;
-import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
@@ -10,7 +9,6 @@ import java.util.Map;
 
 @RestController
 @RequestMapping("/analytics")
-@RequiredArgsConstructor
 public class AnalyticsController {
 
     @GetMapping("/dashboard")

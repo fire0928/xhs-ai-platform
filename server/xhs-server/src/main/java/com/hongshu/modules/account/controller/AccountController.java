@@ -4,7 +4,6 @@ import com.hongshu.common.model.ApiResponse;
 import com.hongshu.modules.account.service.AccountService;
 import com.hongshu.modules.account.entity.XiaohongshuAccount;
 import com.hongshu.modules.account.entity.XhAccountData;
-import lombok.RequiredArgsConstructor;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
@@ -15,10 +14,13 @@ import java.util.Map;
 
 @RestController
 @RequestMapping("/account")
-@RequiredArgsConstructor
 public class AccountController {
 
     private final AccountService accountService;
+
+    public AccountController(AccountService accountService) {
+        this.accountService = accountService;
+    }
 
     @GetMapping("/list")
     public ApiResponse<List<XiaohongshuAccount>> getAccounts(Authentication auth) {
