@@ -5,11 +5,11 @@ WORKDIR /build
 
 # Copy pom.xml first for dependency caching
 COPY pom.xml .
-RUN mvn dependency:go-offline -B -q
+RUN mvn dependency:go-offline -B
 
-# Copy source and build
+# Copy source and build (verbose for debugging)
 COPY src ./src
-RUN mvn package -DskipTests -B -q
+RUN mvn clean package -DskipTests -B
 
 # ====== Stage 2: Run the JAR ======
 FROM eclipse-temurin:21-jre-alpine
