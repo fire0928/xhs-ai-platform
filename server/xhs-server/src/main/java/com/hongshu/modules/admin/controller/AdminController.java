@@ -4,10 +4,12 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.hongshu.common.model.ApiResponse;
 import com.hongshu.common.model.PageResult;
 import com.hongshu.modules.admin.service.AdminService;
+import com.hongshu.modules.admin.entity.OperationLog;
 import com.hongshu.modules.user.dto.*;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
 import java.util.Map;
 
 @RestController
@@ -51,6 +53,13 @@ public class AdminController {
     @GetMapping("/overview")
     public ApiResponse<Map<String, Object>> getOverview() {
         return ApiResponse.ok(adminService.getSystemOverview());
+    }
+
+    // ===== 操作日志 =====
+    @GetMapping("/logs")
+    public ApiResponse<List<OperationLog>> getRecentLogs(
+            @RequestParam(defaultValue = "10") int limit) {
+        return ApiResponse.ok(adminService.getRecentLogs(limit));
     }
 
     // ===== 全量内容管理 =====

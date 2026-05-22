@@ -9,8 +9,10 @@ export const useAdminStore = defineStore('admin', {
       totalUsers: 0, activeUsers: 0, dau: 0,
       totalContents: 0, aiTotal: 0,
       pendingPublishes: 0, publishedToday: 0,
-      systemHealth: '--'
-    }
+      systemHealth: '--',
+      services: []
+    },
+    logs: []
   }),
   actions: {
     async login(phone, password) {
@@ -31,6 +33,12 @@ export const useAdminStore = defineStore('admin', {
       try {
         const res = await api.get('/overview')
         if (res.data.code === 200) Object.assign(this.stats, res.data.data)
+      } catch { }
+    },
+    async fetchLogs() {
+      try {
+        const res = await api.get('/logs?limit=10')
+        if (res.data.code === 200) this.logs = res.data.data
       } catch { }
     }
   }

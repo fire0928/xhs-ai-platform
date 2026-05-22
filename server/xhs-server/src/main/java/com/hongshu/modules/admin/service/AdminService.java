@@ -15,12 +15,16 @@ import com.hongshu.modules.ai.mapper.ApiCallLogMapper;
 import com.hongshu.modules.publish.entity.PublishQueue;
 import com.hongshu.modules.publish.mapper.PublishQueueMapper;
 import com.hongshu.modules.account.mapper.XiaohongshuAccountMapper;
+import com.hongshu.modules.admin.entity.OperationLog;
+import com.hongshu.modules.admin.mapper.OperationLogMapper;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import org.springframework.data.redis.core.RedisTemplate;
+
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.Map;
+import java.util.*;
 
 @Service
 public class AdminService {
@@ -30,16 +34,23 @@ public class AdminService {
     private final ApiCallLogMapper callLogMapper;
     private final PublishQueueMapper publishQueueMapper;
     private final XiaohongshuAccountMapper accountMapper;
+    private final OperationLogMapper operationLogMapper;
+    private final RedisTemplate<String, Object> redisTemplate;
     private final CryptoUtil cryptoUtil;
 
     public AdminService(UserMapper userMapper, AiContentMapper contentMapper,
                         ApiCallLogMapper callLogMapper, PublishQueueMapper publishQueueMapper,
-                        XiaohongshuAccountMapper accountMapper, CryptoUtil cryptoUtil) {
+                        XiaohongshuAccountMapper accountMapper,
+                        OperationLogMapper operationLogMapper,
+                        RedisTemplate<String, Object> redisTemplate,
+                        CryptoUtil cryptoUtil) {
         this.userMapper = userMapper;
         this.contentMapper = contentMapper;
         this.callLogMapper = callLogMapper;
         this.publishQueueMapper = publishQueueMapper;
         this.accountMapper = accountMapper;
+        this.operationLogMapper = operationLogMapper;
+        this.redisTemplate = redisTemplate;
         this.cryptoUtil = cryptoUtil;
     }
 
@@ -80,16 +91,40 @@ public class AdminService {
                         .eq(PublishQueue::getPublishStatus, 2)
                         .ge(PublishQueue::getActualPublishTime, LocalDate.now().atStartOfDay()));
 
-        return Map.of(
-                "totalUsers", totalUsers,
-                "activeUsers", activeUsers,
-                "dau", dau,
-                "totalContents", totalContents,
-                "aiTotal", aiTotal,
-                "pendingPublishes", pendingPublishes,
-                "publishedToday", publishedToday,
-                "systemHealth", "99.8%"
-        );
+        // 服务健康检测
+        List<Map<String, Object>> services = new ArrayList<>();
+        services.add(checkService("API 服务", () -> true));
+        services.add(checkService("数据库", () -> { userMapper.selectCount(null); return true; }));
+        services.add(checkService("Redis", () -> { redisTemplate.opsForValue().get("_h"); return true; }));
+        services.add(checkService("发布引擎", () -> true));
+
+        Map<String, Object> result = new LinkedHashMap<>();
+        result.put("totalUsers", totalUsers);
+        result.put("activeUsers", activeUsers);
+        result.put("dau", dau);
+        result.put("totalContents", totalContents);
+        result.put("aiTotal", aiTotal);
+        result.put("pendingPublishes", pendingPublishes);
+        result.put("publishedToday", publishedToday);
+        result.put("systemHealth", services.stream().allMatch(s -> "up".equals(s.get("status"))) ? "正常" : "异常");
+        result.put("services", services);
+        return result;
+    }
+
+    private Map<String, Object> checkService(String name, java.util.concurrent.Callable<Boolean> checker) {
+        Map<String, Object> svc = new LinkedHashMap<>();
+        svc.put("name", name);
+        try {
+            long t0 = System.currentTimeMillis();
+            checker.call();
+            long latency = System.currentTimeMillis() - t0;
+            svc.put("status", "up");
+            svc.put("latency", latency + "ms");
+        } catch (Exception e) {
+            svc.put("status", "down");
+            svc.put("latency", "不可用");
+        }
+        return svc;
     }
 
     public IPage<AiContent> pageAllContents(int page, int pageSize, Integer auditStatus,
@@ -116,6 +151,13 @@ public class AdminService {
         if (terminal != null) wrapper.eq(ApiCallLog::getTerminal, terminal);
         wrapper.orderByDesc(ApiCallLog::getCreateTime);
         return callLogMapper.selectPage(new Page<>(page, pageSize), wrapper);
+    }
+
+    public List<OperationLog> getRecentLogs(int limit) {
+        return operationLogMapper.selectList(
+                new LambdaQueryWrapper<OperationLog>()
+                        .orderByDesc(OperationLog::getCreateTime)
+                        .last("LIMIT " + Math.min(limit, 50)));
     }
 
     public Map<String, Object> getAnalyticsSummary(int days) {
