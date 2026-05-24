@@ -15,6 +15,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Map;
 
 @Service
 public class AccountService extends ServiceImpl<XiaohongshuAccountMapper, XiaohongshuAccount> {
@@ -40,10 +41,10 @@ public class AccountService extends ServiceImpl<XiaohongshuAccountMapper, Xiaoho
     }
 
     /**
-     * 绑定小红书账号
+     * 绑定小红书账号（Cookie方式）
      */
     @Transactional
-    public XiaohongshuAccount bindAccount(Long userId, String account, String password) {
+    public XiaohongshuAccount bindAccount(Long userId, Map<String, Object> body) {
         // 检查绑定数量
         long count = count(new LambdaQueryWrapper<XiaohongshuAccount>()
                 .eq(XiaohongshuAccount::getUserId, userId));
@@ -51,28 +52,31 @@ public class AccountService extends ServiceImpl<XiaohongshuAccountMapper, Xiaoho
             throw new BusinessException(400, "最多绑定" + MAX_BIND_COUNT + "个小红书账号");
         }
 
-        // 检查是否已绑定
-        String encryptedAccount = cryptoUtil.aesEncrypt(account);
-        XiaohongshuAccount existing = getOne(new LambdaQueryWrapper<XiaohongshuAccount>()
-                .eq(XiaohongshuAccount::getUserId, userId)
-                .eq(XiaohongshuAccount::getXhAccount, encryptedAccount));
-        if (existing != null) {
-            throw new BusinessException(400, "该账号已绑定");
+        String nickname = body.get("nickname") != null ? body.get("nickname").toString() : "";
+        String cookie = body.get("cookie") != null ? body.get("cookie").toString() : "";
+        String remark = body.get("remark") != null ? body.get("remark").toString() : "";
+        Boolean isDefault = Boolean.TRUE.equals(body.get("isDefault"));
+
+        if (StrUtil.isBlank(nickname)) {
+            throw new BusinessException(400, "账号昵称不能为空");
+        }
+        if (StrUtil.isBlank(cookie)) {
+            throw new BusinessException(400, "Cookie不能为空");
         }
 
         XiaohongshuAccount entity = new XiaohongshuAccount();
         entity.setUserId(userId);
-        entity.setXhAccount(encryptedAccount);
-        entity.setXhPassword(password != null ? cryptoUtil.aesEncrypt(password) : null);
+        entity.setXhNickname(nickname);
+        entity.setCookieJson(cryptoUtil.aesEncrypt(cookie));
+        entity.setRemark(remark);
         entity.setBindTime(LocalDateTime.now());
-        entity.setIsDefault(count == 0 ? 1 : 0);
+        entity.setIsDefault(count == 0 || isDefault ? 1 : 0);
         entity.setStatus(1);
-        entity.setSessionStatus(0);
+        entity.setSessionStatus(1); // Cookie已提供，设为在线
         save(entity);
 
         // 脱敏返回
-        entity.setXhAccount(account);
-        entity.setXhPassword(null);
+        entity.setCookieJson(null);
         return entity;
     }
 

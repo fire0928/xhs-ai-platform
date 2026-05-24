@@ -124,8 +124,8 @@
         </div>
         <div class="modal-f">
           <button class="btn btn-ghost" @click="closeModal">取消</button>
-          <button class="btn btn-primary" @click="submitAccount" :disabled="!form.nickname || !form.cookie">
-            确认添加
+          <button class="btn btn-primary" @click="submitAccount" :disabled="submitting || !form.nickname || !form.cookie">
+            {{ submitting ? '提交中...' : (editingAccount ? '确认修改' : '确认添加') }}
           </button>
         </div>
       </div>
@@ -140,6 +140,7 @@ import api from '@/api'
 const accounts = ref([])
 const showAddModal = ref(false)
 const editingAccount = ref(null)
+const submitting = ref(false)
 const form = ref({ nickname: '', cookie: '', remark: '', isDefault: false })
 
 const onlineCount = computed(() => accounts.value.filter(a => a.sessionStatus === 'valid').length)
@@ -185,13 +186,31 @@ function closeModal() {
 }
 
 async function submitAccount() {
+  if (submitting.value) return
+  if (!form.value.nickname?.trim()) {
+    alert('请输入账号昵称')
+    return
+  }
+  if (!form.value.cookie?.trim()) {
+    alert('请输入Cookie字符串')
+    return
+  }
+  submitting.value = true
   try {
     const url = editingAccount.value ? `/account/${editingAccount.value.id}` : '/account/bind'
     const method = editingAccount.value ? 'put' : 'post'
-    await api[method](url, form.value)
-    closeModal()
-    fetchAccounts()
-  } catch { /* ignore */ }
+    const res = await api[method](url, form.value)
+    if (res.data.code === 200) {
+      closeModal()
+      fetchAccounts()
+    } else {
+      alert(res.data.message || '操作失败')
+    }
+  } catch (err) {
+    alert(err.response?.data?.message || '网络错误，请重试')
+  } finally {
+    submitting.value = false
+  }
 }
 
 async function verifyAccount(id) {

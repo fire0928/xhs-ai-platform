@@ -30,10 +30,9 @@ public class AccountController {
 
     @PostMapping("/bind")
     public ApiResponse<XiaohongshuAccount> bindAccount(Authentication auth,
-                                                        @RequestBody Map<String, String> body) {
+                                                        @RequestBody Map<String, Object> body) {
         Long userId = (Long) auth.getPrincipal();
-        return ApiResponse.ok(accountService.bindAccount(userId,
-                body.get("account"), body.get("password")));
+        return ApiResponse.ok(accountService.bindAccount(userId, body));
     }
 
     @DeleteMapping("/unbind/{accountId}")

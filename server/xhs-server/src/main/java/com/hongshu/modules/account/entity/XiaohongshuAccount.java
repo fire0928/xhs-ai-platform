@@ -16,6 +16,7 @@ public class XiaohongshuAccount {
     private Integer isDefault;     // 0-否, 1-是
     private Integer status;        // 0-失效, 1-正常
     private String cookieJson;
+    private String remark;
     private Integer sessionStatus; // 0-离线, 1-在线, 2-过期
     private LocalDateTime lastActiveTime;
     @TableLogic
@@ -34,6 +35,8 @@ public class XiaohongshuAccount {
     public void setXhNickname(String xhNickname) { this.xhNickname = xhNickname; }
     public String getXhAvatar() { return xhAvatar; }
     public void setXhAvatar(String xhAvatar) { this.xhAvatar = xhAvatar; }
+    public String getRemark() { return remark; }
+    public void setRemark(String remark) { this.remark = remark; }
     public LocalDateTime getBindTime() { return bindTime; }
     public void setBindTime(LocalDateTime bindTime) { this.bindTime = bindTime; }
     public Integer getIsDefault() { return isDefault; }
