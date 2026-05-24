@@ -1,9 +1,11 @@
 package com.hongshu.modules.content.entity;
 
 import com.baomidou.mybatisplus.annotation.*;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import java.time.LocalDateTime;
 
 @TableName("ai_content")
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class AiContent {
     @TableId(type = IdType.AUTO)
     private Long id;

@@ -55,8 +55,8 @@ public class PublishController {
      * 获取发布队列
      */
     @GetMapping("/queue")
-    public ApiResponse<List<PublishQueue>> getQueues(Authentication auth,
-                                                      @RequestParam(required = false) Integer status) {
+    public ApiResponse<List<Map<String, Object>>> getQueues(Authentication auth,
+                                                             @RequestParam(required = false) Integer status) {
         Long userId = (Long) auth.getPrincipal();
         return ApiResponse.ok(publishService.getUserQueues(userId, status));
     }
@@ -66,11 +66,13 @@ public class PublishController {
      */
     @PutMapping("/queue/{queueId}")
     public ApiResponse<?> updateQueueItem(
+            Authentication auth,
             @PathVariable Long queueId,
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime publishTime,
             @RequestParam(required = false) Long xhAccountId,
             @RequestParam(required = false) Integer sortOrder) {
-        publishService.updateQueueItem(queueId, publishTime, xhAccountId, sortOrder);
+        Long userId = (Long) auth.getPrincipal();
+        publishService.updateQueueItem(userId, queueId, publishTime, xhAccountId, sortOrder);
         return ApiResponse.ok();
     }
 
@@ -78,8 +80,9 @@ public class PublishController {
      * 从队列移除
      */
     @DeleteMapping("/queue/{queueId}")
-    public ApiResponse<?> removeFromQueue(@PathVariable Long queueId) {
-        publishService.removeFromQueue(queueId);
+    public ApiResponse<?> removeFromQueue(Authentication auth, @PathVariable Long queueId) {
+        Long userId = (Long) auth.getPrincipal();
+        publishService.removeFromQueue(userId, queueId);
         return ApiResponse.ok();
     }
 

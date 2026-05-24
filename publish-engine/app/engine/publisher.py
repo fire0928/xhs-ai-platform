@@ -133,6 +133,7 @@ class XhsPublisher:
     XHS_CREATOR_URL = "https://creator.xiaohongshu.com"
     XHS_PUBLISH_URL = f"{XHS_CREATOR_URL}/publish"
     SERVER_API_URL = os.environ.get("SERVER_URL", "http://localhost:8080/api")
+    INTERNAL_KEY = os.environ.get("INTERNAL_KEY", "XhsEngineInternal2024")
 
     def __init__(self, browser_pool: BrowserPool):
         self.pool = browser_pool
@@ -323,7 +324,8 @@ class XhsPublisher:
         try:
             async with httpx.AsyncClient(timeout=10) as client:
                 resp = await client.get(
-                    f"{self.SERVER_API_URL}/publish/internal/cookie/{account_id}"
+                    f"{self.SERVER_API_URL}/publish/internal/cookie/{account_id}",
+                    headers={"X-Internal-Key": self.INTERNAL_KEY}
                 )
                 if resp.status_code == 200:
                     data = resp.json()
@@ -349,7 +351,8 @@ class XhsPublisher:
             async with httpx.AsyncClient(timeout=10) as client:
                 await client.post(
                     f"{self.SERVER_API_URL}/publish/internal/status",
-                    json={"queueId": queue_id, "status": status, "result": result}
+                    json={"queueId": queue_id, "status": status, "result": result},
+                    headers={"X-Internal-Key": self.INTERNAL_KEY}
                 )
         except Exception as e:
             logger.error(f"更新状态失败: {e}")
@@ -365,7 +368,8 @@ class XhsPublisher:
                         "step": step,
                         "status": status,
                         "errorMsg": ""
-                    }
+                    },
+                    headers={"X-Internal-Key": self.INTERNAL_KEY}
                 )
         except Exception:
             pass

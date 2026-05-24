@@ -1,0 +1,85 @@
+# 上游服务定义
+upstream backend_servers {
+    server xhs-server:8080;
+    keepalive 32;
+}
+
+upstream publish_engine {
+    server publish-engine:8001;
+    keepalive 8;
+}
+
+# HTTP 主站
+server {
+    listen 80;
+    server_name localhost;
+
+    # API 代理到 Spring Boot 后端
+    location /api/ {
+        proxy_pass http://backend_servers;
+        proxy_http_version 1.1;
+        proxy_set_header Connection "";
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+        proxy_read_timeout 120s;
+        proxy_send_timeout 120s;
+    }
+
+    # 发布引擎 API 直接代理
+    location /api/publish-engine/ {
+        proxy_pass http://publish_engine;
+        proxy_http_version 1.1;
+        proxy_set_header Connection "";
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_read_timeout 300s;
+        proxy_send_timeout 300s;
+    }
+
+    # 发布引擎健康检查
+    location /health {
+        proxy_pass http://publish_engine;
+        proxy_http_version 1.1;
+        proxy_set_header Connection "";
+        proxy_set_header Host $host;
+    }
+
+    # MinIO 代理（图片访问）
+    location /images/ {
+        proxy_pass http://minio:9000;
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_read_timeout 30s;
+    }
+
+    # PC 客户端静态文件
+    location / {
+        root /usr/share/nginx/html/pc;
+        try_files $uri $uri/ /index.html;
+        index index.html;
+    }
+
+    # 管理后台静态文件
+    location /admin {
+        alias /usr/share/nginx/html/admin/;
+        try_files $uri $uri/ /admin/index.html;
+        index index.html;
+    }
+
+    # Swagger / Knife4j API 文档
+    location /doc.html {
+        proxy_pass http://backend_servers;
+        proxy_set_header Host $host;
+    }
+    location /v3/ {
+        proxy_pass http://backend_servers;
+        proxy_set_header Host $host;
+    }
+    location /webjars/ {
+        proxy_pass http://backend_servers;
+        proxy_set_header Host $host;
+    }
+}

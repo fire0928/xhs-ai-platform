@@ -1,9 +1,11 @@
 package com.hongshu.modules.ai.entity;
 
 import com.baomidou.mybatisplus.annotation.*;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import java.time.LocalDateTime;
 
 @TableName("agent")
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class Agent {
     @TableId(type = IdType.AUTO)
     private Long id;
@@ -11,8 +13,11 @@ public class Agent {
     private String description;
     private String style;
     private String domain;
+    private Long directionId;
     private Long apiId;
     private String promptTemplate;
+    private Integer agentType;     // 0-文本Agent, 1-图片Agent
+    private String allowedLevels;  // 允许使用的会员等级, 逗号分隔, NULL=所有
     private Integer sortOrder;
     private Integer status;        // 0-禁用, 1-启用
     private LocalDateTime createTime;
@@ -24,8 +29,11 @@ public class Agent {
     public String getDescription() { return description; } public void setDescription(String d) { this.description = d; }
     public String getStyle() { return style; } public void setStyle(String s) { this.style = s; }
     public String getDomain() { return domain; } public void setDomain(String d) { this.domain = d; }
+    public Long getDirectionId() { return directionId; } public void setDirectionId(Long id) { this.directionId = id; }
     public Long getApiId() { return apiId; } public void setApiId(Long id) { this.apiId = id; }
     public String getPromptTemplate() { return promptTemplate; } public void setPromptTemplate(String t) { this.promptTemplate = t; }
+    public Integer getAgentType() { return agentType; } public void setAgentType(Integer t) { this.agentType = t; }
+    public String getAllowedLevels() { return allowedLevels; } public void setAllowedLevels(String l) { this.allowedLevels = l; }
     public Integer getSortOrder() { return sortOrder; } public void setSortOrder(Integer o) { this.sortOrder = o; }
     public Integer getStatus() { return status; } public void setStatus(Integer s) { this.status = s; }
     public LocalDateTime getCreateTime() { return createTime; } public void setCreateTime(LocalDateTime t) { this.createTime = t; }

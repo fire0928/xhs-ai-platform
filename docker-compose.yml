@@ -85,6 +85,7 @@ services:
       MINIO_SECRET_KEY: XhsMinio@2024
       JWT_SECRET: XhsJwtSecretKey2024!@#Secure256BitKey!A
       AES_KEY: "XhsAES256SecretKey!@2024Secure!!"
+      DOUBAO_API_KEY: "df78c629-05d8-48d3-842c-fb4de6c558d1"
     ports:
       - "8080:8080"
     networks:

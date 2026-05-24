@@ -9,6 +9,11 @@ const routes = [
   { path: '/queue', name: 'Queue', component: () => import('@/views/Queue.vue') },
   { path: '/analytics', name: 'Analytics', component: () => import('@/views/Analytics.vue') },
   { path: '/accounts', name: 'Accounts', component: () => import('@/views/Accounts.vue') },
+  { path: '/membership', name: 'Membership', component: () => import('@/views/Membership.vue') },
+  { path: '/orders', name: 'Orders', component: () => import('@/views/Orders.vue') },
+  { path: '/creation-records', name: 'CreationRecords', component: () => import('@/views/CreationRecords.vue') },
+  { path: '/content-edit/:id', name: 'ContentEdit', component: () => import('@/views/ContentEdit.vue') },
+  { path: '/messages', name: 'MessageCenter', component: () => import('@/views/MessageCenter.vue') },
   { path: '/settings', name: 'Settings', component: () => import('@/views/Settings.vue') },
 ]
 

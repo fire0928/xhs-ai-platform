@@ -4,11 +4,14 @@
 /home/ubuntu/xhs-ai-platform/server/xhs-server/src/main/java/com/hongshu/common/security/JwtAuthenticationFilter.java
 /home/ubuntu/xhs-ai-platform/server/xhs-server/src/main/java/com/hongshu/modules/ai/entity/Agent.java
 /home/ubuntu/xhs-ai-platform/server/xhs-server/src/main/java/com/hongshu/modules/member/controller/MemberController.java
+/home/ubuntu/xhs-ai-platform/server/xhs-server/src/main/java/com/hongshu/modules/ai/controller/ContentDirectionController.java
 /home/ubuntu/xhs-ai-platform/server/xhs-server/src/main/java/com/hongshu/common/security/SecurityConfig.java
 /home/ubuntu/xhs-ai-platform/server/xhs-server/src/main/java/com/hongshu/modules/account/entity/XhAccountData.java
 /home/ubuntu/xhs-ai-platform/server/xhs-server/src/main/java/com/hongshu/modules/ai/controller/AiController.java
 /home/ubuntu/xhs-ai-platform/server/xhs-server/src/main/java/com/hongshu/common/util/JsonUtil.java
 /home/ubuntu/xhs-ai-platform/server/xhs-server/src/main/java/com/hongshu/modules/admin/entity/OperationLog.java
+/home/ubuntu/xhs-ai-platform/server/xhs-server/src/main/java/com/hongshu/modules/content/service/AiScoreService.java
+/home/ubuntu/xhs-ai-platform/server/xhs-server/src/main/java/com/hongshu/modules/ai/service/ContentDirectionService.java
 /home/ubuntu/xhs-ai-platform/server/xhs-server/src/main/java/com/hongshu/modules/publish/controller/PublishInternalController.java
 /home/ubuntu/xhs-ai-platform/server/xhs-server/src/main/java/com/hongshu/modules/user/service/UserService.java
 /home/ubuntu/xhs-ai-platform/server/xhs-server/src/main/java/com/hongshu/common/util/CryptoUtil.java
@@ -41,11 +44,13 @@
 /home/ubuntu/xhs-ai-platform/server/xhs-server/src/main/java/com/hongshu/XhsApplication.java
 /home/ubuntu/xhs-ai-platform/server/xhs-server/src/main/java/com/hongshu/common/exception/BusinessException.java
 /home/ubuntu/xhs-ai-platform/server/xhs-server/src/main/java/com/hongshu/modules/user/dto/ResetPasswordRequest.java
+/home/ubuntu/xhs-ai-platform/server/xhs-server/src/main/java/com/hongshu/modules/ai/mapper/ContentDirectionMapper.java
 /home/ubuntu/xhs-ai-platform/server/xhs-server/src/main/java/com/hongshu/modules/user/dto/UpdateUserRequest.java
 /home/ubuntu/xhs-ai-platform/server/xhs-server/src/main/java/com/hongshu/modules/user/dto/LoginRequest.java
 /home/ubuntu/xhs-ai-platform/server/xhs-server/src/main/java/com/hongshu/modules/content/mapper/AiContentMapper.java
 /home/ubuntu/xhs-ai-platform/server/xhs-server/src/main/java/com/hongshu/modules/admin/mapper/OperationLogMapper.java
 /home/ubuntu/xhs-ai-platform/server/xhs-server/src/main/java/com/hongshu/modules/ai/mapper/AgentMapper.java
+/home/ubuntu/xhs-ai-platform/server/xhs-server/src/main/java/com/hongshu/modules/ai/entity/ContentDirection.java
 /home/ubuntu/xhs-ai-platform/server/xhs-server/src/main/java/com/hongshu/modules/user/entity/User.java
 /home/ubuntu/xhs-ai-platform/server/xhs-server/src/main/java/com/hongshu/common/model/ApiResponse.java
 /home/ubuntu/xhs-ai-platform/server/xhs-server/src/main/java/com/hongshu/modules/account/mapper/XiaohongshuAccountMapper.java
@@ -54,6 +59,7 @@
 /home/ubuntu/xhs-ai-platform/server/xhs-server/src/main/java/com/hongshu/modules/ai/entity/ApiCallLog.java
 /home/ubuntu/xhs-ai-platform/server/xhs-server/src/main/java/com/hongshu/modules/member/mapper/MemberPlanMapper.java
 /home/ubuntu/xhs-ai-platform/server/xhs-server/src/main/java/com/hongshu/modules/account/controller/AccountController.java
+/home/ubuntu/xhs-ai-platform/server/xhs-server/src/main/java/com/hongshu/modules/ai/controller/UserAiController.java
 /home/ubuntu/xhs-ai-platform/server/xhs-server/src/main/java/com/hongshu/modules/publish/mapper/PublishLogMapper.java
 /home/ubuntu/xhs-ai-platform/server/xhs-server/src/main/java/com/hongshu/modules/user/dto/LoginResponse.java
 /home/ubuntu/xhs-ai-platform/server/xhs-server/src/main/java/com/hongshu/common/model/PageResult.java

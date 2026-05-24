@@ -15,6 +15,7 @@ public class AiModelApi {
     private String modelName;
     private String requestParams;
     private Integer rateLimit;
+    private Integer todayCall;     // 今日调用次数
     private Integer status;        // 0-禁用, 1-启用
     private Long usedTokens;
     private Long totalTokens;
@@ -31,6 +32,7 @@ public class AiModelApi {
     public String getModelName() { return modelName; } public void setModelName(String n) { this.modelName = n; }
     public String getRequestParams() { return requestParams; } public void setRequestParams(String p) { this.requestParams = p; }
     public Integer getRateLimit() { return rateLimit; } public void setRateLimit(Integer r) { this.rateLimit = r; }
+    public Integer getTodayCall() { return todayCall; } public void setTodayCall(Integer t) { this.todayCall = t; }
     public Integer getStatus() { return status; } public void setStatus(Integer s) { this.status = s; }
     public Long getUsedTokens() { return usedTokens; } public void setUsedTokens(Long t) { this.usedTokens = t; }
     public Long getTotalTokens() { return totalTokens; } public void setTotalTokens(Long t) { this.totalTokens = t; }

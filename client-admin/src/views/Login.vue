@@ -35,7 +35,7 @@ const password = ref('')
 const loading = ref(false)
 const errorMsg = ref('')
 
-async function handleLogin() {
+  async function handleLogin() {
   errorMsg.value = ''
   if (!phone.value || phone.value.length < 11) {
     errorMsg.value = '请输入正确的手机号'
@@ -57,6 +57,11 @@ async function handleLogin() {
     })
     if (res.data.code === 200) {
       const token = res.data.data.token
+      const payload = JSON.parse(atob(token.split('.')[1]))
+      if (payload.role !== 'ADMIN') {
+        errorMsg.value = '权限不足，仅管理员可登录'
+        return
+      }
       localStorage.setItem('admin_token', token)
       router.push('/overview')
     } else {

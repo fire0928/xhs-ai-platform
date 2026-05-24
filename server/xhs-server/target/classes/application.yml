@@ -8,10 +8,13 @@ spring:
     name: xhs-server
   profiles:
     active: dev
+  jackson:
+    time-zone: Asia/Shanghai
+    date-format: yyyy-MM-dd HH:mm:ss
 
   # MySQL
   datasource:
-    url: jdbc:mysql://localhost:3306/xhs_db?useUnicode=true&characterEncoding=utf8mb4&serverTimezone=Asia/Shanghai&useSSL=false&allowPublicKeyRetrieval=true
+    url: jdbc:mysql://localhost:3306/xhs_db?useUnicode=true&characterEncoding=UTF-8&serverTimezone=Asia/Shanghai&useSSL=false&allowPublicKeyRetrieval=true
     username: root
     password: Xhs@2024!secure
     driver-class-name: com.mysql.cj.jdbc.Driver
@@ -21,6 +24,7 @@ spring:
       idle-timeout: 300000
       max-lifetime: 1200000
       connection-timeout: 30000
+      connection-init-sql: SET NAMES utf8mb4
 
   # Redis
   data:
@@ -71,7 +75,7 @@ mybatis-plus:
 
 # JWT
 jwt:
-  secret: XhsJwtSecretKey2024!@#$
+  secret: XhsJwtSecretKey2024Secure256bit!!ForHS256
   expiration: 604800000  # 7 days
   refresh-expiration: 2592000000  # 30 days
 

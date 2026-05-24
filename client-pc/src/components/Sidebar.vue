@@ -19,7 +19,8 @@
       </router-link>
       <router-link to="/review" class="sb-item">
         <svg viewBox="0 0 18 18" fill="none"><path d="M3 3H15C15.55 3 16 3.45 16 4V14C16 14.55 15.55 15 15 15H3C2.45 15 2 14.55 2 14V4C2 3.45 2.45 3 3 3Z" stroke="currentColor" stroke-width="1.5" fill="none"/><path d="M6 7H12M6 10H10" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
-        <span>图文审核</span><span class="cnt-b">5</span>
+        <span>图文审核</span>
+        <span v-if="pendingCount > 0" class="cnt-b">{{ pendingCount }}</span>
       </router-link>
       <router-link to="/queue" class="sb-item">
         <svg viewBox="0 0 18 18" fill="none"><rect x="2" y="3" width="14" height="2.5" rx="1" fill="currentColor" opacity=".5"/><rect x="2" y="7.75" width="14" height="2.5" rx="1" fill="currentColor" opacity=".5"/><rect x="2" y="12.5" width="14" height="2.5" rx="1" fill="currentColor" opacity=".5"/><circle cx="5" cy="4.25" r="1" fill="currentColor"/><circle cx="5" cy="9" r="1" fill="currentColor"/><circle cx="5" cy="13.75" r="1" fill="currentColor"/></svg>
@@ -29,10 +30,22 @@
         <svg viewBox="0 0 18 18" fill="none"><path d="M3 15V8M7 15V5M11 15V10M15 15V3" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
         <span>数据分析</span>
       </router-link>
+      <router-link to="/creation-records" class="sb-item">
+        <svg viewBox="0 0 18 18" fill="none"><path d="M3 3h12v12H3z" stroke="currentColor" stroke-width="1.5" fill="none"/><path d="M6 7h6M6 10h4M6 13h3" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/></svg>
+        <span>创作记录</span>
+      </router-link>
       <div class="sb-lbl">系统</div>
       <router-link to="/accounts" class="sb-item">
         <svg viewBox="0 0 18 18" fill="none"><circle cx="7" cy="7" r="3.5" stroke="currentColor" stroke-width="1.5" fill="none"/><path d="M1 15C1 12 3.5 10 7 10C10.5 10 13 12 13 15" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" fill="none"/><circle cx="14" cy="6" r="2.5" stroke="currentColor" stroke-width="1.2" fill="none" opacity=".5"/><path d="M14 10C16 10 17 11.5 17 13" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" fill="none" opacity=".5"/></svg>
         <span>账号绑定</span>
+      </router-link>
+      <router-link to="/membership" class="sb-item">
+        <svg viewBox="0 0 18 18" fill="none"><path d="M9 1l2.5 5H17l-4 3.5L14.5 15 9 11.5 3.5 15 5 9.5 1 6h5.5L9 1z" stroke="currentColor" stroke-width="1.5" fill="none"/></svg>
+        <span>会员管理</span>
+      </router-link>
+      <router-link to="/orders" class="sb-item">
+        <svg viewBox="0 0 18 18" fill="none"><rect x="2" y="2" width="14" height="14" rx="2" stroke="currentColor" stroke-width="1.5" fill="none"/><path d="M2 6h14M6 2v14" stroke="currentColor" stroke-width="1.2"/></svg>
+        <span>订单管理</span>
       </router-link>
       <router-link to="/settings" class="sb-item">
         <svg viewBox="0 0 18 18" fill="none"><circle cx="9" cy="9" r="2.5" stroke="currentColor" stroke-width="1.5" fill="none"/><path d="M9 1.5V3.5M9 14.5V16.5M1.5 9H3.5M14.5 9H16.5M3.4 3.4L4.8 4.8M13.2 13.2L14.6 14.6M14.6 3.4L13.2 4.8M4.8 13.2L3.4 14.6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
@@ -40,14 +53,45 @@
       </router-link>
     </nav>
     <div class="sb-user">
-      <div class="sb-avatar">小</div>
+      <div class="sb-avatar">{{ avatarText }}</div>
       <div class="sb-user-info">
-        <div class="sb-user-name">小红创作者</div>
-        <div class="sb-user-plan">专业版 · 到期 2026/12</div>
+        <div class="sb-user-name">{{ userName }}</div>
+        <div class="sb-user-plan">{{ userPlan }}</div>
       </div>
     </div>
   </aside>
 </template>
+
+<script setup>
+import { ref, onMounted } from 'vue'
+import { userApi, contentApi } from '@/api'
+
+const avatarText = ref('创')
+const userName = ref('创作者')
+const userPlan = ref('免费版')
+const pendingCount = ref(0)
+
+onMounted(async () => {
+  try {
+    const res = await userApi.info()
+    if (res.data.code === 200) {
+      const u = res.data.data
+      userName.value = u.nickname || '创作者'
+      avatarText.value = (u.nickname || '创').charAt(0)
+      const levelMap = { 0: '免费版', 1: '标准版', 2: '专业版' }
+      const planName = levelMap[u.memberLevel] || '免费版'
+      const expire = u.memberExpireTime ? u.memberExpireTime.substring(0, 10) : null
+      userPlan.value = expire ? (planName + ' · 到期 ' + expire) : planName
+    }
+  } catch { }
+
+  // 待审核数量
+  try {
+    const res = await contentApi.myList({ page: 1, pageSize: 1, auditStatus: 1 })
+    if (res.data.code === 200) pendingCount.value = res.data.data?.total || 0
+  } catch { }
+})
+</script>
 
 <style scoped>
 .sb { width: var(--sw); min-width: var(--sw); background: #fff; border-right: 1px solid var(--cn-200); display: flex; flex-direction: column; z-index: 10; }

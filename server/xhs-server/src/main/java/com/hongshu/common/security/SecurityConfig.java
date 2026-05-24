@@ -48,6 +48,8 @@ public class SecurityConfig {
                     "/swagger-resources/**", "/webjars/**", "/favicon.ico",
                     "/error"
                 ).permitAll()
+                // 发布引擎内部API（不开JWT，通过X-Internal-Key验证）
+                .requestMatchers("/publish/internal/**").permitAll()
                 // 管理后台接口
                 .requestMatchers("/admin/**").hasRole("ADMIN")
                 // 其他接口需要认证

@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.hongshu.common.model.ApiResponse;
 import com.hongshu.common.model.PageResult;
 import com.hongshu.modules.content.entity.AiContent;
+import com.hongshu.modules.content.service.AiScoreService;
 import com.hongshu.modules.content.service.ContentService;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
@@ -17,9 +18,11 @@ import java.util.Map;
 public class ContentController {
 
     private final ContentService contentService;
+    private final AiScoreService aiScoreService;
 
-    public ContentController(ContentService contentService) {
+    public ContentController(ContentService contentService, AiScoreService aiScoreService) {
         this.contentService = contentService;
+        this.aiScoreService = aiScoreService;
     }
 
     // ===== CRUD =====
@@ -87,6 +90,14 @@ public class ContentController {
         Long userId = (Long) auth.getPrincipal();
         IPage<AiContent> result = contentService.pageUserContents(userId, page, pageSize, auditStatus, keyword);
         return ApiResponse.ok(PageResult.of(result.getTotal(), page, pageSize, result.getRecords()));
+    }
+
+    // ===== AI 评分 =====
+    @GetMapping("/{id}/ai-score")
+    public ApiResponse<Map<String, Integer>> getAiScore(@PathVariable Long id) {
+        AiContent content = contentService.getContentDetail(id);
+        Map<String, Integer> score = aiScoreService.scoreContent(content);
+        return ApiResponse.ok(score);
     }
 
     // ===== 图片上传 =====

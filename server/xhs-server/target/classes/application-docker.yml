@@ -3,6 +3,8 @@ spring:
     url: jdbc:mysql://${DB_HOST:mysql}:${DB_PORT:3306}/${DB_NAME:xhs_db}?characterEncoding=UTF-8&serverTimezone=Asia/Shanghai&useSSL=false&allowPublicKeyRetrieval=true
     username: ${DB_USER:xhs_user}
     password: ${DB_PASS:Xhs@2024!user}
+    hikari:
+      connection-init-sql: SET NAMES utf8mb4
   data:
     redis:
       host: ${REDIS_HOST:redis}
@@ -16,3 +18,6 @@ minio:
 
 jwt:
   secret: ${JWT_SECRET:XhsJwtSecretKey2024Secure256bit!!}
+
+doubao:
+  api-key: ${DOUBAO_API_KEY:}

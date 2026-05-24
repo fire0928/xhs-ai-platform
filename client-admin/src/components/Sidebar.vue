@@ -16,11 +16,15 @@
       <router-link to="/users" class="sb-item">
         <svg viewBox="0 0 18 18" fill="none"><circle cx="7" cy="7" r="3.5" stroke="currentColor" stroke-width="1.5" fill="none"/><path d="M1 15C1 12 3.5 10 7 10C10.5 10 13 12 13 15" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" fill="none"/></svg>
         <span>用户管理</span>
-        <span class="cnt-b">1.2K</span>
+        <span class="cnt-b">{{ fmtK(stats.totalUsers) }}</span>
       </router-link>
       <router-link to="/membership" class="sb-item">
         <svg viewBox="0 0 18 18" fill="none"><path d="M9 2L11 7H16L12 10.5L13.5 16L9 12.5L4.5 16L6 10.5L2 7H7L9 2Z" fill="currentColor" opacity=".6"/></svg>
         <span>会员管理</span>
+      </router-link>
+      <router-link to="/orders" class="sb-item">
+        <svg viewBox="0 0 18 18" fill="none"><rect x="2" y="3" width="14" height="12" rx="2" stroke="currentColor" stroke-width="1.5" fill="none"/><path d="M2 7H16" stroke="currentColor" stroke-width="1.5"/><path d="M6 11H10" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+        <span>订单管理</span>
       </router-link>
 
       <div class="sb-lbl">AI 与内容</div>
@@ -32,6 +36,10 @@
         <svg viewBox="0 0 18 18" fill="none"><path d="M9 2L10.5 5.5H14.5L11.25 8L12.75 12L9 9.5L5.25 12L6.75 8L3.5 5.5H7.5L9 2Z" fill="currentColor" opacity=".6"/></svg>
         <span>Agent 管理</span>
       </router-link>
+      <router-link to="/content-directions" class="sb-item">
+        <svg viewBox="0 0 18 18" fill="none"><path d="M3 4.5h12M3 8h8M3 11.5h5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+        <span>创作方向</span>
+      </router-link>
       <router-link to="/monitor" class="sb-item">
         <svg viewBox="0 0 18 18" fill="none"><path d="M2 14L6 8L10 11L16 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" fill="none"/></svg>
         <span>调用监控</span>
@@ -39,7 +47,7 @@
       <router-link to="/content" class="sb-item">
         <svg viewBox="0 0 18 18" fill="none"><path d="M3 3H15C15.55 3 16 3.45 16 4V14C16 14.55 15.55 15 15 15H3C2.45 15 2 14.55 2 14V4C2 3.45 2.45 3 3 3Z" stroke="currentColor" stroke-width="1.5" fill="none"/><path d="M6 7H12M6 10H10" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
         <span>内容管理</span>
-        <span class="cnt-b alert">3</span>
+        <span v-if="stats.pendingContents > 0" class="cnt-b alert">{{ stats.pendingContents }}</span>
       </router-link>
 
       <div class="sb-lbl">数据</div>
@@ -53,10 +61,10 @@
       </router-link>
     </nav>
     <div class="sb-user">
-      <div class="sb-avatar">管</div>
+      <div class="sb-avatar">{{ adminAvatar }}</div>
       <div class="sb-user-info">
-        <div class="sb-user-name">超级管理员</div>
-        <div class="sb-user-plan">admin@hongshu.ai</div>
+        <div class="sb-user-name">{{ adminName }}</div>
+        <div class="sb-user-plan">{{ adminEmail }}</div>
       </div>
       <button class="sb-logout" title="退出登录" @click="handleLogout">
         <svg viewBox="0 0 16 16" fill="none"><path d="M6 2H3C2.45 2 2 2.45 2 3V13C2 13.55 2.45 14 3 14H6M11 11L14 8L11 5M14 8H6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
@@ -66,14 +74,32 @@
 </template>
 
 <script setup>
+import { computed, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
+import { useAdminStore } from '@/store'
 
 const router = useRouter()
+const store = useAdminStore()
+const stats = computed(() => store.stats)
+
+const adminName = computed(() => store.adminInfo?.name || '超级管理员')
+const adminEmail = computed(() => store.adminInfo?.email || 'admin@hongshu.ai')
+const adminAvatar = computed(() => (store.adminInfo?.name || '管').charAt(0))
+
+function fmtK(v) {
+  if (v == null) return '--'
+  if (v >= 10000) return (v / 10000).toFixed(1) + '万'
+  return Number(v).toLocaleString()
+}
 
 function handleLogout() {
-  localStorage.removeItem('admin_token')
+  store.logout()
   router.push('/login')
 }
+
+onMounted(() => {
+  store.fetchStats()
+})
 </script>
 
 <style scoped>

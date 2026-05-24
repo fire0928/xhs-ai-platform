@@ -53,6 +53,7 @@
         </div>
 
         <div class="flex aic g2 mb4" style="flex-wrap:wrap">
+          <span :style="{fontSize:'11px',padding:'1px 8px',borderRadius:'10px',background:a.agentType===1?'#EDE9FE':'var(--cp-50)',color:a.agentType===1?'#8B5CF6':'var(--cp-500)'}">{{ a.agentType===1?'图片Agent':'文案Agent' }}</span>
           <span v-if="a.style" style="font-size:11px;color:var(--cp-500);background:var(--cp-50);padding:1px 8px;border-radius:10px">{{ a.style }}</span>
           <span v-if="a.domain" style="font-size:11px;color:var(--ca-purple);background:var(--ca-purple-l);padding:1px 8px;border-radius:10px">{{ a.domain }}</span>
         </div>
@@ -91,6 +92,13 @@
             <div>
               <label class="fl">Agent 名称 *</label>
               <input class="ipt" v-model="form.name" placeholder="如：美食探店 Agent" required />
+            </div>
+            <div>
+              <label class="fl">Agent 类型 *</label>
+              <select class="ipt" v-model.number="form.agentType">
+                <option :value="0">文案 Agent</option>
+                <option :value="1">图片 Agent</option>
+              </select>
             </div>
             <div>
               <label class="fl">绑定 AI 模型</label>
@@ -186,6 +194,7 @@ const defaultForm = () => ({
   domain: '',
   apiId: null,
   promptTemplate: '',
+  agentType: 0,
   sortOrder: 0,
   status: 1
 })
@@ -243,6 +252,7 @@ function openEdit(a) {
     domain: a.domain || '',
     apiId: a.apiId || null,
     promptTemplate: a.promptTemplate || '',
+    agentType: a.agentType ?? 0,
     sortOrder: a.sortOrder || 0,
     status: a.status ?? 1
   }

@@ -31,7 +31,7 @@ public class CryptoUtil {
 
     @PostConstruct
     public void init() {
-        byte[] key = SecureUtil.generateKey(SymmetricAlgorithm.AES.getValue(), 256, aesKey.getBytes(StandardCharsets.UTF_8)).getEncoded();
+        byte[] key = SecureUtil.generateKey(SymmetricAlgorithm.AES.getValue(), aesKey.getBytes(StandardCharsets.UTF_8)).getEncoded();
         this.aes = new SymmetricCrypto(SymmetricAlgorithm.AES, key);
     }
 
